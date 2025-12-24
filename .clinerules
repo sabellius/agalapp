@@ -41,3 +41,4 @@ DON'T:
 - Don't use client components unless interactive
 - Don't skip TypeScript types
 - Don't hardcode - use env variables
+- Don't add line comments unless really necessary
