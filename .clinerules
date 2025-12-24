@@ -1,0 +1,43 @@
+PROJECT: Israeli Coffee Cart Review Platform
+STACK: Next.js 15, TypeScript, Tailwind, MySQL
+
+ARCHITECTURE DECISIONS:
+
+- App Router (not Pages Router)
+- Server Components by default, Client Components only when needed
+- Separate /components/ui for reusable components
+
+CODE STYLE:
+
+- TypeScript strict mode always
+- Functional components only
+- Use shadcn/ui for base components
+- Hebrew RTL support from day one
+- Mobile-first responsive design
+
+API & DATA:
+
+- Server Actions for mutations
+- Zod for validation
+
+NAMING CONVENTIONS:
+
+- Files and folders: kebab-case
+- Components: PascalCase
+- Function and variables: camelCase
+- Constants: SCREAMING_CASE
+- Database tables: snake_case (coffee_carts, user_reviews)
+
+FEATURES TO BUILD FIRST:
+
+1. Cart listing and search
+2. User auth
+3. Rating/review system
+4. Map integration
+5. Image upload
+
+DON'T:
+
+- Don't use client components unless interactive
+- Don't skip TypeScript types
+- Don't hardcode - use env variables
