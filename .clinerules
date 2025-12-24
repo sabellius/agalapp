@@ -14,6 +14,7 @@ CODE STYLE:
 - Use shadcn/ui for base components
 - Hebrew RTL support from day one
 - Mobile-first responsive design
+- Commit concise messages after completing todos in a task
 
 API & DATA:
 
