@@ -43,3 +43,5 @@ next-env.d.ts
 
 memory-bank/
 
+
+/generated/prisma
