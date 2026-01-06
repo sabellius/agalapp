@@ -1,7 +1,7 @@
 services:
   db:
     image: mysql:9
-    container_name: agalapp_deve
+    container_name: agalapp_dev_db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
