@@ -73,9 +73,9 @@ export default function DashboardPage() {
           </dl>
         </div>
 
-        <div className="flex flex-col gap-4">
+        {/* <div className="flex flex-col gap-4">
           <SignOut redirectTo="/" />
-        </div>
+        </div> */}
 
         <Link
           href="/"
