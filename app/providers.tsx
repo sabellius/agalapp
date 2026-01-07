@@ -15,10 +15,6 @@ export function Providers({ children }: { children: ReactNode }) {
       authClient={authClient}
       navigate={router.push}
       replace={router.replace}
-      onSessionChange={() => {
-        // Clear router cache (protected routes)
-        router.refresh();
-      }}
       Link={Link}
       localization={{
         SIGN_IN: "התחברות",
