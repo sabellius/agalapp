@@ -47,3 +47,5 @@ memory-bank/
 /generated/prisma
 
 CLAUDE.md
+.kilocode
+plans/
