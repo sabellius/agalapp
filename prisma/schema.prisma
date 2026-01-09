@@ -7,16 +7,25 @@ datasource db {
   provider = "mysql"
 }
 
+enum Role {
+  USER
+  TRUCK_OWNER
+  ADMIN
+}
+
 model User {
-  id            String    @id @default(cuid())
-  name          String    @db.Text
+  id            String        @id @default(cuid())
+  name          String        @db.Text
   email         String
-  emailVerified Boolean   @default(false)
-  image         String?   @db.Text
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  emailVerified Boolean       @default(false)
+  image         String?       @db.Text
+  role          Role          @default(USER)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   sessions      Session[]
   accounts      Account[]
+  coffeeTrucks  CoffeeTruck[]
+  reviews       Review[]
 
   @@unique([email])
   @@map("users")
@@ -68,4 +77,54 @@ model Verification {
 
   @@index([identifier(length: 191)])
   @@map("verifications")
+}
+
+model CoffeeTruck {
+  id        String             @id @default(cuid())
+  name      String             @db.Text
+  city      String
+  address   String             @db.Text
+  latitude  Float
+  longitude Float
+  ownerId   String
+  owner     User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  images    CoffeeTruckImage[]
+  reviews   Review[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([city])
+  @@index([latitude, longitude])
+  @@map("coffee_trucks")
+}
+
+model CoffeeTruckImage {
+  id        String      @id @default(cuid())
+  truckId   String
+  truck     CoffeeTruck @relation(fields: [truckId], references: [id], onDelete: Cascade)
+  url       String      @db.Text
+  publicId  String      @db.Text
+  alt       String?     @db.Text
+  isPrimary Boolean     @default(false)
+  createdAt DateTime    @default(now())
+
+  @@index([truckId])
+  @@map("coffee_truck_images")
+}
+
+model Review {
+  id        String      @id @default(cuid())
+  rating    Int // 1-5 stars
+  content   String      @db.Text
+  truckId   String
+  truck     CoffeeTruck @relation(fields: [truckId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([truckId])
+  @@index([userId])
+  @@index([rating])
+  @@map("reviews")
 }
