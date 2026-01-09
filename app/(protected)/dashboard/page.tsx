@@ -1,10 +1,10 @@
 "use client";
 
-import { useSession, authClient } from "@/lib/auth-client";
 import { SignOut } from "@daveyplate/better-auth-ui";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { authClient, useSession } from "@/lib/auth-client";
 
 export default function DashboardPage() {
   const { data: session, isPending } = useSession();

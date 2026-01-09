@@ -1,7 +1,6 @@
-import { Role } from "../generated/prisma/client";
 import { fakerHE as faker } from "@faker-js/faker";
-
 import { prisma } from "@/lib/prisma";
+import { Role } from "../generated/prisma/client";
 
 async function main() {
   console.log("🌱 Starting database seed...");
@@ -25,7 +24,7 @@ async function main() {
           role: Role.USER,
           emailVerified: true,
         },
-      })
+      }),
     ),
     // Truck owners
     ...Array.from({ length: 4 }).map((_, i) =>
@@ -36,7 +35,7 @@ async function main() {
           role: Role.TRUCK_OWNER,
           emailVerified: true,
         },
-      })
+      }),
     ),
     // Admin
     prisma.user.create({
@@ -65,8 +64,8 @@ async function main() {
           longitude: faker.location.longitude({ min: 34.0, max: 36.0 }),
           ownerId: owner.id,
         },
-      })
-    )
+      }),
+    ),
   );
 
   // Create images for trucks
@@ -86,8 +85,8 @@ async function main() {
             alt: `${truck.name} - Photo ${i + 1}`,
             isPrimary: i === 0,
           },
-        })
-      )
+        }),
+      ),
     );
   }
 
@@ -108,7 +107,7 @@ async function main() {
               truckId: truck.id,
               userId: user.id,
             },
-          })
+          }),
         );
       }
     }

@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
 import { TruckPreview } from "@/components/trucks/truck-preview";
+import { prisma } from "@/lib/prisma";
 
 async function getTrucks() {
   const trucks = await prisma.coffeeTruck.findMany({
@@ -35,7 +35,7 @@ async function getTrucks() {
         ...truck,
         avgRating,
       };
-    })
+    }),
   );
 
   return trucksWithRating;
