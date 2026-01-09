@@ -54,7 +54,7 @@ async function main() {
   // Create coffee trucks
   console.log("☕ Creating coffee trucks...");
   const trucks = await Promise.all(
-    truckOwners.map((owner, i) =>
+    truckOwners.map((owner, _i) =>
       prisma.coffeeTruck.create({
         data: {
           name: `Coffee Truck ${faker.company.name()}`,
