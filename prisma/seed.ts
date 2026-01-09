@@ -93,12 +93,14 @@ async function main() {
 
   // Create reviews
   console.log("⭐ Creating reviews...");
-  await Promise.all(
-    regularUsers.flatMap((user, userIndex) =>
-      trucks.map((truck, truckIndex) => {
-        // Each user reviews 1-3 trucks
-        const reviewCount = faker.number.int({ min: 1, max: 3 });
-        return Array.from({ length: reviewCount }).map((_, i) =>
+  const reviewPromises: Promise<unknown>[] = [];
+
+  for (const user of regularUsers) {
+    for (const truck of trucks) {
+      // Each user reviews 1-3 trucks
+      const reviewCount = faker.number.int({ min: 1, max: 3 });
+      for (let i = 0; i < reviewCount; i++) {
+        reviewPromises.push(
           prisma.review.create({
             data: {
               rating: faker.number.int({ min: 3, max: 5 }),
@@ -108,9 +110,11 @@ async function main() {
             },
           })
         );
-      })
-    )
-  );
+      }
+    }
+  }
+
+  await Promise.all(reviewPromises);
 
   console.log("✅ Seed completed successfully!");
   console.log(`📊 Created ${users.length} users`);
