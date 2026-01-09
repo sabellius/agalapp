@@ -1,4 +1,5 @@
 import { Calendar, MapPin, Star } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -77,10 +78,12 @@ export default async function TruckPage({
             <CardContent className="p-0">
               {primaryImage && (
                 <div className="relative h-96 w-full bg-muted">
-                  <img
+                  <Image
                     src={primaryImage.url}
                     alt={truck.name}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
+                    priority
                   />
                 </div>
               )}
@@ -91,10 +94,11 @@ export default async function TruckPage({
                       key={image.id}
                       className="relative h-24 w-full bg-muted"
                     >
-                      <img
+                      <Image
                         src={image.url}
                         alt={image.alt || truck.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     </div>
                   ))}
@@ -120,11 +124,14 @@ export default async function TruckPage({
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
                           {review.user.image && (
-                            <img
-                              src={review.user.image}
-                              alt={review.user.name}
-                              className="h-8 w-8 rounded-full"
-                            />
+                            <div className="relative h-8 w-8 rounded-full overflow-hidden">
+                              <Image
+                                src={review.user.image}
+                                alt={review.user.name}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
                           )}
                           <span className="font-medium">
                             {review.user.name}

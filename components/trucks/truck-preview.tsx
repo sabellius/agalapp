@@ -1,4 +1,5 @@
 import { MapPin, Star } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,10 +31,12 @@ export function TruckPreview({ truck }: TruckPreviewProps) {
         <CardHeader className="p-0">
           {primaryImage && (
             <div className="relative h-48 w-full bg-muted">
-              <img
+              <Image
                 src={primaryImage.url}
                 alt={truck.name}
-                className="h-full w-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             </div>
           )}
