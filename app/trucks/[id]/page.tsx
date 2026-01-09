@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Star, MapPin, Calendar } from "lucide-react";
+import { Calendar, MapPin, Star } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { prisma } from "@/lib/prisma";
 
 async function getTruck(id: string) {
   const truck = await prisma.coffeeTruck.findUnique({

@@ -1,13 +1,13 @@
+import { MapPin, Star } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Star, MapPin } from "lucide-react";
-import { CoffeeTruck } from "@/generated/prisma/client";
+import type { CoffeeTruck } from "@/generated/prisma/client";
 
 interface TruckPreviewProps {
   truck: CoffeeTruck & {
