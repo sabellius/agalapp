@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -52,6 +53,24 @@ export default function DashboardPage() {
           <p className="text-muted-foreground">
             {session.user.name || session.user.email}
           </p>
+        </div>
+
+        <div className="rounded-lg border p-4">
+          <h2 className="mb-4 text-lg font-semibold">ניהול עגלות</h2>
+          <div className="space-y-3">
+            <Link
+              href="/trucks/new"
+              className="flex items-center justify-between rounded-md border p-4 hover:bg-accent transition-colors"
+            >
+              <div>
+                <p className="font-medium">הוספת עגלת קפה חדשה</p>
+                <p className="text-sm text-muted-foreground">
+                  הוסף את עגלת הקפה שלך
+                </p>
+              </div>
+              <Plus className="h-6 w-6" />
+            </Link>
+          </div>
         </div>
 
         <div className="rounded-lg border p-4">
