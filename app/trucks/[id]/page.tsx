@@ -1,9 +1,11 @@
 import { Calendar, MapPin, Star } from "lucide-react";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 async function getTruck(id: string) {
@@ -62,6 +64,11 @@ export default async function TruckPage({
     notFound();
   }
 
+  // Get session to check if user can edit this truck
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
   const primaryImage =
     truck.images.find((img) => img.isPrimary) || truck.images[0];
   const otherImages = truck.images.filter((img) => !img.isPrimary);
@@ -106,8 +113,10 @@ export default async function TruckPage({
               )}
             </CardContent>
           </Card>
+        </div>
 
-          <Card className="mt-6">
+        <div className="lg:col-span-1">
+          <Card>
             <CardHeader>
               <CardTitle>ביקורות ({truck.reviews.length})</CardTitle>
             </CardHeader>
@@ -137,7 +146,7 @@ export default async function TruckPage({
                             {review.user.name}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                           <span className="text-sm">{review.rating}</span>
                         </div>
@@ -172,16 +181,13 @@ export default async function TruckPage({
                   ({truck.reviews.length} ביקורות)
                 </span>
               </div>
-
-              <div className="space-y-2">
-                <div className="flex items-start gap-2">
-                  <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">{truck.city}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {truck.address}
-                    </p>
-                  </div>
+              <div className="flex items-start gap-2">
+                <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">{truck.city}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {truck.address}
+                  </p>
                 </div>
               </div>
 
@@ -194,6 +200,14 @@ export default async function TruckPage({
                 <Button className="w-full" size="lg">
                   כתוב ביקורת
                 </Button>
+              </div>
+
+              <div className="pt-4 border-t">
+                {session?.user && (
+                  <Link href={`/trucks/${id}/edit`} className="w-full">
+                    <Button size="lg">עריכת עגלה</Button>
+                  </Link>
+                )}
               </div>
             </CardContent>
           </Card>
