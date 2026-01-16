@@ -84,8 +84,8 @@ model CoffeeTruck {
   name      String             @db.Text
   city      String
   address   String             @db.Text
-  latitude  Float
-  longitude Float
+  latitude  Float?
+  longitude Float?
   ownerId   String
   owner     User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   images    CoffeeTruckImage[]
@@ -94,7 +94,6 @@ model CoffeeTruck {
   updatedAt DateTime           @updatedAt
 
   @@index([city])
-  @@index([latitude, longitude])
   @@map("coffee_trucks")
 }
 
