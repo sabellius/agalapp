@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@daveyplate/better-auth-ui": "^3.3.12",
+    "@next/env": "^16.1.4",
     "@prisma/adapter-mariadb": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@radix-ui/react-label": "^2.1.8",
