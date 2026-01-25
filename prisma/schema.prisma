@@ -122,6 +122,7 @@ model Review {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
+  @@unique([truckId, userId])
   @@index([truckId])
   @@index([userId])
   @@index([rating])
