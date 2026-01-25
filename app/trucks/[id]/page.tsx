@@ -2,7 +2,8 @@ import { Calendar, MapPin, Star } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { ReviewForm } from "@/components/reviews/review-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
@@ -68,6 +69,11 @@ export default async function TruckPage({
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+
+  // Check if user has already reviewed this truck
+  const hasReviewed = session?.user?.id
+    ? truck.reviews.some((review) => review.userId === session.user.id)
+    : false;
 
   const primaryImage =
     truck.images.find((img) => img.isPrimary) || truck.images[0];
@@ -197,9 +203,31 @@ export default async function TruckPage({
               </div>
 
               <div className="pt-4 border-t">
-                <Button className="w-full" size="lg">
-                  כתוב ביקורת
-                </Button>
+                {!session?.user ? (
+                  <Link href="/auth/sign-in" className="w-full">
+                    <Button className="w-full" size="lg" variant="outline">
+                      התחבר כדי לכתוב ביקורת
+                    </Button>
+                  </Link>
+                ) : hasReviewed ? (
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    variant="outline"
+                    disabled
+                  >
+                    כבר כתבת ביקורת על עגלה זו
+                  </Button>
+                ) : (
+                  <ReviewForm
+                    truckId={id}
+                    onSuccess={() => redirect(`/trucks/${id}`)}
+                  >
+                    <Button className="w-full" size="lg">
+                      כתוב ביקורת
+                    </Button>
+                  </ReviewForm>
+                )}
               </div>
 
               <div className="pt-4 border-t">
