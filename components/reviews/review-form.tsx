@@ -1,6 +1,7 @@
 "use client";
 
 import { Star } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createReview } from "@/app/actions/reviews";
 import { Button } from "@/components/ui/button";
@@ -18,11 +19,11 @@ import { StarRating } from "./star-rating";
 
 interface ReviewFormProps {
   truckId: string;
-  onSuccess: () => void;
   children: React.ReactNode;
 }
 
-export function ReviewForm({ truckId, onSuccess, children }: ReviewFormProps) {
+export function ReviewForm({ truckId, children }: ReviewFormProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
@@ -63,7 +64,7 @@ export function ReviewForm({ truckId, onSuccess, children }: ReviewFormProps) {
       setOpen(false);
       setRating(0);
       setContent("");
-      onSuccess();
+      router.refresh();
     } else {
       setError(result.message || "שגיאה ביצירת הביקורת");
     }

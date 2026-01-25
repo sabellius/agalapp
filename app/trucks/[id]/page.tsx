@@ -2,7 +2,7 @@ import { Calendar, MapPin, Star } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ReviewForm } from "@/components/reviews/review-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -219,10 +219,7 @@ export default async function TruckPage({
                     כבר כתבת ביקורת על עגלה זו
                   </Button>
                 ) : (
-                  <ReviewForm
-                    truckId={id}
-                    onSuccess={() => redirect(`/trucks/${id}`)}
-                  >
+                  <ReviewForm truckId={id}>
                     <Button className="w-full" size="lg">
                       כתוב ביקורת
                     </Button>
