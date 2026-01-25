@@ -134,22 +134,30 @@ async function main() {
 
   console.log("⭐ Creating reviews...");
   const reviewPromises: Promise<unknown>[] = [];
+  const usedUserTruckPairs = new Set<string>();
 
   for (const user of regularUsers) {
     for (const truck of trucks) {
-      const reviewCount = faker.number.int({ min: 1, max: 3 });
-      for (let i = 0; i < reviewCount; i++) {
-        reviewPromises.push(
-          prisma.review.create({
-            data: {
-              rating: faker.number.int({ min: 3, max: 5 }),
-              content: faker.lorem.paragraphs(2),
-              truckId: truck.id,
-              userId: user.id,
-            },
-          }),
-        );
+      const pairKey = `${user.id}-${truck.id}`;
+
+      // Skip if this user already reviewed this truck
+      if (usedUserTruckPairs.has(pairKey)) {
+        continue;
       }
+
+      usedUserTruckPairs.add(pairKey);
+
+      // Only create one review per (user, truck) pair
+      reviewPromises.push(
+        prisma.review.create({
+          data: {
+            rating: faker.number.int({ min: 3, max: 5 }),
+            content: faker.lorem.paragraphs(2),
+            truckId: truck.id,
+            userId: user.id,
+          },
+        }),
+      );
     }
   }
 
