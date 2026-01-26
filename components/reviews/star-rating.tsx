@@ -39,7 +39,7 @@ export function StarRating({
           onMouseEnter={() => handleStarMouseEnter(star)}
           onMouseLeave={() => handleStarClick(value)}
           className={cn(
-            "transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded",
+            "transition-transform hover:scale-110 focus:outline-none",
             readonly && "cursor-default",
           )}
           aria-label={`דרג ${star} כוכבים`}
