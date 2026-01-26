@@ -1,6 +1,5 @@
 "use client";
 
-import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createReview } from "@/app/actions/reviews";
@@ -81,7 +80,6 @@ export function ReviewForm({ truckId, children }: ReviewFormProps) {
       <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
             כתוב ביקורת
           </DialogTitle>
           <DialogDescription>
