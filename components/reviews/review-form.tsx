@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { createReview } from "@/app/actions/reviews";
+import { useEffect, useState } from "react";
+import { createReview, updateReview } from "@/app/actions/reviews";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,18 +16,33 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { StarRating } from "./star-rating";
 
+interface Review {
+  id: string;
+  rating: number;
+  content: string;
+}
+
 interface ReviewFormProps {
   truckId: string;
   children: React.ReactNode;
+  review?: Review;
 }
 
-export function ReviewForm({ truckId, children }: ReviewFormProps) {
+export function ReviewForm({ truckId, children, review }: ReviewFormProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isEditMode = !!review;
+
+  useEffect(() => {
+    if (review) {
+      setRating(review.rating);
+      setContent(review.content);
+    }
+  }, [review]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,17 +70,26 @@ export function ReviewForm({ truckId, children }: ReviewFormProps) {
 
     setIsSubmitting(true);
 
-    const result = await createReview(truckId, rating, content.trim());
+    const result =
+      isEditMode && review
+        ? await updateReview(review.id, rating, content.trim())
+        : await createReview(truckId, rating, content.trim());
 
     setIsSubmitting(false);
 
     if (result.success) {
       setOpen(false);
-      setRating(0);
-      setContent("");
+      if (!isEditMode) {
+        setRating(0);
+        setContent("");
+      }
       router.refresh();
     } else {
-      setError(result.message || "שגיאה ביצירת הביקורת");
+      setError(
+        result.message || isEditMode
+          ? "שגיאה בעדכון הביקורת"
+          : "שגיאה ביצירת הביקורת",
+      );
     }
   };
 
@@ -80,10 +104,12 @@ export function ReviewForm({ truckId, children }: ReviewFormProps) {
       <DialogContent className="sm:max-w-125">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            כתוב ביקורת
+            {isEditMode ? "ערוך ביקורת" : "כתוב ביקורת"}
           </DialogTitle>
           <DialogDescription>
-            שתף את דעתך על העגלה ועזור למשתמשים אחרים
+            {isEditMode
+              ? "עדכן את הביקורת שלך על העגלה"
+              : "שתף את דעתך על העגלה ועזור למשתמשים אחרים"}
           </DialogDescription>
         </DialogHeader>
 
@@ -124,7 +150,11 @@ export function ReviewForm({ truckId, children }: ReviewFormProps) {
               ביטול
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "שולח..." : "שלח ביקורת"}
+              {isSubmitting
+                ? "שולח..."
+                : isEditMode
+                  ? "עדכן ביקורת"
+                  : "שלח ביקורת"}
             </Button>
           </div>
         </form>
