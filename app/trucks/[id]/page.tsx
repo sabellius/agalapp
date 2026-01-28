@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ReviewActions } from "@/components/reviews/review-actions";
 import { ReviewForm } from "@/components/reviews/review-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -152,9 +153,21 @@ export default async function TruckPage({
                             {review.user.name}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm">{review.rating}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            <span className="text-sm">{review.rating}</span>
+                          </div>
+                          <ReviewActions
+                            reviewId={review.id}
+                            review={{
+                              id: review.id,
+                              rating: review.rating,
+                              content: review.content,
+                            }}
+                            truckId={id}
+                            isOwner={session?.user?.id === review.userId}
+                          />
                         </div>
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">
