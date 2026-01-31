@@ -21,12 +21,19 @@ export default async function EditTruckPage({
 
   const truck = await prisma.coffeeTruck.findUnique({
     where: { id },
-    select: {
-      id: true,
-      name: true,
-      city: true,
-      address: true,
-      ownerId: true,
+    include: {
+      images: {
+        select: {
+          id: true,
+          url: true,
+          publicId: true,
+          alt: true,
+          isPrimary: true,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      },
     },
   });
 
@@ -48,7 +55,13 @@ export default async function EditTruckPage({
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">עריכת עגלת קפה</h1>
-      <TruckForm truck={truck} />
+      <TruckForm
+        truck={truck}
+        images={truck.images.map((img) => ({
+          ...img,
+          alt: img.alt || "",
+        }))}
+      />
     </div>
   );
 }
