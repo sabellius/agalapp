@@ -2,7 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  deleteImage,
+  setPrimaryImage,
+  updateImageAlt,
+} from "@/app/actions/images";
 import { createTruck, updateTruck } from "@/app/actions/trucks";
+import { ImagePreview } from "@/components/trucks/image-preview";
+import { ImageUpload } from "@/components/trucks/image-upload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +22,13 @@ interface TruckFormProps {
     city: string;
     address: string;
   };
+  images?: Array<{
+    id: string;
+    url: string;
+    publicId: string;
+    alt: string;
+    isPrimary: boolean;
+  }>;
 }
 
 interface FormData {
@@ -23,7 +37,19 @@ interface FormData {
   address: string;
 }
 
-export function TruckForm({ truck }: TruckFormProps) {
+interface TruckImageData {
+  id: string;
+  url: string;
+  publicId: string;
+  alt: string | null;
+  isPrimary: boolean;
+  isNew?: boolean;
+}
+
+export function TruckForm({
+  truck,
+  images: initialImages = [],
+}: TruckFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>(
     truck || {
@@ -37,6 +63,8 @@ export function TruckForm({ truck }: TruckFormProps) {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [images, setImages] = useState<TruckImageData[]>(initialImages);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
@@ -58,7 +86,14 @@ export function TruckForm({ truck }: TruckFormProps) {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (images.length === 0) {
+      setImageError("יש להעלות לפחות תמונה אחת");
+    } else {
+      setImageError(null);
+    }
+
+    return Object.keys(newErrors).length === 0 && images.length > 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,9 +107,12 @@ export function TruckForm({ truck }: TruckFormProps) {
     setIsSubmitting(true);
 
     try {
+      const formData = new FormData(e.target as HTMLFormElement);
+      formData.append("images", JSON.stringify(images));
+
       const result = truck
-        ? await updateTruck(truck.id, new FormData(e.target as HTMLFormElement))
-        : await createTruck(new FormData(e.target as HTMLFormElement));
+        ? await updateTruck(truck.id, formData)
+        : await createTruck(formData);
 
       if (!result.success) {
         setServerError(result.message || "שגיאה בשמירת העגלה");
@@ -104,6 +142,69 @@ export function TruckForm({ truck }: TruckFormProps) {
     // Clear error when user starts typing
     if (errors[name as keyof FormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleImageUpload = (image: Omit<TruckImageData, "id">) => {
+    setImages((prev) => [
+      ...prev,
+      {
+        ...image,
+        id: `temp-${Date.now()}`,
+        isNew: true,
+      },
+    ]);
+    setImageError(null);
+  };
+
+  const handleSetPrimary = async (imageId: string) => {
+    const truckId = truck?.id;
+    if (!truckId) {
+      setImages((prev) =>
+        prev.map((img) => ({
+          ...img,
+          isPrimary: img.id === imageId,
+        })),
+      );
+      return;
+    }
+
+    const result = await setPrimaryImage(imageId, truckId);
+    if (!result.success) {
+      setServerError(result.message || "שגיאה בעדכון התמונה הראשית");
+    } else {
+      setImages((prev) =>
+        prev.map((img) => ({
+          ...img,
+          isPrimary: img.id === imageId,
+        })),
+      );
+    }
+  };
+
+  const handleDeleteImage = async (imageId: string) => {
+    const truckId = truck?.id;
+    if (!truckId) {
+      setImages((prev) => prev.filter((img) => img.id !== imageId));
+      return;
+    }
+
+    const result = await deleteImage(imageId, truckId);
+    if (!result.success) {
+      setServerError(result.message || "שגיאה במחיקת התמונה");
+    } else {
+      setImages((prev) => prev.filter((img) => img.id !== imageId));
+    }
+  };
+
+  const handleUpdateAlt = async (imageId: string, alt: string) => {
+    const result = await updateImageAlt(imageId, alt);
+    if (!result.success) {
+      setServerError(result.message || "שגיאה בעדכון טקסט התמונה");
+    } else {
+      setImages((prev) =>
+        prev.map((img) => (img.id === imageId ? { ...img, alt } : img)),
+      );
     }
   };
 
@@ -199,6 +300,36 @@ export function TruckForm({ truck }: TruckFormProps) {
             {errors.address && (
               <p className="text-sm text-red-500">{errors.address}</p>
             )}
+          </div>
+
+          <div className="space-y-4 pt-4 border-t">
+            <div>
+              <Label>תמונות *</Label>
+              <p className="text-sm text-muted-foreground mb-2">
+                העלה עד 10 תמונות. סמן אחת כראשית.
+              </p>
+            </div>
+
+            <ImageUpload
+              onUpload={handleImageUpload}
+              disabled={isSubmitting}
+              maxImages={10}
+              currentImageCount={images.length}
+            />
+
+            {imageError && (
+              <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+                {imageError}
+              </div>
+            )}
+
+            <ImagePreview
+              images={images}
+              onSetPrimary={handleSetPrimary}
+              onDelete={handleDeleteImage}
+              onUpdateAlt={handleUpdateAlt}
+              disabled={isSubmitting}
+            />
           </div>
 
           <div className="flex gap-4 justify-end pt-4">
