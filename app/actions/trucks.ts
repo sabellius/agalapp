@@ -40,11 +40,33 @@ export async function createTruck(formData: FormData) {
     const name = formData.get("name") as string;
     const city = formData.get("city") as string;
     const address = formData.get("address") as string;
+    const imagesJson = formData.get("images") as string;
 
     if (!name || !city || !address) {
       return {
         success: false,
         message: "Missing required fields",
+      };
+    }
+
+    let images: Array<{
+      url: string;
+      publicId: string;
+      alt: string;
+      isPrimary: boolean;
+    }> = [];
+    if (imagesJson) {
+      try {
+        images = JSON.parse(imagesJson);
+      } catch (e) {
+        console.error("Error parsing images JSON:", e);
+      }
+    }
+
+    if (images.length === 0) {
+      return {
+        success: false,
+        message: "יש להעלות לפחות תמונה אחת",
       };
     }
 
@@ -54,6 +76,14 @@ export async function createTruck(formData: FormData) {
         city: city.trim(),
         address: address.trim(),
         ownerId: session.user.id,
+        images: {
+          create: images.map((img, index) => ({
+            url: img.url,
+            publicId: img.publicId,
+            alt: img.alt || null,
+            isPrimary: index === 0, // First image is primary by default
+          })),
+        },
       },
     });
 
@@ -87,7 +117,14 @@ export async function updateTruck(truckId: string, formData: FormData) {
 
     const truck = await prisma.coffeeTruck.findUnique({
       where: { id: truckId },
-      select: { ownerId: true },
+      include: {
+        images: {
+          select: {
+            id: true,
+            publicId: true,
+          },
+        },
+      },
     });
 
     if (!truck) {
@@ -114,12 +151,80 @@ export async function updateTruck(truckId: string, formData: FormData) {
     const name = formData.get("name") as string;
     const city = formData.get("city") as string;
     const address = formData.get("address") as string;
+    const imagesJson = formData.get("images") as string;
 
     if (!name || !city || !address) {
       return {
         success: false,
         message: "Missing required fields",
       };
+    }
+
+    let images: Array<{
+      id?: string;
+      url: string;
+      publicId: string;
+      alt: string;
+      isPrimary: boolean;
+    }> = [];
+    if (imagesJson) {
+      try {
+        images = JSON.parse(imagesJson);
+      } catch (e) {
+        console.error("Error parsing images JSON:", e);
+      }
+    }
+
+    if (truck.images && images.length > 0) {
+      const _existingImageIds = new Set(
+        truck.images.map((img) => img.publicId),
+      );
+      const newImageIds = new Set(
+        images
+          .filter((img) => !img.id?.startsWith("temp-"))
+          .map((img) => img.publicId),
+      );
+
+      const imagesToDelete = truck.images.filter(
+        (img) => !newImageIds.has(img.publicId),
+      );
+      for (const image of imagesToDelete) {
+        try {
+          await prisma.coffeeTruckImage.delete({
+            where: { id: image.id },
+          });
+        } catch (error) {
+          console.error("Error deleting image:", error);
+        }
+      }
+
+      const imagesToCreate = images.filter((img) =>
+        img.id?.startsWith("temp-"),
+      );
+      if (imagesToCreate.length > 0) {
+        await prisma.coffeeTruckImage.createMany({
+          data: imagesToCreate.map((img, _index) => ({
+            url: img.url,
+            publicId: img.publicId,
+            alt: img.alt || null,
+            isPrimary: img.isPrimary,
+            truckId,
+          })),
+        });
+      }
+
+      const imagesToUpdate = images.filter(
+        (img) => !img.id?.startsWith("temp-"),
+      );
+      for (const image of imagesToUpdate) {
+        await prisma.coffeeTruckImage.updateMany({
+          where: { publicId: image.publicId, truckId },
+          data: {
+            alt: image.alt || null,
+            isPrimary: image.isPrimary,
+          },
+        });
+      }
     }
 
     const updatedTruck = await prisma.coffeeTruck.update({
