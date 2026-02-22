@@ -148,6 +148,13 @@ npm run seed         # Seed database with test data
 - Commit after completing todos in a task
 - Keep messages concise but descriptive
 
+## Documentation Lookup
+
+Always use the Context7 MCP server when you need library/API documentation, code generation, setup or configuration steps — do this proactively without waiting for explicit user instruction.
+
+1. First call `mcp__context7__resolve-library-id` to get the library ID
+2. Then call `mcp__context7__query-docs` with the resolved library ID and your query
+
 ## What NOT to Do
 
 - Don't use client components unless interactive
