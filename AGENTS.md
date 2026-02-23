@@ -131,17 +131,21 @@ agalapp/
 
 ## Development Workflow
 
+### Package Management
+- **Always use `pnpm`** for all package operations (install, add, etc.)
+- Never use npm or yarn
+
 ### Running the App
 ```bash
-npm run dev          # Start dev server
-npm run build        # Build for production
-npm run start        # Start production server
+pnpm run dev         # Start dev server
+pnpm run build       # Build for production
+pnpm run start       # Start production server
 ```
 
 ### Database
 ```bash
 npx prisma generate  # Generate Prisma client
-npm run seed         # Seed database with test data
+pnpm run seed        # Seed database with test data
 ```
 
 ### Git Commit Pattern
