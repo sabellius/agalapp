@@ -128,6 +128,24 @@ agalapp/
 3. **Reviews**: Star ratings with text content
 4. **Authentication**: Email/password with role-based access
 5. **Seeding**: Faker-based seed script for development
+6. **Navigation Header**: Responsive sticky header with mobile sheet drawer
+
+### Navigation Structure
+
+**Public (all users):**
+- בית → `/`
+- עגלות קפה → `/trucks`
+
+**Authenticated:**
+- לוח בקרה → `/dashboard`
+
+**Truck Owner / Admin:**
+- הוסף עגלה → `/trucks/new`
+
+**Components:**
+- `components/site-header.tsx` - Main responsive header
+- `components/ui/dropdown-menu.tsx` - User menu dropdown
+- `components/ui/sheet.tsx` - Mobile navigation drawer
 
 ## Development Workflow
 
