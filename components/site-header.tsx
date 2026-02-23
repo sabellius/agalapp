@@ -119,10 +119,6 @@ export function SiteHeader() {
           </SheetContent>
         </Sheet>
 
-        <Link href="/" className="mr-6 text-lg font-bold hidden md:block">
-          אגלאפ
-        </Link>
-
         <nav className="hidden md:flex items-center gap-6 text-sm">
           <Link href="/" className="text-lg font-bold">
             אגלאפ
