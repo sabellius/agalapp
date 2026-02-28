@@ -4,84 +4,68 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import {
+  createTruckSchema,
+  updateTruckSchema,
+  deleteTruckSchema,
+  type CreateTruckInput,
+  type UpdateTruckInput,
+  type DeleteTruckInput,
+} from "@/lib/validations";
+import { ZodError } from "zod";
+import type { Role } from "@generated/prisma";
 
-export async function createTruck(formData: FormData) {
+type ActionResult<T = void> =
+  | { success: true; data?: T }
+  | { success: false; message: string };
+
+async function getUserRole(userId: string): Promise<Role | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+  return user?.role ?? null;
+}
+
+async function canModifyTruck(
+  userId: string,
+  truckOwnerId: string
+): Promise<boolean> {
+  if (userId === truckOwnerId) return true;
+  const role = await getUserRole(userId);
+  return role === "ADMIN";
+}
+
+export async function createTruck(input: CreateTruckInput): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user?.id) {
-      return {
-        success: false,
-        message: "Unauthorized",
-      };
+      return { success: false, message: "אינך מחובר" };
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { role: true },
-    });
+    const role = await getUserRole(session.user.id);
 
-    if (!user) {
-      return {
-        success: false,
-        message: "User not found",
-      };
+    if (role !== "TRUCK_OWNER" && role !== "ADMIN") {
+      return { success: false, message: "רק בעלי עגלות יכולים ליצור עגלות" };
     }
 
-    if (user.role !== "TRUCK_OWNER" && user.role !== "ADMIN") {
-      return {
-        success: false,
-        message: "Only truck owners can create trucks",
-      };
-    }
-
-    const name = formData.get("name") as string;
-    const city = formData.get("city") as string;
-    const address = formData.get("address") as string;
-    const imagesJson = formData.get("images") as string;
-
-    if (!name || !city || !address) {
-      return {
-        success: false,
-        message: "Missing required fields",
-      };
-    }
-
-    let images: Array<{
-      url: string;
-      publicId: string;
-      alt: string;
-      isPrimary: boolean;
-    }> = [];
-    if (imagesJson) {
-      try {
-        images = JSON.parse(imagesJson);
-      } catch (e) {
-        console.error("Error parsing images JSON:", e);
-      }
-    }
-
-    if (images.length === 0) {
-      return {
-        success: false,
-        message: "יש להעלות לפחות תמונה אחת",
-      };
-    }
+    const validated = createTruckSchema.parse(input);
 
     const truck = await prisma.coffeeTruck.create({
       data: {
-        name: name.trim(),
-        city: city.trim(),
-        address: address.trim(),
+        name: validated.name,
+        city: validated.city,
+        address: validated.address,
         ownerId: session.user.id,
         images: {
-          create: images.map((img, index) => ({
+          create: validated.images.map((img, index) => ({
             url: img.url,
             publicId: img.publicId,
-            alt: img.alt || null,
-            isPrimary: index === 0, // First image is primary by default
+            alt: img.alt ?? null,
+            isPrimary: index === 0,
           })),
         },
       },
@@ -89,31 +73,32 @@ export async function createTruck(formData: FormData) {
 
     revalidatePath("/trucks");
 
-    return {
-      success: true,
-      truck,
-    };
+    return { success: true, data: truck };
   } catch (error) {
+    if (error instanceof ZodError) {
+      const firstError = error.errors[0];
+      return {
+        success: false,
+        message: firstError?.message ?? "נתונים לא תקינים",
+      };
+    }
     console.error("Error creating truck:", error);
-    return {
-      success: false,
-      message: "Failed to create truck",
-    };
+    return { success: false, message: "שגיאה ביצירת העגלה" };
   }
 }
 
-export async function updateTruck(truckId: string, formData: FormData) {
+export async function updateTruck(input: UpdateTruckInput & { truckId: string }): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user?.id) {
-      return {
-        success: false,
-        message: "Unauthorized",
-      };
+      return { success: false, message: "אינך מחובר" };
     }
+
+    const { truckId, ...dataToValidate } = input;
+    const validated = updateTruckSchema.parse(dataToValidate);
 
     const truck = await prisma.coffeeTruck.findUnique({
       where: { id: truckId },
@@ -128,126 +113,130 @@ export async function updateTruck(truckId: string, formData: FormData) {
     });
 
     if (!truck) {
-      return {
-        success: false,
-        message: "Truck not found",
-      };
+      return { success: false, message: "העגלה לא נמצאה" };
     }
 
-    if (truck.ownerId !== session.user.id) {
-      const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { role: true },
-      });
-
-      if (!user || user.role !== "ADMIN") {
-        return {
-          success: false,
-          message: "You can only edit your own trucks",
-        };
-      }
+    const canModify = await canModifyTruck(session.user.id, truck.ownerId);
+    if (!canModify) {
+      return { success: false, message: "אינך מורשה לערוך עגלה זו" };
     }
 
-    const name = formData.get("name") as string;
-    const city = formData.get("city") as string;
-    const address = formData.get("address") as string;
-    const imagesJson = formData.get("images") as string;
+    const existingImageIds = new Set(truck.images.map((img) => img.publicId));
+    const newImageIds = new Set(
+      validated.images
+        .filter((img) => !img.id?.startsWith("temp-"))
+        .map((img) => img.publicId)
+    );
 
-    if (!name || !city || !address) {
-      return {
-        success: false,
-        message: "Missing required fields",
-      };
-    }
-
-    let images: Array<{
-      id?: string;
-      url: string;
-      publicId: string;
-      alt: string;
-      isPrimary: boolean;
-    }> = [];
-    if (imagesJson) {
+    const imagesToDelete = truck.images.filter(
+      (img) => !newImageIds.has(img.publicId)
+    );
+    for (const image of imagesToDelete) {
       try {
-        images = JSON.parse(imagesJson);
-      } catch (e) {
-        console.error("Error parsing images JSON:", e);
+        await prisma.coffeeTruckImage.delete({
+          where: { id: image.id },
+        });
+      } catch (error) {
+        console.error("Error deleting image:", error);
       }
     }
 
-    if (truck.images && images.length > 0) {
-      const _existingImageIds = new Set(
-        truck.images.map((img) => img.publicId),
-      );
-      const newImageIds = new Set(
-        images
-          .filter((img) => !img.id?.startsWith("temp-"))
-          .map((img) => img.publicId),
-      );
+    const imagesToCreate = validated.images.filter((img) =>
+      img.id?.startsWith("temp-")
+    );
+    if (imagesToCreate.length > 0) {
+      await prisma.coffeeTruckImage.createMany({
+        data: imagesToCreate.map((img) => ({
+          url: img.url,
+          publicId: img.publicId,
+          alt: img.alt ?? null,
+          isPrimary: img.isPrimary,
+          truckId,
+        })),
+      });
+    }
 
-      const imagesToDelete = truck.images.filter(
-        (img) => !newImageIds.has(img.publicId),
-      );
-      for (const image of imagesToDelete) {
-        try {
-          await prisma.coffeeTruckImage.delete({
-            where: { id: image.id },
-          });
-        } catch (error) {
-          console.error("Error deleting image:", error);
-        }
-      }
-
-      const imagesToCreate = images.filter((img) =>
-        img.id?.startsWith("temp-"),
-      );
-      if (imagesToCreate.length > 0) {
-        await prisma.coffeeTruckImage.createMany({
-          data: imagesToCreate.map((img, _index) => ({
-            url: img.url,
-            publicId: img.publicId,
-            alt: img.alt || null,
-            isPrimary: img.isPrimary,
-            truckId,
-          })),
-        });
-      }
-
-      const imagesToUpdate = images.filter(
-        (img) => !img.id?.startsWith("temp-"),
-      );
-      for (const image of imagesToUpdate) {
-        await prisma.coffeeTruckImage.updateMany({
-          where: { publicId: image.publicId, truckId },
-          data: {
-            alt: image.alt || null,
-            isPrimary: image.isPrimary,
-          },
-        });
-      }
+    const imagesToUpdate = validated.images.filter(
+      (img) => !img.id?.startsWith("temp-")
+    );
+    for (const image of imagesToUpdate) {
+      await prisma.coffeeTruckImage.updateMany({
+        where: { publicId: image.publicId, truckId },
+        data: {
+          alt: image.alt ?? null,
+          isPrimary: image.isPrimary,
+        },
+      });
     }
 
     const updatedTruck = await prisma.coffeeTruck.update({
       where: { id: truckId },
       data: {
-        name: name.trim(),
-        city: city.trim(),
-        address: address.trim(),
+        name: validated.name,
+        city: validated.city,
+        address: validated.address,
       },
     });
 
     revalidatePath("/trucks");
     revalidatePath(`/trucks/${truckId}`);
 
-    return {
-      success: true,
-      truck: updatedTruck,
-    };
+    return { success: true, data: updatedTruck };
   } catch (error) {
+    if (error instanceof ZodError) {
+      const firstError = error.errors[0];
+      return {
+        success: false,
+        message: firstError?.message ?? "נתונים לא תקינים",
+      };
+    }
     console.error("Error updating truck:", error);
-    return {
-      success: false,
-      message: "Failed to update truck",
-    };
+    return { success: false, message: "שגיאה בעדכון העגלה" };
+  }
+}
+
+export async function deleteTruck(input: DeleteTruckInput): Promise<ActionResult> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id) {
+      return { success: false, message: "אינך מחובר" };
+    }
+
+    const validated = deleteTruckSchema.parse(input);
+
+    const truck = await prisma.coffeeTruck.findUnique({
+      where: { id: validated.truckId },
+      select: { ownerId: true },
+    });
+
+    if (!truck) {
+      return { success: false, message: "העגלה לא נמצאה" };
+    }
+
+    const canModify = await canModifyTruck(session.user.id, truck.ownerId);
+    if (!canModify) {
+      return { success: false, message: "אינך מורשה למחוק עגלה זו" };
+    }
+
+    await prisma.coffeeTruck.delete({
+      where: { id: validated.truckId },
+    });
+
+    revalidatePath("/trucks");
+
+    return { success: true };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const firstError = error.errors[0];
+      return {
+        success: false,
+        message: firstError?.message ?? "נתונים לא תקינים",
+      };
+    }
+    console.error("Error deleting truck:", error);
+    return { success: false, message: "שגיאה במחיקת העגלה" };
   }
 }
