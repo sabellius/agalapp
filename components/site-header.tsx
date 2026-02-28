@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { MenuIcon } from "lucide-react";
-import { useSession, authClient } from "@/lib/auth-client";
+import Link from "next/link";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,24 +15,20 @@ import {
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import * as React from "react";
+import { authClient, useSession } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 const mainNav = [
   { title: "בית", href: "/" },
   { title: "עגלות קפה", href: "/trucks" },
 ];
 
-const authenticatedNav = [
-  { title: "לוח בקרה", href: "/dashboard" },
-];
+const authenticatedNav = [{ title: "לוח בקרה", href: "/dashboard" }];
 
-const ownerNav = [
-  { title: "הוסף עגלה", href: "/trucks/new" },
-];
+const ownerNav = [{ title: "הוסף עגלה", href: "/trucks/new" }];
 
 export function SiteHeader() {
   const { data: session, isPending } = useSession();
@@ -60,7 +55,7 @@ export function SiteHeader() {
         "font-medium transition-colors hover:text-primary text-foreground/80 block",
         isMobile
           ? "text-base py-3 px-6 hover:bg-accent hover:text-accent-foreground"
-          : "text-sm"
+          : "text-sm",
       )}
     >
       {children}
@@ -147,7 +142,10 @@ export function SiteHeader() {
             (isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-9 w-9 rounded-full"
+                  >
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
                       {user?.name?.[0] || user?.email?.[0] || "U"}
                     </div>

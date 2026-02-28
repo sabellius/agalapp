@@ -2,10 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type {
-  CreateTruckInput,
-  UpdateTruckInput,
-} from "@/lib/validations";
 import {
   deleteImage,
   setPrimaryImage,
@@ -18,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { CreateTruckInput, UpdateTruckInput } from "@/lib/validations";
 
 interface TruckFormProps {
   truck?: {
@@ -60,10 +57,10 @@ export function TruckForm({
       name: "",
       city: "",
       address: "",
-    }
+    },
   );
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
-    {}
+    {},
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -161,7 +158,7 @@ export function TruckForm({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -192,7 +189,7 @@ export function TruckForm({
         prev.map((img) => ({
           ...img,
           isPrimary: img.id === imageId,
-        }))
+        })),
       );
       return;
     }
@@ -205,7 +202,7 @@ export function TruckForm({
         prev.map((img) => ({
           ...img,
           isPrimary: img.id === imageId,
-        }))
+        })),
       );
     }
   };
@@ -231,7 +228,7 @@ export function TruckForm({
       setServerError(result.message || "שגיאה בעדכון טקסט התמונה");
     } else {
       setImages((prev) =>
-        prev.map((img) => (img.id === imageId ? { ...img, alt } : img))
+        prev.map((img) => (img.id === imageId ? { ...img, alt } : img)),
       );
     }
   };
