@@ -2,6 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type {
+  CreateTruckInput,
+  UpdateTruckInput,
+} from "@/lib/validations";
 import {
   deleteImage,
   setPrimaryImage,
@@ -56,10 +60,10 @@ export function TruckForm({
       name: "",
       city: "",
       address: "",
-    },
+    }
   );
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
-    {},
+    {}
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -107,16 +111,41 @@ export function TruckForm({
     setIsSubmitting(true);
 
     try {
-      const formData = new FormData(e.target as HTMLFormElement);
-      formData.append("images", JSON.stringify(images));
+      const imagesData = images.map((img) => ({
+        id: img.isNew ? undefined : img.id,
+        url: img.url,
+        publicId: img.publicId,
+        alt: img.alt,
+        isPrimary: img.isPrimary,
+      }));
 
-      const result = truck
-        ? await updateTruck(truck.id, formData)
-        : await createTruck(formData);
+      if (truck) {
+        const input: UpdateTruckInput & { truckId: string } = {
+          truckId: truck.id,
+          name: formData.name,
+          city: formData.city,
+          address: formData.address,
+          images: imagesData,
+        };
+        const result = await updateTruck(input);
 
-      if (!result.success) {
-        setServerError(result.message || "שגיאה בשמירת העגלה");
-        return;
+        if (!result.success) {
+          setServerError(result.message || "שגיאה בשמירת העגלה");
+          return;
+        }
+      } else {
+        const input: CreateTruckInput = {
+          name: formData.name,
+          city: formData.city,
+          address: formData.address,
+          images: imagesData,
+        };
+        const result = await createTruck(input);
+
+        if (!result.success) {
+          setServerError(result.message || "שגיאה בשמירת העגלה");
+          return;
+        }
       }
 
       router.push("/trucks");
@@ -132,14 +161,13 @@ export function TruckForm({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (errors[name as keyof FormData]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -164,12 +192,12 @@ export function TruckForm({
         prev.map((img) => ({
           ...img,
           isPrimary: img.id === imageId,
-        })),
+        }))
       );
       return;
     }
 
-    const result = await setPrimaryImage(imageId, truckId);
+    const result = await setPrimaryImage({ imageId, truckId });
     if (!result.success) {
       setServerError(result.message || "שגיאה בעדכון התמונה הראשית");
     } else {
@@ -177,7 +205,7 @@ export function TruckForm({
         prev.map((img) => ({
           ...img,
           isPrimary: img.id === imageId,
-        })),
+        }))
       );
     }
   };
@@ -189,7 +217,7 @@ export function TruckForm({
       return;
     }
 
-    const result = await deleteImage(imageId, truckId);
+    const result = await deleteImage({ imageId, truckId });
     if (!result.success) {
       setServerError(result.message || "שגיאה במחיקת התמונה");
     } else {
@@ -198,12 +226,12 @@ export function TruckForm({
   };
 
   const handleUpdateAlt = async (imageId: string, alt: string) => {
-    const result = await updateImageAlt(imageId, alt);
+    const result = await updateImageAlt({ imageId, alt });
     if (!result.success) {
       setServerError(result.message || "שגיאה בעדכון טקסט התמונה");
     } else {
       setImages((prev) =>
-        prev.map((img) => (img.id === imageId ? { ...img, alt } : img)),
+        prev.map((img) => (img.id === imageId ? { ...img, alt } : img))
       );
     }
   };
@@ -227,6 +255,19 @@ export function TruckForm({
     "מודיעין",
     "לוד",
     "רעננה",
+    "גבעתיים",
+    "חדרה",
+    "רעלות",
+    "קריית גת",
+    "קריית מוצקין",
+    "אשקלון",
+    "בת ים",
+    "כפר קאסם",
+    "טירה",
+    "נצרת",
+    "מגדל",
+    "נהריה",
+    "עפולה",
   ];
 
   return (
