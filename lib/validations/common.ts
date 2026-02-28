@@ -40,6 +40,12 @@ export const hebrewTextSchema = z
   .min(2, "מינימום 2 תווים")
   .max(500, "מקסימום 500 תווים");
 
+export const truckNameSchema = z
+  .string()
+  .trim()
+  .min(2, "שם העגלה חייב להכיל לפחות 2 תווים")
+  .max(100, "שם העגלה לא יכול לעלות על 100 תווים");
+
 export const citySchema = z.enum(israeliCities, {
   errorMap: () => ({ message: "יש לבחור עיר מהרשימה" }),
 });

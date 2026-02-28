@@ -1,6 +1,6 @@
 import { z } from "zod";
 import {
-  hebrewTextSchema,
+  truckNameSchema,
   citySchema,
   addressSchema,
   imageSchema,
@@ -8,9 +8,7 @@ import {
 } from "./common";
 
 export const createTruckSchema = z.object({
-  name: hebrewTextSchema
-    .min(2, "שם העגלה חייב להכיל לפחות 2 תווים")
-    .max(100, "שם העגלה לא יכול לעלות על 100 תווים"),
+  name: truckNameSchema,
   city: citySchema,
   address: addressSchema,
   images: z
@@ -20,7 +18,7 @@ export const createTruckSchema = z.object({
 });
 
 export const updateTruckSchema = z.object({
-  name: hebrewTextSchema.min(2).max(100),
+  name: truckNameSchema,
   city: citySchema,
   address: addressSchema,
   images: z.array(truckImageSchema).max(10, "מקסימום 10 תמונות"),
