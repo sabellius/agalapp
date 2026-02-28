@@ -2,6 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import type {
+  CreateReviewInput,
+  UpdateReviewInput,
+} from "@/lib/validations";
 import { createReview, updateReview } from "@/app/actions/reviews";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,27 +57,41 @@ export function ReviewForm({ truckId, children, review }: ReviewFormProps) {
       return;
     }
 
-    if (!content.trim()) {
+    const trimmedContent = content.trim();
+
+    if (!trimmedContent) {
       setError("יש לכתוב תוכן לביקורת");
       return;
     }
 
-    if (content.trim().length < 10) {
+    if (trimmedContent.length < 10) {
       setError("התוכן קצר מדי (מינימום 10 תווים)");
       return;
     }
 
-    if (content.trim().length > 1000) {
+    if (trimmedContent.length > 1000) {
       setError("התוכן ארוך מדי (מקסימום 1000 תווים)");
       return;
     }
 
     setIsSubmitting(true);
 
-    const result =
-      isEditMode && review
-        ? await updateReview(review.id, rating, content.trim())
-        : await createReview(truckId, rating, content.trim());
+    let result;
+    if (isEditMode && review) {
+      const input: UpdateReviewInput = {
+        reviewId: review.id,
+        rating,
+        content: trimmedContent,
+      };
+      result = await updateReview(input);
+    } else {
+      const input: CreateReviewInput = {
+        truckId,
+        rating,
+        content: trimmedContent,
+      };
+      result = await createReview(input);
+    }
 
     setIsSubmitting(false);
 

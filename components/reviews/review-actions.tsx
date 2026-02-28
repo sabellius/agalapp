@@ -36,7 +36,7 @@ export function ReviewActions({
 
   const handleDelete = async () => {
     setIsDeleting(true);
-    const result = await deleteReview(reviewId);
+    const result = await deleteReview({ reviewId });
     setIsDeleting(false);
 
     if (result.success) {
