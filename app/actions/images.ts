@@ -5,22 +5,52 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
+import {
+  deleteImageSchema,
+  setPrimaryImageSchema,
+  updateImageAltSchema,
+  type DeleteImageInput,
+  type SetPrimaryImageInput,
+  type UpdateImageAltInput,
+} from "@/lib/validations";
+import { ZodError } from "zod";
+import type { Role } from "@generated/prisma";
 
-export async function deleteImage(imageId: string, truckId: string) {
+type ActionResult<T = void> =
+  | { success: true; data?: T }
+  | { success: false; message: string };
+
+async function getUserRole(userId: string): Promise<Role | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+  return user?.role ?? null;
+}
+
+async function canModifyTruck(
+  userId: string,
+  truckOwnerId: string
+): Promise<boolean> {
+  if (userId === truckOwnerId) return true;
+  const role = await getUserRole(userId);
+  return role === "ADMIN";
+}
+
+export async function deleteImage(input: DeleteImageInput): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user?.id) {
-      return {
-        success: false,
-        message: "אינך מחובר",
-      };
+      return { success: false, message: "אינך מחובר" };
     }
 
+    const validated = deleteImageSchema.parse(input);
+
     const image = await prisma.coffeeTruckImage.findUnique({
-      where: { id: imageId },
+      where: { id: validated.imageId },
       include: {
         truck: {
           select: {
@@ -31,29 +61,17 @@ export async function deleteImage(imageId: string, truckId: string) {
     });
 
     if (!image) {
-      return {
-        success: false,
-        message: "התמונה לא נמצאה",
-      };
+      return { success: false, message: "התמונה לא נמצאה" };
     }
 
-    if (image.truck.ownerId !== session.user.id) {
-      const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { role: true },
-      });
-
-      if (!user || user.role !== "ADMIN") {
-        return {
-          success: false,
-          message: "אינך מורשה לבצע פעולה זו",
-        };
-      }
+    const canModify = await canModifyTruck(session.user.id, image.truck.ownerId);
+    if (!canModify) {
+      return { success: false, message: "אינך מורשה לבצע פעולה זו" };
     }
 
     const isPrimary = image.isPrimary;
     const truckImages = await prisma.coffeeTruckImage.findMany({
-      where: { truckId },
+      where: { truckId: validated.truckId },
       orderBy: { createdAt: "asc" },
     });
 
@@ -64,11 +82,11 @@ export async function deleteImage(imageId: string, truckId: string) {
     }
 
     await prisma.coffeeTruckImage.delete({
-      where: { id: imageId },
+      where: { id: validated.imageId },
     });
 
     if (isPrimary && truckImages.length > 1) {
-      const nextImage = truckImages.find((img) => img.id !== imageId);
+      const nextImage = truckImages.find((img) => img.id !== validated.imageId);
       if (nextImage) {
         await prisma.coffeeTruckImage.update({
           where: { id: nextImage.id },
@@ -78,113 +96,100 @@ export async function deleteImage(imageId: string, truckId: string) {
     }
 
     revalidatePath("/trucks");
-    revalidatePath(`/trucks/${truckId}`);
-    revalidatePath(`/trucks/${truckId}/edit`);
+    revalidatePath(`/trucks/${validated.truckId}`);
+    revalidatePath(`/trucks/${validated.truckId}/edit`);
 
-    return {
-      success: true,
-    };
+    return { success: true };
   } catch (error) {
+    if (error instanceof ZodError) {
+      const firstError = error.errors[0];
+      return {
+        success: false,
+        message: firstError?.message ?? "נתונים לא תקינים",
+      };
+    }
     console.error("Error deleting image:", error);
-    return {
-      success: false,
-      message: "שגיאה במחיקת התמונה",
-    };
+    return { success: false, message: "שגיאה במחיקת התמונה" };
   }
 }
 
-export async function setPrimaryImage(imageId: string, truckId: string) {
+export async function setPrimaryImage(input: SetPrimaryImageInput): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user?.id) {
-      return {
-        success: false,
-        message: "אינך מחובר",
-      };
+      return { success: false, message: "אינך מחובר" };
     }
 
+    const validated = setPrimaryImageSchema.parse(input);
+
     const truck = await prisma.coffeeTruck.findUnique({
-      where: { id: truckId },
+      where: { id: validated.truckId },
       select: { ownerId: true },
     });
 
     if (!truck) {
-      return {
-        success: false,
-        message: "העגלה לא נמצאה",
-      };
+      return { success: false, message: "העגלה לא נמצאה" };
     }
 
-    if (truck.ownerId !== session.user.id) {
-      const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { role: true },
-      });
-
-      if (!user || user.role !== "ADMIN") {
-        return {
-          success: false,
-          message: "אינך מורשה לבצע פעולה זו",
-        };
-      }
+    const canModify = await canModifyTruck(session.user.id, truck.ownerId);
+    if (!canModify) {
+      return { success: false, message: "אינך מורשה לבצע פעולה זו" };
     }
 
     const image = await prisma.coffeeTruckImage.findUnique({
-      where: { id: imageId },
+      where: { id: validated.imageId },
       select: { truckId: true },
     });
 
-    if (!image || image.truckId !== truckId) {
-      return {
-        success: false,
-        message: "התמונה לא שייכת לעגלה זו",
-      };
+    if (!image || image.truckId !== validated.truckId) {
+      return { success: false, message: "התמונה לא שייכת לעגלה זו" };
     }
 
     await prisma.coffeeTruckImage.updateMany({
-      where: { truckId },
+      where: { truckId: validated.truckId },
       data: { isPrimary: false },
     });
 
     await prisma.coffeeTruckImage.update({
-      where: { id: imageId },
+      where: { id: validated.imageId },
       data: { isPrimary: true },
     });
 
     revalidatePath("/trucks");
-    revalidatePath(`/trucks/${truckId}`);
-    revalidatePath(`/trucks/${truckId}/edit`);
+    revalidatePath(`/trucks/${validated.truckId}`);
+    revalidatePath(`/trucks/${validated.truckId}/edit`);
 
-    return {
-      success: true,
-    };
+    return { success: true };
   } catch (error) {
+    if (error instanceof ZodError) {
+      const firstError = error.errors[0];
+      return {
+        success: false,
+        message: firstError?.message ?? "נתונים לא תקינים",
+      };
+    }
     console.error("Error setting primary image:", error);
-    return {
-      success: false,
-      message: "שגיאה בעדכון התמונה הראשית",
-    };
+    return { success: false, message: "שגיאה בעדכון התמונה הראשית" };
   }
 }
 
-export async function updateImageAlt(imageId: string, alt: string) {
+export async function updateImageAlt(input: UpdateImageAltInput): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user?.id) {
-      return {
-        success: false,
-        message: "אינך מחובר",
-      };
+      return { success: false, message: "אינך מחובר" };
     }
 
+    const validated = updateImageAltSchema.parse(input);
+
     const image = await prisma.coffeeTruckImage.findUnique({
-      where: { id: imageId },
+      where: { id: validated.imageId },
       include: {
         truck: {
           select: {
@@ -195,42 +200,32 @@ export async function updateImageAlt(imageId: string, alt: string) {
     });
 
     if (!image) {
-      return {
-        success: false,
-        message: "התמונה לא נמצאה",
-      };
+      return { success: false, message: "התמונה לא נמצאה" };
     }
 
-    if (image.truck.ownerId !== session.user.id) {
-      const user = await prisma.user.findUnique({
-        where: { id: session.user.id },
-        select: { role: true },
-      });
-
-      if (!user || user.role !== "ADMIN") {
-        return {
-          success: false,
-          message: "אינך מורשה לבצע פעולה זו",
-        };
-      }
+    const canModify = await canModifyTruck(session.user.id, image.truck.ownerId);
+    if (!canModify) {
+      return { success: false, message: "אינך מורשה לבצע פעולה זו" };
     }
 
     await prisma.coffeeTruckImage.update({
-      where: { id: imageId },
-      data: { alt: alt.trim() },
+      where: { id: validated.imageId },
+      data: { alt: validated.alt },
     });
 
     revalidatePath("/trucks");
     revalidatePath(`/trucks/${image.truckId}`);
 
-    return {
-      success: true,
-    };
+    return { success: true };
   } catch (error) {
+    if (error instanceof ZodError) {
+      const firstError = error.errors[0];
+      return {
+        success: false,
+        message: firstError?.message ?? "נתונים לא תקינים",
+      };
+    }
     console.error("Error updating image alt:", error);
-    return {
-      success: false,
-      message: "שגיאה בעדכון טקסט התמונה",
-    };
+    return { success: false, message: "שגיאה בעדכון טקסט התמונה" };
   }
 }
