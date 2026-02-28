@@ -4,257 +4,171 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import {
+  createReviewSchema,
+  updateReviewSchema,
+  deleteReviewSchema,
+  type CreateReviewInput,
+  type UpdateReviewInput,
+  type DeleteReviewInput,
+} from "@/lib/validations";
+import { ZodError } from "zod";
 
-export async function createReview(
-  truckId: string,
-  rating: number,
-  content: string,
-) {
+type ActionResult<T = void> =
+  | { success: true; data?: T }
+  | { success: false; message: string };
+
+export async function createReview(input: CreateReviewInput): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user?.id) {
-      return {
-        success: false,
-        message: "אינך מחובר",
-      };
+      return { success: false, message: "אינך מחובר" };
     }
 
-    // Validate rating
-    if (!rating || rating < 1 || rating > 5) {
-      return {
-        success: false,
-        message: "דירוג חייב להיות בין 1 ל-5",
-      };
-    }
+    const validated = createReviewSchema.parse(input);
 
-    // Validate content
-    const trimmedContent = content.trim();
-    if (!trimmedContent) {
-      return {
-        success: false,
-        message: "יש לכתוב תוכן לביקורת",
-      };
-    }
-
-    if (trimmedContent.length < 10) {
-      return {
-        success: false,
-        message: "התוכן קצר מדי (מינימום 10 תווים)",
-      };
-    }
-
-    if (trimmedContent.length > 1000) {
-      return {
-        success: false,
-        message: "התוכן ארוך מדי (מקסימום 1000 תווים)",
-      };
-    }
-
-    // Check if truck exists
     const truck = await prisma.coffeeTruck.findUnique({
-      where: { id: truckId },
+      where: { id: validated.truckId },
     });
 
     if (!truck) {
-      return {
-        success: false,
-        message: "העגלה לא נמצאה",
-      };
+      return { success: false, message: "העגלה לא נמצאה" };
     }
 
-    // Check if user has already reviewed this truck
     const existingReview = await prisma.review.findUnique({
       where: {
         truckId_userId: {
-          truckId,
+          truckId: validated.truckId,
           userId: session.user.id,
         },
       },
     });
 
     if (existingReview) {
-      return {
-        success: false,
-        message: "כבר כתבת ביקורת על עגלה זו",
-      };
+      return { success: false, message: "כבר כתבת ביקורת על עגלה זו" };
     }
 
-    // Create review
     const review = await prisma.review.create({
       data: {
-        rating,
-        content: trimmedContent,
-        truckId,
+        rating: validated.rating,
+        content: validated.content,
+        truckId: validated.truckId,
         userId: session.user.id,
       },
     });
 
-    // Revalidate paths
     revalidatePath("/trucks");
-    revalidatePath(`/trucks/${truckId}`);
+    revalidatePath(`/trucks/${validated.truckId}`);
 
-    return {
-      success: true,
-      review,
-    };
+    return { success: true, data: review };
   } catch (error) {
+    if (error instanceof ZodError) {
+      const firstError = error.errors[0];
+      return {
+        success: false,
+        message: firstError?.message ?? "נתונים לא תקינים",
+      };
+    }
     console.error("Error creating review:", error);
-    return {
-      success: false,
-      message: "שגיאה ביצירת הביקורת",
-    };
+    return { success: false, message: "שגיאה ביצירת הביקורת" };
   }
 }
 
-export async function updateReview(
-  reviewId: string,
-  rating: number,
-  content: string,
-) {
+export async function updateReview(input: UpdateReviewInput): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user?.id) {
-      return {
-        success: false,
-        message: "אינך מחובר",
-      };
+      return { success: false, message: "אינך מחובר" };
     }
 
-    // Get the review to check ownership and get truckId
+    const validated = updateReviewSchema.parse(input);
+
     const review = await prisma.review.findUnique({
-      where: { id: reviewId },
+      where: { id: validated.reviewId },
     });
 
     if (!review) {
-      return {
-        success: false,
-        message: "הביקורת לא נמצאה",
-      };
+      return { success: false, message: "הביקורת לא נמצאה" };
     }
 
-    // Check if user owns this review
     if (review.userId !== session.user.id) {
-      return {
-        success: false,
-        message: "אינך מורשה לבצע פעולה זו",
-      };
+      return { success: false, message: "אינך מורשה לבצע פעולה זו" };
     }
 
-    // Validate rating
-    if (!rating || rating < 1 || rating > 5) {
-      return {
-        success: false,
-        message: "דירוג חייב להיות בין 1 ל-5",
-      };
-    }
-
-    // Validate content
-    const trimmedContent = content.trim();
-    if (!trimmedContent) {
-      return {
-        success: false,
-        message: "יש לכתוב תוכן לביקורת",
-      };
-    }
-
-    if (trimmedContent.length < 10) {
-      return {
-        success: false,
-        message: "התוכן קצר מדי (מינימום 10 תווים)",
-      };
-    }
-
-    if (trimmedContent.length > 1000) {
-      return {
-        success: false,
-        message: "התוכן ארוך מדי (מקסימום 1000 תווים)",
-      };
-    }
-
-    // Update review
     const updatedReview = await prisma.review.update({
-      where: { id: reviewId },
+      where: { id: validated.reviewId },
       data: {
-        rating,
-        content: trimmedContent,
+        rating: validated.rating,
+        content: validated.content,
       },
     });
 
-    // Revalidate paths
     revalidatePath("/trucks");
     revalidatePath(`/trucks/${review.truckId}`);
 
-    return {
-      success: true,
-      review: updatedReview,
-    };
+    return { success: true, data: updatedReview };
   } catch (error) {
+    if (error instanceof ZodError) {
+      const firstError = error.errors[0];
+      return {
+        success: false,
+        message: firstError?.message ?? "נתונים לא תקינים",
+      };
+    }
     console.error("Error updating review:", error);
-    return {
-      success: false,
-      message: "שגיאה בעדכון הביקורת",
-    };
+    return { success: false, message: "שגיאה בעדכון הביקורת" };
   }
 }
 
-export async function deleteReview(reviewId: string) {
+export async function deleteReview(input: DeleteReviewInput): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
     if (!session?.user?.id) {
-      return {
-        success: false,
-        message: "אינך מחובר",
-      };
+      return { success: false, message: "אינך מחובר" };
     }
 
-    // Get the review to check ownership and get truckId
+    const validated = deleteReviewSchema.parse(input);
+
     const review = await prisma.review.findUnique({
-      where: { id: reviewId },
+      where: { id: validated.reviewId },
     });
 
     if (!review) {
-      return {
-        success: false,
-        message: "הביקורת לא נמצאה",
-      };
+      return { success: false, message: "הביקורת לא נמצאה" };
     }
 
-    // Check if user owns this review
     if (review.userId !== session.user.id) {
-      return {
-        success: false,
-        message: "אינך מורשה לבצע פעולה זו",
-      };
+      return { success: false, message: "אינך מורשה לבצע פעולה זו" };
     }
 
     const truckId = review.truckId;
 
-    // Delete review
     await prisma.review.delete({
-      where: { id: reviewId },
+      where: { id: validated.reviewId },
     });
 
-    // Revalidate paths
     revalidatePath("/trucks");
     revalidatePath(`/trucks/${truckId}`);
 
-    return {
-      success: true,
-    };
+    return { success: true };
   } catch (error) {
+    if (error instanceof ZodError) {
+      const firstError = error.errors[0];
+      return {
+        success: false,
+        message: firstError?.message ?? "נתונים לא תקינים",
+      };
+    }
     console.error("Error deleting review:", error);
-    return {
-      success: false,
-      message: "שגיאה במחיקת הביקורת",
-    };
+    return { success: false, message: "שגיאה במחיקת הביקורת" };
   }
 }
