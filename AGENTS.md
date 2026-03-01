@@ -15,8 +15,10 @@ This document provides context for AI agents (Cline, Claude, etc.) working on th
 | Styling | Tailwind CSS v4 |
 | Database | MySQL/MariaDB via Prisma ORM |
 | Authentication | better-auth |
+| Validation | Zod 4.x |
 | UI Components | shadcn/ui (Radix UI primitives) |
 | Image Hosting | Cloudinary |
+| Formatting | Biome |
 | Fonts | Noto Sans Hebrew (Google Fonts) |
 
 ## Project Structure
@@ -43,7 +45,12 @@ agalapp/
 │   ├── auth-client.ts        # Client-side auth utilities
 │   ├── cloudinary.ts         # Cloudinary setup
 │   ├── prisma.ts             # Prisma client with MariaDB adapter
-│   └── utils.ts              # Utility functions
+│   ├── utils.ts              # Utility functions
+│   └── validations/          # Zod validation schemas
+│       ├── common.ts         # Shared schemas (truckName, city, etc.)
+│       ├── truck-schema.ts   # Truck validation
+│       ├── review-schema.ts  # Review validation
+│       └── image-schema.ts   # Image validation
 ├── prisma/
 │   ├── schema.prisma         # Database schema
 │   └── seed.ts               # Database seeding script
@@ -88,10 +95,53 @@ agalapp/
 
 ## Code Style Guidelines
 
+### Server Action Pattern
+```typescript
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { ZodError } from "zod";
+
+type ActionResult<T = void> =
+  | { success: true; data?: T }
+  | { success: false; message: string };
+
+export async function actionName(
+  input: InputType,
+): Promise<ActionResult<{ id: string }>> {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.id) {
+      return { success: false, message: "אינך מחובר" };
+    }
+
+    const validated = schema.parse(input);
+    // ... do work with validated data ...
+
+    revalidatePath("/path");
+    return { success: true, data: result };
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const firstError = error.issues[0];
+      return {
+        success: false,
+        message: firstError?.message ?? "נתונים לא תקינים",
+      };
+    }
+    console.error("Error:", error);
+    return { success: false, message: "שגיאה כללית" };
+  }
+}
+```
+
 ### TypeScript
-- Strict mode enabled
+- Strict mode enabled - **no `any` types**
 - Define types for all function parameters and returns
 - Use generated Prisma types from `@/generated/prisma/client`
+- Hebrew error messages for user-facing errors, English for code/comments
 
 ### Components
 - Functional components only (no class components)
@@ -101,12 +151,20 @@ agalapp/
 ### Server Actions
 - Place in `app/actions/` directory
 - Use `"use server"` directive
-- Return `{ success: boolean, message?: string, data?: T }` pattern
+- Accept **typed plain objects** (not FormData) - infer types from Zod schemas
+- Return `ActionResult<T>` type: `{ success: true; data?: T } | { success: false; message: string }`
 - Check user roles before mutations
 - Use `revalidatePath()` after mutations
 
 ### Validation
-- Use Zod for input validation (TODO: not yet implemented)
+- Use **Zod 4.x** for input validation
+- Schemas in `lib/validations/` with exported types via `z.infer<>`
+- Validate with `.parse()` in Server Actions, catch `ZodError`
+
+### Code Formatting
+- **Biome** for formatting and linting (replaces ESLint/Prettier)
+- Auto-format on save
+- Run `npx biome check --write .` to format all files
 
 ### Environment Variables
 - Use `env-config.ts` to load environment variables
