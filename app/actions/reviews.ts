@@ -18,7 +18,9 @@ type ActionResult<T = void> =
   | { success: true; data?: T }
   | { success: false; message: string };
 
-export async function createReview(input: CreateReviewInput): Promise<ActionResult> {
+export async function createReview(
+  input: CreateReviewInput,
+): Promise<ActionResult<{ id: string }>> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -66,7 +68,7 @@ export async function createReview(input: CreateReviewInput): Promise<ActionResu
     return { success: true, data: review };
   } catch (error) {
     if (error instanceof ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         message: firstError?.message ?? "נתונים לא תקינים",
@@ -77,7 +79,9 @@ export async function createReview(input: CreateReviewInput): Promise<ActionResu
   }
 }
 
-export async function updateReview(input: UpdateReviewInput): Promise<ActionResult> {
+export async function updateReview(
+  input: UpdateReviewInput,
+): Promise<ActionResult<{ id: string }>> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -115,7 +119,7 @@ export async function updateReview(input: UpdateReviewInput): Promise<ActionResu
     return { success: true, data: updatedReview };
   } catch (error) {
     if (error instanceof ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         message: firstError?.message ?? "נתונים לא תקינים",
@@ -162,7 +166,7 @@ export async function deleteReview(input: DeleteReviewInput): Promise<ActionResu
     return { success: true };
   } catch (error) {
     if (error instanceof ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         message: firstError?.message ?? "נתונים לא תקינים",

@@ -11,7 +11,7 @@ interface TruckImage {
   id: string;
   url: string;
   publicId: string;
-  alt: string;
+  alt: string | null;
   isPrimary: boolean;
   isNew?: boolean;
 }
@@ -36,7 +36,7 @@ export function ImagePreview({
 
   const handleEditAlt = (image: TruckImage) => {
     setEditingAlt(image.id);
-    setAltText(image.alt);
+    setAltText(image.alt ?? "");
   };
 
   const handleSaveAlt = (imageId: string) => {

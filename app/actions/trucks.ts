@@ -13,7 +13,7 @@ import {
   type DeleteTruckInput,
 } from "@/lib/validations";
 import { ZodError } from "zod";
-import type { Role } from "@generated/prisma";
+import type { Role } from "@generated/prisma/client";
 
 type ActionResult<T = void> =
   | { success: true; data?: T }
@@ -36,7 +36,9 @@ async function canModifyTruck(
   return role === "ADMIN";
 }
 
-export async function createTruck(input: CreateTruckInput): Promise<ActionResult> {
+export async function createTruck(
+  input: CreateTruckInput,
+): Promise<ActionResult<{ id: string }>> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -76,7 +78,7 @@ export async function createTruck(input: CreateTruckInput): Promise<ActionResult
     return { success: true, data: truck };
   } catch (error) {
     if (error instanceof ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         message: firstError?.message ?? "נתונים לא תקינים",
@@ -87,7 +89,9 @@ export async function createTruck(input: CreateTruckInput): Promise<ActionResult
   }
 }
 
-export async function updateTruck(input: UpdateTruckInput & { truckId: string }): Promise<ActionResult> {
+export async function updateTruck(
+  input: UpdateTruckInput & { truckId: string },
+): Promise<ActionResult<{ id: string }>> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -184,7 +188,7 @@ export async function updateTruck(input: UpdateTruckInput & { truckId: string })
     return { success: true, data: updatedTruck };
   } catch (error) {
     if (error instanceof ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         message: firstError?.message ?? "נתונים לא תקינים",
@@ -230,7 +234,7 @@ export async function deleteTruck(input: DeleteTruckInput): Promise<ActionResult
     return { success: true };
   } catch (error) {
     if (error instanceof ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         message: firstError?.message ?? "נתונים לא תקינים",

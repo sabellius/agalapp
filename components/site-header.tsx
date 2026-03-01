@@ -33,7 +33,7 @@ const ownerNav = [{ title: "הוסף עגלה", href: "/trucks/new" }];
 export function SiteHeader() {
   const { data: session, isPending } = useSession();
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const user = session?.user;
+  const user = session?.user as { name?: string | null; email?: string | null; role?: string } | null | undefined;
   const isAuthenticated = !!user;
   const isOwner = user?.role === "TRUCK_OWNER" || user?.role === "ADMIN";
 

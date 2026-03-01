@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createReviewSchema = z.object({
   truckId: z.string().min(1, "מזהה עגלה חסר"),
   rating: z
-    .number({ required_error: "דירוג נדרש" })
+    .number({ message: "דירוג נדרש" })
     .int("דירוג חייב להיות מספר שלם")
     .min(1, "דירוג מינימלי הוא 1")
     .max(5, "דירוג מקסימלי הוא 5"),

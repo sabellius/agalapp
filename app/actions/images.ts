@@ -14,7 +14,7 @@ import {
   type UpdateImageAltInput,
 } from "@/lib/validations";
 import { ZodError } from "zod";
-import type { Role } from "@generated/prisma";
+import type { Role } from "@generated/prisma/client";
 
 type ActionResult<T = void> =
   | { success: true; data?: T }
@@ -102,7 +102,7 @@ export async function deleteImage(input: DeleteImageInput): Promise<ActionResult
     return { success: true };
   } catch (error) {
     if (error instanceof ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         message: firstError?.message ?? "נתונים לא תקינים",
@@ -165,7 +165,7 @@ export async function setPrimaryImage(input: SetPrimaryImageInput): Promise<Acti
     return { success: true };
   } catch (error) {
     if (error instanceof ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         message: firstError?.message ?? "נתונים לא תקינים",
@@ -219,7 +219,7 @@ export async function updateImageAlt(input: UpdateImageAltInput): Promise<Action
     return { success: true };
   } catch (error) {
     if (error instanceof ZodError) {
-      const firstError = error.errors[0];
+      const firstError = error.issues[0];
       return {
         success: false,
         message: firstError?.message ?? "נתונים לא תקינים",

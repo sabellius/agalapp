@@ -120,7 +120,7 @@ export function TruckForm({
         const input: UpdateTruckInput & { truckId: string } = {
           truckId: truck.id,
           name: formData.name,
-          city: formData.city,
+          city: formData.city as UpdateTruckInput["city"],
           address: formData.address,
           images: imagesData,
         };
@@ -133,7 +133,7 @@ export function TruckForm({
       } else {
         const input: CreateTruckInput = {
           name: formData.name,
-          city: formData.city,
+          city: formData.city as CreateTruckInput["city"],
           address: formData.address,
           images: imagesData,
         };

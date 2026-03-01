@@ -47,7 +47,7 @@ export const truckNameSchema = z
   .max(100, "שם העגלה לא יכול לעלות על 100 תווים");
 
 export const citySchema = z.enum(israeliCities, {
-  errorMap: () => ({ message: "יש לבחור עיר מהרשימה" }),
+  message: "יש לבחור עיר מהרשימה",
 });
 
 export const addressSchema = z
