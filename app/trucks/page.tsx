@@ -12,31 +12,31 @@ async function getTrucks() {
           reviews: true,
         },
       },
+      reviews: {
+        select: {
+          rating: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
     },
   });
 
-  // Calculate average rating for each truck
-  const trucksWithRating = await Promise.all(
-    trucks.map(async (truck) => {
-      const reviews = await prisma.review.findMany({
-        where: { truckId: truck.id },
-        select: { rating: true },
-      });
+  // Calculate average rating for each truck from included reviews
+  const trucksWithRating = trucks.map((truck) => {
+    const avgRating =
+      truck.reviews.length > 0
+        ? truck.reviews.reduce((sum, r) => sum + r.rating, 0) /
+          truck.reviews.length
+        : 0;
 
-      const avgRating =
-        reviews.length > 0
-          ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-          : 0;
-
-      return {
-        ...truck,
-        avgRating,
-      };
-    }),
-  );
+    return {
+      ...truck,
+      avgRating,
+      reviews: undefined,
+    };
+  });
 
   return trucksWithRating;
 }

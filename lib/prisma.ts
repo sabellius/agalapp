@@ -10,6 +10,9 @@ const adapter = new PrismaMariaDb({
   database: process.env.DB_NAME,
   connectionLimit: 5,
 });
-const prisma = new PrismaClient({ adapter });
+const prisma = new PrismaClient({
+  adapter,
+  log: process.env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+});
 
 export { prisma };
