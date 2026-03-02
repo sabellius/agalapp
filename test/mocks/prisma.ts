@@ -21,7 +21,9 @@ const mockReviewDelete = vi.fn();
 const mockImageFindMany = vi.fn();
 const mockImageFindUnique = vi.fn();
 const mockImageCreate = vi.fn();
+const mockImageCreateMany = vi.fn();
 const mockImageUpdate = vi.fn();
+const mockImageUpdateMany = vi.fn();
 const mockImageDelete = vi.fn();
 
 const mockUserFindUnique = vi.fn();
@@ -47,7 +49,9 @@ export const mockPrismaClient = {
     findMany: mockImageFindMany,
     findUnique: mockImageFindUnique,
     create: mockImageCreate,
+    createMany: mockImageCreateMany,
     update: mockImageUpdate,
+    updateMany: mockImageUpdateMany,
     delete: mockImageDelete,
   },
   user: {
@@ -72,7 +76,9 @@ export const mockReset = () => {
   mockImageFindMany.mockReset();
   mockImageFindUnique.mockReset();
   mockImageCreate.mockReset();
+  mockImageCreateMany.mockReset();
   mockImageUpdate.mockReset();
+  mockImageUpdateMany.mockReset();
   mockImageDelete.mockReset();
 
   mockUserFindUnique.mockReset();
