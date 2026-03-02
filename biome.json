@@ -21,6 +21,28 @@
       "next": "recommended"
     }
   },
+  "overrides": [
+    {
+      "includes": [
+        "**/*.test.{ts,tsx}",
+        "**/*.spec.{ts,tsx}",
+        "vitest.setup.ts"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          },
+          "performance": {
+            "noImgElement": "off"
+          },
+          "a11y": {
+            "useButtonType": "off"
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "double"
