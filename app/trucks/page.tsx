@@ -1,8 +1,52 @@
+import { TrucksSearch } from "@/components/trucks/trucks-search";
 import { TruckPreview } from "@/components/trucks/truck-preview";
 import { prisma } from "@/lib/prisma";
 
-async function getTrucks() {
+interface SearchParams {
+  search?: string;
+  city?: string;
+  minRating?: string;
+}
+
+interface TrucksPageProps {
+  searchParams: Promise<SearchParams>;
+}
+
+async function getTrucks(params: SearchParams) {
+  const { search, city, minRating } = params;
+
+  const normalizedCity = city === "all" ? undefined : city;
+
+  const where: {
+    AND?: Array<
+      | { name: { contains: string; mode: "insensitive" } }
+      | { address: { contains: string; mode: "insensitive" } }
+      | { city: string }
+      | { reviews: { some: {} } }
+    >;
+  } = {};
+
+  const conditions = [];
+
+  if (search && search.trim()) {
+    conditions.push({
+      OR: [
+        { name: { contains: search } },
+        { address: { contains: search } },
+      ],
+    });
+  }
+
+  if (normalizedCity && normalizedCity.trim()) {
+    conditions.push({ city: normalizedCity });
+  }
+
+  if (conditions.length > 0) {
+    where.AND = conditions;
+  }
+
   const trucks = await prisma.coffeeTruck.findMany({
+    where,
     include: {
       images: {
         orderBy: { isPrimary: "desc" },
@@ -23,7 +67,6 @@ async function getTrucks() {
     },
   });
 
-  // Calculate average rating for each truck from included reviews
   const trucksWithRating = trucks.map((truck) => {
     const avgRating =
       truck.reviews.length > 0
@@ -38,11 +81,17 @@ async function getTrucks() {
     };
   });
 
-  return trucksWithRating;
+  const minRatingNum = minRating ? Number.parseFloat(minRating) : 0;
+  const filtered = minRatingNum > 0
+    ? trucksWithRating.filter((t) => t.avgRating >= minRatingNum)
+    : trucksWithRating;
+
+  return filtered;
 }
 
-export default async function TrucksPage() {
-  const trucks = await getTrucks();
+export default async function TrucksPage({ searchParams }: TrucksPageProps) {
+  const params = await searchParams;
+  const trucks = await getTrucks(params);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -52,6 +101,8 @@ export default async function TrucksPage() {
           גלה את עגלות הקפה הטובות ביותר בישראל
         </p>
       </div>
+
+      <TrucksSearch />
 
       {trucks.length === 0 ? (
         <div className="text-center py-12">
