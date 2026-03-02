@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { geocodeAddress } from "@/lib/geocoding";
 import {
   createTruckSchema,
   updateTruckSchema,
@@ -56,11 +57,15 @@ export async function createTruck(
 
     const validated = createTruckSchema.parse(input);
 
+    const location = await geocodeAddress(validated.address, validated.city);
+
     const truck = await prisma.coffeeTruck.create({
       data: {
         name: validated.name,
         city: validated.city,
         address: validated.address,
+        latitude: location?.latitude,
+        longitude: location?.longitude,
         ownerId: session.user.id,
         images: {
           create: validated.images.map((img, index) => ({
@@ -103,6 +108,8 @@ export async function updateTruck(
 
     const { truckId, ...dataToValidate } = input;
     const validated = updateTruckSchema.parse(dataToValidate);
+
+    const location = await geocodeAddress(validated.address, validated.city);
 
     const truck = await prisma.coffeeTruck.findUnique({
       where: { id: truckId },
@@ -179,6 +186,8 @@ export async function updateTruck(
         name: validated.name,
         city: validated.city,
         address: validated.address,
+        latitude: location?.latitude,
+        longitude: location?.longitude,
       },
     });
 
