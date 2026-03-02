@@ -177,7 +177,7 @@ export async function actionName(
 ### Code Formatting
 - **Biome** for formatting and linting (replaces ESLint/Prettier)
 - Auto-format on save
-- Run `npx biome check --write .` to format all files
+- Run `pnpm run lint` to check, `pnpm run lint:fix` to auto-fix
 
 ### Testing
 - **Vitest** for unit/integration tests
@@ -334,6 +334,12 @@ pnpm run test:run      # Run all unit/integration tests
 pnpm run test:coverage # Coverage report
 pnpm run test:e2e      # E2E tests
 pnpm run test:e2e:ui    # E2E tests with UI
+```
+
+### Linting & Formatting
+```bash
+pnpm run lint         # Check code (format + lint issues)
+pnpm run lint:fix     # Auto-fix all issues
 ```
 
 ### Database
