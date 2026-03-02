@@ -256,15 +256,15 @@ test("signs in with valid credentials", async ({ page }) => {
 });
 ```
 
-#### Current Test Coverage (176 tests)
+#### Current Test Coverage (192 tests)
 | Category | Tests | Files |
 |----------|-------|-------|
 | Validation schemas | 88 | 4 files |
 | Server actions (trucks) | 16 | trucks.test.ts |
 | Server actions (reviews) | 19 | reviews.test.ts |
 | Server actions (images) | 23 | images.test.ts |
-| Component tests | 31 | star-rating, truck-preview, review-form, trucks-search |
-| E2E tests | 10 | auth, trucks, reviews |
+| Component tests | 30 | star-rating, truck-preview, review-form, trucks-search |
+| E2E tests | 16 | auth, trucks, reviews |
 
 ### Environment Variables
 - Use `env-config.ts` to load environment variables
@@ -288,7 +288,7 @@ test("signs in with valid credentials", async ({ page }) => {
 5. **Seeding**: Faker-based seed script for development
 6. **Navigation Header**: Responsive sticky header with mobile sheet drawer
 7. **Search & Filtering**: Text search, city filter, rating filter with URL params
-8. **Testing**: 176 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
+8. **Testing**: 192 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
 
 ### Navigation Structure
 
