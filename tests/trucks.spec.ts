@@ -9,40 +9,89 @@ test.describe("Trucks Listing", () => {
   test("displays truck cards", async ({ page }) => {
     await page.goto("/trucks");
 
-    // Check for any truck cards
     const truckCards = page.locator('[class*="card"]').or(page.locator('a[href*="/trucks/"]'));
     const count = await truckCards.count();
 
-    // Should have some content even if no trucks
     await expect(page.locator("body")).toBeVisible();
   });
 
-  test("shows search functionality", async ({ page }) => {
+  test("shows search and filter controls", async ({ page }) => {
     await page.goto("/trucks");
 
-    // Look for search input or filter controls (Phase 2 feature - may not exist yet)
-    const searchInput = page.locator('input[placeholder*="חיפוש" i]')
-      .or(page.locator('input[name*="search" i]'))
-      .or(page.locator('[data-testid*="search" i]'));
-    const cityFilter = page.locator('select[name*="city" i]')
-      .or(page.locator('[data-testid*="city" i]'))
-      .or(page.locator('button:has-text("סינון")')); // Hebrew "filter"
+    await expect(page.locator('input[placeholder*="חיפוש"]')).toBeVisible();
+    await expect(page.getByText(/כל הערים/)).toBeVisible();
+    await expect(page.getByText(/כל הדירוגים/)).toBeVisible();
+    await expect(page.getByRole("button", { name: /חפש/ })).toBeVisible();
+  });
 
-    // Note: Search/filter is Phase 2 feature
-    // Just check the page loads successfully
-    await expect(page.locator("body")).toBeVisible();
+  test("search filters by name or address", async ({ page }) => {
+    await page.goto("/trucks");
+
+    const searchInput = page.locator('input[placeholder*="חיפוש"]');
+    await searchInput.fill("תל אביב");
+
+    await page.getByRole("button", { name: /חפש/ }).click();
+
+    await expect(page).toHaveURL(/search=תל\+אביב/);
+  });
+
+  test("clear button appears when typing in search", async ({ page }) => {
+    await page.goto("/trucks");
+
+    const searchInput = page.locator('input[placeholder*="חיפוש"]');
+
+    await searchInput.fill("test");
+
+    const clearButton = page.locator("button").filter({ hasText: "" }).or(page.locator('button[aria-label="clear"]'));
+    const hasClearButton = await clearButton.count() > 0;
+
+    expect(hasClearButton).toBe(true);
+  });
+
+  test("city filter updates URL", async ({ page }) => {
+    await page.goto("/trucks");
+
+    const citySelect = page.getByText(/כל הערים/);
+    await citySelect.click();
+
+    await page.getByText("תל אביב").click();
+
+    await expect(page).toHaveURL(/city=תל\+אביב/);
+  });
+
+  test("rating filter updates URL", async ({ page }) => {
+    await page.goto("/trucks");
+
+    const ratingSelect = page.getByText(/כל הדירוגים/);
+    await ratingSelect.click();
+
+    await page.getByText(/4\+ כוכבים/).click();
+
+    await expect(page).toHaveURL(/minRating=4/);
+  });
+
+  test("clear filters button appears when filters are active", async ({ page }) => {
+    await page.goto("/trucks?search=test");
+
+    await expect(page.getByRole("button", { name: /נקה סינון/ })).toBeVisible();
+  });
+
+  test("clear filters button resets all filters", async ({ page }) => {
+    await page.goto("/trucks?search=test&city=תל+אביב");
+
+    await page.getByRole("button", { name: /נקה סינון/ }).click();
+
+    await expect(page).toHaveURL("/trucks");
   });
 
   test("navigates to truck detail page when clicking a truck", async ({ page }) => {
     await page.goto("/trucks");
 
-    // Try to find a truck link and click it
     const truckLink = page.locator('a[href*="/trucks/"]').first();
     const count = await truckLink.count();
 
     if (count > 0) {
       await truckLink.click();
-      // Should navigate to a truck detail page
       await expect(page).toHaveURL(/\/trucks\/[^/]+$/);
     }
   });
