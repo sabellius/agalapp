@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Hebrew } from "next/font/google";
 import "./globals.css";
+import "leaflet/dist/leaflet.css";
 import { Providers } from "@/app/providers";
 import { SiteHeader } from "@/components/site-header";
 
