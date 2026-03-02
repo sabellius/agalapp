@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CITIES } from "@/lib/constants";
 import type { CreateTruckInput, UpdateTruckInput } from "@/lib/validations";
 
 interface TruckFormProps {
@@ -233,40 +234,6 @@ export function TruckForm({
     }
   };
 
-  const cities = [
-    "תל אביב",
-    "ירושלים",
-    "חיפה",
-    "באר שבע",
-    "ראשון לציון",
-    "פתח תקווה",
-    "אשדוד",
-    "נתניה",
-    "בני ברק",
-    "חולון",
-    "רמת גן",
-    "רחובות",
-    "באר יעקב",
-    "הרצליה",
-    "כפר סבא",
-    "מודיעין",
-    "לוד",
-    "רעננה",
-    "גבעתיים",
-    "חדרה",
-    "רעלות",
-    "קריית גת",
-    "קריית מוצקין",
-    "אשקלון",
-    "בת ים",
-    "כפר קאסם",
-    "טירה",
-    "נצרת",
-    "מגדל",
-    "נהריה",
-    "עפולה",
-  ];
-
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
@@ -311,7 +278,7 @@ export function TruckForm({
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="">בחר עיר</option>
-              {cities.map((city) => (
+              {CITIES.map((city) => (
                 <option key={city} value={city}>
                   {city}
                 </option>
