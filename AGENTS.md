@@ -20,6 +20,7 @@ This document provides context for AI agents (Cline, Claude, etc.) working on th
 | Image Hosting | Cloudinary |
 | Formatting | Biome |
 | Fonts | Noto Sans Hebrew (Google Fonts) |
+| Testing | Vitest, Playwright, Testing Library |
 
 ## Project Structure
 
@@ -54,7 +55,15 @@ agalapp/
 ├── prisma/
 │   ├── schema.prisma         # Database schema
 │   └── seed.ts               # Database seeding script
-└── generated/prisma/         # Generated Prisma client
+├── generated/prisma/         # Generated Prisma client
+├── test/                     # Test infrastructure
+│   ├── fixtures/             # Test data (trucks, users, reviews)
+│   └── mocks/                # Shared mocks
+├── tests/                    # E2E tests (Playwright)
+│   └── auth.spec.ts
+├── vitest.config.ts          # Vitest configuration
+├── vitest.setup.ts           # Global test setup (mocks, cleanup)
+└── playwright.config.ts      # Playwright configuration
 ```
 
 ## Architecture Decisions
@@ -166,6 +175,96 @@ export async function actionName(
 - Auto-format on save
 - Run `npx biome check --write .` to format all files
 
+### Testing
+- **Vitest** for unit/integration tests
+- **Playwright** for E2E tests
+- **Testing Library** for component tests
+- Tests are **co-located** with source files (`*.test.ts` for unit/integration, `tests/` for E2E)
+
+#### Test Structure
+```
+app/
+  actions/
+    truck.ts
+    truck.test.ts           # Server action tests
+    reviews.test.ts
+    images.test.ts
+components/
+  reviews/
+    star-rating.tsx
+    star-rating.test.tsx    # Component tests
+lib/
+  validations/
+    truck-schema.ts
+    truck-schema.test.ts     # Validation tests
+test/
+  fixtures/                 # Test data (trucks, users, reviews)
+  mocks/                    # Prisma and other mocks
+tests/
+  auth.spec.ts              # E2E tests (Playwright)
+```
+
+#### Running Tests
+```bash
+pnpm run test          # Vitest watch mode
+pnpm run test:run      # Run all unit/integration tests
+pnpm run test:coverage # Coverage report
+pnpm exec playwright test tests/  # E2E tests
+```
+
+#### Writing Tests
+
+**Server Actions** - Mock dependencies inline:
+```typescript
+vi.mock("@/lib/prisma", () => ({
+  prisma: {
+    coffeeTruck: {
+      create: vi.fn(),
+      findUnique: vi.fn(),
+      // ...
+    },
+  },
+}));
+
+const mockPrisma = prisma as typeof prisma & {
+  coffeeTruck: { create: ReturnType<typeof vi.fn> };
+};
+```
+
+**Components** - Test behavior, not implementation:
+```typescript
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+test("updates rating when star clicked", async () => {
+  const handleChange = vi.fn();
+  render(<StarRating value={0} onChange={handleChange} />);
+  await userEvent.click(screen.getByRole("button", { name: "3 stars" }));
+  expect(handleChange).toHaveBeenCalledWith(3);
+});
+```
+
+**E2E** - Test critical user flows:
+```typescript
+test("signs in with valid credentials", async ({ page }) => {
+  await page.goto("/auth/sign-in");
+  await page.fill('input[type="email"]', "user@example.com");
+  await page.fill('input[type="password"]', "password");
+  await page.click('button[type="submit"]');
+  await expect(page).toHaveURL(/\/dashboard/);
+});
+```
+
+#### Current Test Coverage (157 tests)
+| Category | Tests | Files |
+|----------|-------|-------|
+| Validation schemas | 88 | 4 files |
+| Server actions (trucks) | 16 | trucks.test.ts |
+| Server actions (reviews) | 19 | reviews.test.ts |
+| Server actions (images) | 23 | images.test.ts |
+| Component tests | 6 | star-rating.test.tsx |
+| E2E tests | 5 | auth.spec.ts |
+
 ### Environment Variables
 - Use `env-config.ts` to load environment variables
 - Never hardcode sensitive values
@@ -187,6 +286,7 @@ export async function actionName(
 4. **Authentication**: Email/password with role-based access
 5. **Seeding**: Faker-based seed script for development
 6. **Navigation Header**: Responsive sticky header with mobile sheet drawer
+7. **Testing**: 157 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
 
 ### Navigation Structure
 
@@ -216,6 +316,14 @@ export async function actionName(
 pnpm run dev         # Start dev server
 pnpm run build       # Build for production
 pnpm run start       # Start production server
+```
+
+### Testing
+```bash
+pnpm run test          # Vitest watch mode
+pnpm run test:run      # Run all unit/integration tests
+pnpm run test:coverage # Coverage report
+pnpm exec playwright test tests/  # E2E tests
 ```
 
 ### Database
