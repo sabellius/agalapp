@@ -2,7 +2,7 @@
 
 import { Search, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,7 +17,6 @@ import { CITIES, MIN_RATING_OPTIONS } from "@/lib/constants";
 export function TrucksSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
 
   const search = searchParams.get("search") || "";
   const city = searchParams.get("city") || "";
@@ -39,9 +38,7 @@ export function TrucksSearch() {
     const queryString = params.toString();
     const url = queryString ? `/trucks?${queryString}` : "/trucks";
 
-    startTransition(() => {
-      router.push(url);
-    });
+    router.push(url);
   };
 
   const handleSearchChange = (value: string) => {
@@ -121,7 +118,7 @@ export function TrucksSearch() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit">
             חפש
           </Button>
           {hasFilters && (
