@@ -1,5 +1,8 @@
+import Link from "next/link";
+import { Map } from "lucide-react";
 import { TrucksSearch } from "@/components/trucks/trucks-search";
 import { TruckPreview } from "@/components/trucks/truck-preview";
+import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 
 interface SearchParams {
@@ -95,11 +98,19 @@ export default async function TrucksPage({ searchParams }: TrucksPageProps) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">עגלות קפה</h1>
-        <p className="text-muted-foreground">
-          גלה את עגלות הקפה הטובות ביותר בישראל
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-4xl font-bold mb-2">עגלות קפה</h1>
+          <p className="text-muted-foreground">
+            גלה את עגלות הקפה הטובות ביותר בישראל
+          </p>
+        </div>
+        <Link href="/trucks/map">
+          <Button variant="outline" className="gap-2">
+            <Map className="h-4 w-4" />
+            מפה
+          </Button>
+        </Link>
       </div>
 
       <TrucksSearch />
