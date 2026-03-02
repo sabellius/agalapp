@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReviewActions } from "@/components/reviews/review-actions";
 import { ReviewForm } from "@/components/reviews/review-form";
+import { TruckMap } from "@/components/map/truck-map";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
@@ -120,6 +121,39 @@ export default async function TruckPage({
               )}
             </CardContent>
           </Card>
+
+          {truck.latitude && truck.longitude && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  מיקום
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <TruckMap
+                  trucks={[
+                    {
+                      id: truck.id,
+                      name: truck.name,
+                      address: truck.address,
+                      latitude: truck.latitude,
+                      longitude: truck.longitude,
+                      avgRating: truck.avgRating,
+                      reviewCount: truck.reviews.length,
+                    },
+                  ]}
+                  height="350px"
+                  center={
+                    truck.latitude && truck.longitude
+                      ? [truck.latitude, truck.longitude]
+                      : undefined
+                  }
+                  zoom={15}
+                />
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         <div className="lg:col-span-1">
