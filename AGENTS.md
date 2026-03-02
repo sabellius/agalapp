@@ -17,6 +17,8 @@ This document provides context for AI agents (Cline, Claude, etc.) working on th
 | Authentication | better-auth |
 | Validation | Zod 4.x |
 | UI Components | shadcn/ui (Radix UI primitives) |
+| Maps | Leaflet + OpenStreetMap |
+| Geocoding | Nominatim API |
 | Image Hosting | Cloudinary |
 | Formatting | Biome |
 | Fonts | Noto Sans Hebrew (Google Fonts) |
@@ -39,12 +41,14 @@ agalapp/
 │   └── providers.tsx         # React providers
 ├── components/
 │   ├── ui/                   # shadcn/ui base components
+│   ├── map/                  # Map-related components (Leaflet)
 │   ├── reviews/              # Review-related components
 │   └── trucks/               # Truck-related components
 ├── lib/
 │   ├── auth.ts               # better-auth configuration
 │   ├── auth-client.ts        # Client-side auth utilities
 │   ├── cloudinary.ts         # Cloudinary setup
+│   ├── geocoding.ts          # Nominatim geocoding utility
 │   ├── prisma.ts             # Prisma client with MariaDB adapter
 │   ├── utils.ts              # Utility functions
 │   └── validations/          # Zod validation schemas
@@ -256,15 +260,16 @@ test("signs in with valid credentials", async ({ page }) => {
 });
 ```
 
-#### Current Test Coverage (192 tests)
+#### Current Test Coverage (218 tests)
 | Category | Tests | Files |
 |----------|-------|-------|
 | Validation schemas | 88 | 4 files |
 | Server actions (trucks) | 16 | trucks.test.ts |
 | Server actions (reviews) | 19 | reviews.test.ts |
 | Server actions (images) | 23 | images.test.ts |
-| Component tests | 30 | star-rating, truck-preview, review-form, trucks-search |
-| E2E tests | 16 | auth, trucks, reviews |
+| Component tests | 37 | star-rating, truck-preview, review-form, trucks-search, map components |
+| Geocoding utility | 5 | geocoding.test.ts |
+| E2E tests | 22 | auth, trucks, reviews, map |
 
 ### Environment Variables
 - Use `env-config.ts` to load environment variables
@@ -288,13 +293,15 @@ test("signs in with valid credentials", async ({ page }) => {
 5. **Seeding**: Faker-based seed script for development
 6. **Navigation Header**: Responsive sticky header with mobile sheet drawer
 7. **Search & Filtering**: Text search, city filter, rating filter with URL params
-8. **Testing**: 192 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
+8. **Map Integration**: Leaflet + OpenStreetMap with automatic geocoding via Nominatim
+9. **Testing**: 218 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
 
 ### Navigation Structure
 
 **Public (all users):**
 - בית → `/`
 - עגלות קפה → `/trucks`
+- מפת עגלות → `/trucks/map`
 
 **Authenticated:**
 - לוח בקרה → `/dashboard`
