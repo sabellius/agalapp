@@ -209,7 +209,8 @@ tests/
 pnpm run test          # Vitest watch mode
 pnpm run test:run      # Run all unit/integration tests
 pnpm run test:coverage # Coverage report
-pnpm exec playwright test tests/  # E2E tests
+pnpm run test:e2e      # E2E tests
+pnpm run test:e2e:ui    # E2E tests with UI
 ```
 
 #### Writing Tests
@@ -255,15 +256,15 @@ test("signs in with valid credentials", async ({ page }) => {
 });
 ```
 
-#### Current Test Coverage (157 tests)
+#### Current Test Coverage (182 tests)
 | Category | Tests | Files |
 |----------|-------|-------|
 | Validation schemas | 88 | 4 files |
 | Server actions (trucks) | 16 | trucks.test.ts |
 | Server actions (reviews) | 19 | reviews.test.ts |
 | Server actions (images) | 23 | images.test.ts |
-| Component tests | 6 | star-rating.test.tsx |
-| E2E tests | 5 | auth.spec.ts |
+| Component tests | 24 | star-rating, truck-preview, review-form |
+| E2E tests | 13 | auth, trucks, reviews |
 
 ### Environment Variables
 - Use `env-config.ts` to load environment variables
@@ -286,7 +287,7 @@ test("signs in with valid credentials", async ({ page }) => {
 4. **Authentication**: Email/password with role-based access
 5. **Seeding**: Faker-based seed script for development
 6. **Navigation Header**: Responsive sticky header with mobile sheet drawer
-7. **Testing**: 157 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
+7. **Testing**: 182 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
 
 ### Navigation Structure
 
@@ -323,7 +324,8 @@ pnpm run start       # Start production server
 pnpm run test          # Vitest watch mode
 pnpm run test:run      # Run all unit/integration tests
 pnpm run test:coverage # Coverage report
-pnpm exec playwright test tests/  # E2E tests
+pnpm run test:e2e      # E2E tests
+pnpm run test:e2e:ui    # E2E tests with UI
 ```
 
 ### Database
