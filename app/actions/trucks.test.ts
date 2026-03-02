@@ -1,5 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { revalidatePath } from "next/cache";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock dependencies before importing actions
 vi.mock("@/lib/auth", () => ({
@@ -41,20 +40,14 @@ vi.mock("next/cache", () => ({
 }));
 
 vi.mock("next/headers", () => ({
-  headers: vi.fn(() =>
-    Promise.resolve(new Headers({ "user-agent": "test" }))
-  ),
+  headers: vi.fn(() => Promise.resolve(new Headers({ "user-agent": "test" }))),
 }));
 
-import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import {
-  createTruck,
-  updateTruck,
-  deleteTruck,
-} from "./trucks";
+import { prisma } from "@/lib/prisma";
 import { mockTruck } from "@/test/fixtures/trucks";
-import { mockUser, mockTruckOwner, mockAdmin } from "@/test/fixtures/users";
+import { mockAdmin, mockTruckOwner, mockUser } from "@/test/fixtures/users";
+import { createTruck, deleteTruck, updateTruck } from "./trucks";
 
 const mockPrisma = prisma as typeof prisma & {
   user: { findUnique: ReturnType<typeof vi.fn> };

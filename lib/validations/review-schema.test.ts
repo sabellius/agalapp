@@ -1,9 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  createReviewSchema,
-  updateReviewSchema,
-  deleteReviewSchema,
   type CreateReviewInput,
+  createReviewSchema,
+  deleteReviewSchema,
+  updateReviewSchema,
 } from "./review-schema";
 
 describe("createReviewSchema", () => {
@@ -72,12 +72,18 @@ describe("createReviewSchema", () => {
   });
 
   it("rejects decimal rating", () => {
-    const result = createReviewSchema.safeParse({ ...validReview, rating: 3.5 });
+    const result = createReviewSchema.safeParse({
+      ...validReview,
+      rating: 3.5,
+    });
     expect(result.success).toBe(false);
   });
 
   it("rejects content shorter than 10 characters", () => {
-    const result = createReviewSchema.safeParse({ ...validReview, content: "קפה טוב" });
+    const result = createReviewSchema.safeParse({
+      ...validReview,
+      content: "קפה טוב",
+    });
     expect(result.success).toBe(false);
     if (!result.success) {
       expect(result.error.issues[0].message).toContain("מינימום 10");
@@ -126,7 +132,10 @@ describe("updateReviewSchema", () => {
   });
 
   it("rejects empty reviewId", () => {
-    const result = updateReviewSchema.safeParse({ ...validUpdate, reviewId: "" });
+    const result = updateReviewSchema.safeParse({
+      ...validUpdate,
+      reviewId: "",
+    });
     expect(result.success).toBe(false);
   });
 

@@ -2,17 +2,17 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { ZodError } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
-  createReviewSchema,
-  updateReviewSchema,
-  deleteReviewSchema,
   type CreateReviewInput,
-  type UpdateReviewInput,
+  createReviewSchema,
   type DeleteReviewInput,
+  deleteReviewSchema,
+  type UpdateReviewInput,
+  updateReviewSchema,
 } from "@/lib/validations";
-import { ZodError } from "zod";
 
 type ActionResult<T = void> =
   | { success: true; data?: T }
@@ -130,7 +130,9 @@ export async function updateReview(
   }
 }
 
-export async function deleteReview(input: DeleteReviewInput): Promise<ActionResult> {
+export async function deleteReview(
+  input: DeleteReviewInput,
+): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),

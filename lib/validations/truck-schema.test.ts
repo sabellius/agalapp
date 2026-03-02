@@ -1,10 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  createTruckSchema,
-  updateTruckSchema,
-  truckFiltersSchema,
-  deleteTruckSchema,
   type CreateTruckInput,
+  createTruckSchema,
+  deleteTruckSchema,
+  truckFiltersSchema,
+  updateTruckSchema,
 } from "./truck-schema";
 
 describe("createTruckSchema", () => {
@@ -33,12 +33,18 @@ describe("createTruckSchema", () => {
   });
 
   it("rejects invalid city", () => {
-    const result = createTruckSchema.safeParse({ ...validTruck, city: "ניו יורק" });
+    const result = createTruckSchema.safeParse({
+      ...validTruck,
+      city: "ניו יורק",
+    });
     expect(result.success).toBe(false);
   });
 
   it("rejects short address", () => {
-    const result = createTruckSchema.safeParse({ ...validTruck, address: "רח 1" });
+    const result = createTruckSchema.safeParse({
+      ...validTruck,
+      address: "רח 1",
+    });
     expect(result.success).toBe(false);
   });
 

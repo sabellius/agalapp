@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Authentication", () => {
   test("homepage loads", async ({ page }) => {
@@ -12,8 +12,12 @@ test.describe("Authentication", () => {
     // Check the page loads
     await expect(page).toHaveURL(/\/auth\/sign-in/);
     // Check for form elements
-    const emailInput = page.locator('input[type="email"]').or(page.locator('input[name*="email"]'));
-    const passwordInput = page.locator('input[type="password"]').or(page.locator('input[name*="password"]'));
+    const emailInput = page
+      .locator('input[type="email"]')
+      .or(page.locator('input[name*="email"]'));
+    const passwordInput = page
+      .locator('input[type="password"]')
+      .or(page.locator('input[name*="password"]'));
     await expect(emailInput.or(passwordInput)).toHaveCount(2);
   });
 
@@ -28,7 +32,9 @@ test.describe("Authentication", () => {
   test("can navigate between sign in and sign up", async ({ page }) => {
     await page.goto("/auth/sign-in");
     // Look for link to sign up
-    const signUpLink = page.getByRole("link", { name: /sign.?up|הרשמה/i }).or(page.locator('a[href*="sign-up"]'));
+    const signUpLink = page
+      .getByRole("link", { name: /sign.?up|הרשמה/i })
+      .or(page.locator('a[href*="sign-up"]'));
     if (await signUpLink.first().isVisible()) {
       await signUpLink.first().click();
       await expect(page).toHaveURL(/\/auth\/sign-up/);
@@ -38,7 +44,9 @@ test.describe("Authentication", () => {
   test("shows error for empty form submission", async ({ page }) => {
     await page.goto("/auth/sign-in");
     // Try to find a submit button
-    const submitButton = page.locator('button[type="submit"]').or(page.getByRole("button", { name: /sign.?in|התחבר/ }));
+    const submitButton = page
+      .locator('button[type="submit"]')
+      .or(page.getByRole("button", { name: /sign.?in|התחבר/ }));
     if (await submitButton.first().isVisible()) {
       await submitButton.first().click();
       // Should still be on sign-in page (form validation or error)

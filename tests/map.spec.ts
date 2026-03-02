@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Map View", () => {
   test("shows map page", async ({ page }) => {
@@ -41,7 +41,9 @@ test.describe("Map Link", () => {
 });
 
 test.describe("Truck Detail Map", () => {
-  test("map section only shows for trucks with coordinates", async ({ page }) => {
+  test("map section only shows for trucks with coordinates", async ({
+    page,
+  }) => {
     await page.goto("/trucks");
 
     const truckLink = page.locator('a[href*="/trucks/"]').first();
@@ -51,7 +53,7 @@ test.describe("Truck Detail Map", () => {
       await truckLink.click();
 
       const mapHeading = page.getByText(/מיקום/);
-      const hasMap = await mapHeading.count() > 0;
+      const hasMap = (await mapHeading.count()) > 0;
 
       if (hasMap) {
         await expect(mapHeading).toBeVisible();

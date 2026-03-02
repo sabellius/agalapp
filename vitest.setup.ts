@@ -30,8 +30,8 @@ vi.mock("next/headers", () => ({
     Promise.resolve(
       new Headers({
         "user-agent": "test",
-      })
-    )
+      }),
+    ),
   ),
 }));
 

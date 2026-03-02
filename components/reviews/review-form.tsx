@@ -2,10 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import type {
-  CreateReviewInput,
-  UpdateReviewInput,
-} from "@/lib/validations";
 import { createReview, updateReview } from "@/app/actions/reviews";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +14,12 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import type { CreateReviewInput, UpdateReviewInput } from "@/lib/validations";
 import { StarRating } from "./star-rating";
+
+type ActionResult<T = void> =
+  | { success: true; data?: T }
+  | { success: false; message: string };
 
 interface Review {
   id: string;
@@ -76,7 +77,7 @@ export function ReviewForm({ truckId, children, review }: ReviewFormProps) {
 
     setIsSubmitting(true);
 
-    let result;
+    let result: ActionResult<{ id: string }>;
     if (isEditMode && review) {
       const input: UpdateReviewInput = {
         reviewId: review.id,

@@ -1,10 +1,10 @@
 import { z } from "zod";
 import {
-  truckNameSchema,
-  citySchema,
   addressSchema,
+  citySchema,
   imageSchema,
   truckImageSchema,
+  truckNameSchema,
 } from "./common";
 
 export const createTruckSchema = z.object({

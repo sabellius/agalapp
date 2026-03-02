@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock dependencies before importing actions
 vi.mock("@/lib/auth", () => ({
@@ -32,16 +32,14 @@ vi.mock("next/cache", () => ({
 }));
 
 vi.mock("next/headers", () => ({
-  headers: vi.fn(() =>
-    Promise.resolve(new Headers({ "user-agent": "test" }))
-  ),
+  headers: vi.fn(() => Promise.resolve(new Headers({ "user-agent": "test" }))),
 }));
 
-import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { createReview, updateReview, deleteReview } from "./reviews";
-import { mockUser } from "@/test/fixtures/users";
+import { prisma } from "@/lib/prisma";
 import { mockReview } from "@/test/fixtures/reviews";
+import { mockUser } from "@/test/fixtures/users";
+import { createReview, deleteReview, updateReview } from "./reviews";
 
 const mockPrisma = prisma as typeof prisma & {
   coffeeTruck: { findUnique: ReturnType<typeof vi.fn> };

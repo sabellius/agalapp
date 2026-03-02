@@ -1,20 +1,20 @@
 "use server";
 
+import type { Role } from "@generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { ZodError } from "zod";
 import { auth } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
 import {
-  deleteImageSchema,
-  setPrimaryImageSchema,
-  updateImageAltSchema,
   type DeleteImageInput,
+  deleteImageSchema,
   type SetPrimaryImageInput,
+  setPrimaryImageSchema,
   type UpdateImageAltInput,
+  updateImageAltSchema,
 } from "@/lib/validations";
-import { ZodError } from "zod";
-import type { Role } from "@generated/prisma/client";
 
 type ActionResult<T = void> =
   | { success: true; data?: T }
@@ -30,14 +30,16 @@ async function getUserRole(userId: string): Promise<Role | null> {
 
 async function canModifyTruck(
   userId: string,
-  truckOwnerId: string
+  truckOwnerId: string,
 ): Promise<boolean> {
   if (userId === truckOwnerId) return true;
   const role = await getUserRole(userId);
   return role === "ADMIN";
 }
 
-export async function deleteImage(input: DeleteImageInput): Promise<ActionResult> {
+export async function deleteImage(
+  input: DeleteImageInput,
+): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -64,7 +66,10 @@ export async function deleteImage(input: DeleteImageInput): Promise<ActionResult
       return { success: false, message: "התמונה לא נמצאה" };
     }
 
-    const canModify = await canModifyTruck(session.user.id, image.truck.ownerId);
+    const canModify = await canModifyTruck(
+      session.user.id,
+      image.truck.ownerId,
+    );
     if (!canModify) {
       return { success: false, message: "אינך מורשה לבצע פעולה זו" };
     }
@@ -113,7 +118,9 @@ export async function deleteImage(input: DeleteImageInput): Promise<ActionResult
   }
 }
 
-export async function setPrimaryImage(input: SetPrimaryImageInput): Promise<ActionResult> {
+export async function setPrimaryImage(
+  input: SetPrimaryImageInput,
+): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -176,7 +183,9 @@ export async function setPrimaryImage(input: SetPrimaryImageInput): Promise<Acti
   }
 }
 
-export async function updateImageAlt(input: UpdateImageAltInput): Promise<ActionResult> {
+export async function updateImageAlt(
+  input: UpdateImageAltInput,
+): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -203,7 +212,10 @@ export async function updateImageAlt(input: UpdateImageAltInput): Promise<Action
       return { success: false, message: "התמונה לא נמצאה" };
     }
 
-    const canModify = await canModifyTruck(session.user.id, image.truck.ownerId);
+    const canModify = await canModifyTruck(
+      session.user.id,
+      image.truck.ownerId,
+    );
     if (!canModify) {
       return { success: false, message: "אינך מורשה לבצע פעולה זו" };
     }

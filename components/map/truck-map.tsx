@@ -1,7 +1,7 @@
 "use client";
 
-import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { useEffect } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import type { TruckMarkerData } from "./truck-marker";
 import { TruckMarker } from "./truck-marker";
 
@@ -15,7 +15,7 @@ interface TruckMapProps {
 
 const DEFAULT_CENTER: [number, number] = [31.5, 34.8];
 const DEFAULT_ZOOM = 7;
-const ISRAEL_BOUNDS = [
+const _ISRAEL_BOUNDS = [
   [29.3, 34.2] as [number, number],
   [33.5, 35.9] as [number, number],
 ];

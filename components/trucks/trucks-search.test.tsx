@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TrucksSearch } from "./trucks-search";
 
 const mockPush = vi.fn();
@@ -23,7 +23,9 @@ describe("TrucksSearch", () => {
   it("renders search input and filters", () => {
     render(<TrucksSearch />);
 
-    expect(screen.getByPlaceholderText(/חיפוש לפי שם או כתובת/)).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/חיפוש לפי שם או כתובת/),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /חפש/ })).toBeInTheDocument();
   });
 
@@ -82,7 +84,9 @@ describe("TrucksSearch", () => {
 
     render(<TrucksSearch />);
 
-    expect(screen.getByRole("button", { name: /נקה סינון/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /נקה סינון/ }),
+    ).toBeInTheDocument();
   });
 
   it("clears all filters when clicking clear button", async () => {

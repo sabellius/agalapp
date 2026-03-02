@@ -1,11 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
-  truckNameSchema,
-  citySchema,
   addressSchema,
-  imageSchema,
+  citySchema,
   hebrewTextSchema,
+  imageSchema,
   israeliCities,
+  truckNameSchema,
 } from "./common";
 
 describe("truckNameSchema", () => {

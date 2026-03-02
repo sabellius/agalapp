@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ReviewForm } from "./review-form";
 
 vi.mock("next/navigation", () => ({
@@ -32,7 +32,7 @@ describe("ReviewForm", () => {
     render(
       <ReviewForm truckId={truckId}>
         <button>כתוב ביקורת</button>
-      </ReviewForm>
+      </ReviewForm>,
     );
 
     await user.click(screen.getByRole("button", { name: /כתוב ביקורת/ }));
@@ -45,7 +45,7 @@ describe("ReviewForm", () => {
     render(
       <ReviewForm truckId={truckId}>
         <button>Open</button>
-      </ReviewForm>
+      </ReviewForm>,
     );
 
     // Dialog is initially closed
@@ -59,7 +59,7 @@ describe("ReviewForm", () => {
         review={{ id: "review-1", rating: 5, content: "Great!" }}
       >
         <button>Open</button>
-      </ReviewForm>
+      </ReviewForm>,
     );
 
     // Open the dialog
@@ -75,7 +75,7 @@ describe("ReviewForm", () => {
         review={{ id: "review-1", rating: 4, content: "Good coffee!" }}
       >
         <button>Open</button>
-      </ReviewForm>
+      </ReviewForm>,
     );
 
     await userEvent.click(screen.getByRole("button", { name: /Open/ }));
@@ -92,7 +92,7 @@ describe("ReviewForm", () => {
     render(
       <ReviewForm truckId={truckId}>
         <button>Open</button>
-      </ReviewForm>
+      </ReviewForm>,
     );
 
     await userEvent.click(screen.getByRole("button", { name: /Open/ }));
@@ -106,7 +106,7 @@ describe("ReviewForm", () => {
     render(
       <ReviewForm truckId={truckId}>
         <button>Open</button>
-      </ReviewForm>
+      </ReviewForm>,
     );
 
     await user.click(screen.getByRole("button", { name: /Open/ }));
@@ -123,7 +123,7 @@ describe("ReviewForm", () => {
     render(
       <ReviewForm truckId={truckId}>
         <button>Open</button>
-      </ReviewForm>
+      </ReviewForm>,
     );
 
     await user.click(screen.getByRole("button", { name: /Open/ }));
@@ -140,7 +140,7 @@ describe("ReviewForm", () => {
     render(
       <ReviewForm truckId={truckId}>
         <button>Open</button>
-      </ReviewForm>
+      </ReviewForm>,
     );
 
     await userEvent.click(screen.getByRole("button", { name: /Open/ }));
@@ -154,7 +154,7 @@ describe("ReviewForm", () => {
     render(
       <ReviewForm truckId={truckId}>
         <button>Open</button>
-      </ReviewForm>
+      </ReviewForm>,
     );
 
     await user.click(screen.getByRole("button", { name: /Open/ }));
@@ -167,11 +167,11 @@ describe("ReviewForm", () => {
     await user.type(textarea, "Great coffee! Highly recommended.");
 
     // Mock the action to return a promise we can control
-    let isSubmitting = true;
+    let _isSubmitting = true;
     mockCreateReview.mockImplementation(() => {
       return new Promise((resolve) => {
         setTimeout(() => {
-          isSubmitting = false;
+          _isSubmitting = false;
           resolve({ success: true });
         }, 100);
       });

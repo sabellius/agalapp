@@ -86,7 +86,12 @@ export function TrucksSearch() {
             )}
           </div>
 
-          <Select value={city} onValueChange={(value) => updateParams({ city: value === "all" ? null : value })}>
+          <Select
+            value={city}
+            onValueChange={(value) =>
+              updateParams({ city: value === "all" ? null : value })
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="כל הערים" />
             </SelectTrigger>
@@ -118,9 +123,7 @@ export function TrucksSearch() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button type="submit">
-            חפש
-          </Button>
+          <Button type="submit">חפש</Button>
           {hasFilters && (
             <Button type="button" variant="ghost" onClick={handleClearAll}>
               נקה סינון

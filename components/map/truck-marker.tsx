@@ -1,9 +1,9 @@
 "use client";
 
-import { Marker, Popup, useMap } from "react-leaflet";
-import { Icon, DivIcon } from "leaflet";
-import { MapPin, Star } from "lucide-react";
+import { DivIcon } from "leaflet";
+import { Star } from "lucide-react";
 import Link from "next/link";
+import { Marker, Popup } from "react-leaflet";
 
 export interface TruckMarkerData {
   id: string;

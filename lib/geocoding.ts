@@ -5,7 +5,7 @@ interface GeocodeResult {
 
 export async function geocodeAddress(
   address: string,
-  city: string
+  city: string,
 ): Promise<GeocodeResult | null> {
   const query = `${address}, ${city}, Israel`;
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;

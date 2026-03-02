@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock dependencies before importing actions
 vi.mock("@/lib/auth", () => ({
@@ -41,16 +41,14 @@ vi.mock("next/cache", () => ({
 }));
 
 vi.mock("next/headers", () => ({
-  headers: vi.fn(() =>
-    Promise.resolve(new Headers({ "user-agent": "test" }))
-  ),
+  headers: vi.fn(() => Promise.resolve(new Headers({ "user-agent": "test" }))),
 }));
 
-import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
+import { prisma } from "@/lib/prisma";
+import { mockAdmin, mockTruckOwner, mockUser } from "@/test/fixtures/users";
 import { deleteImage, setPrimaryImage, updateImageAlt } from "./images";
-import { mockUser, mockTruckOwner, mockAdmin } from "@/test/fixtures/users";
 
 const mockPrisma = prisma as typeof prisma & {
   user: { findUnique: ReturnType<typeof vi.fn> };
@@ -111,7 +109,9 @@ describe("images server actions", () => {
       expect(mockPrisma.coffeeTruckImage.delete).toHaveBeenCalledWith({
         where: { id: validInput.imageId },
       });
-      expect(mockCloudinary.uploader.destroy).toHaveBeenCalledWith("cloudinary-123");
+      expect(mockCloudinary.uploader.destroy).toHaveBeenCalledWith(
+        "cloudinary-123",
+      );
     });
 
     it("deletes image for admin", async () => {
@@ -251,7 +251,9 @@ describe("images server actions", () => {
 
       mockPrisma.coffeeTruckImage.findUnique.mockResolvedValue(image);
       mockPrisma.coffeeTruckImage.findMany.mockResolvedValue([image]);
-      mockCloudinary.uploader.destroy.mockRejectedValue(new Error("Cloudinary error"));
+      mockCloudinary.uploader.destroy.mockRejectedValue(
+        new Error("Cloudinary error"),
+      );
       mockPrisma.coffeeTruckImage.delete.mockResolvedValue(undefined);
 
       const result = await deleteImage(validInput);

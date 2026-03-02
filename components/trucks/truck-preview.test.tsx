@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { TruckPreview } from "./truck-preview";
 
 vi.mock("next/navigation", () => ({
@@ -44,7 +43,11 @@ describe("TruckPreview", () => {
   });
 
   it("shows zero rating when no reviews", () => {
-    const truckNoReviews = { ...mockTruck, _count: { reviews: 0 }, avgRating: 0 };
+    const truckNoReviews = {
+      ...mockTruck,
+      _count: { reviews: 0 },
+      avgRating: 0,
+    };
 
     render(<TruckPreview truck={truckNoReviews} />);
 
@@ -55,7 +58,9 @@ describe("TruckPreview", () => {
   it("shows view details button", () => {
     render(<TruckPreview truck={mockTruck} />);
 
-    expect(screen.getByRole("link", { name: /צפה בפרטים/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /צפה בפרטים/ }),
+    ).toBeInTheDocument();
   });
 
   it("links to truck detail page", () => {
@@ -76,8 +81,16 @@ describe("TruckPreview", () => {
     const truckNoPrimary = {
       ...mockTruck,
       images: [
-        { id: "img-1", url: "https://example.com/image1.jpg", isPrimary: false },
-        { id: "img-2", url: "https://example.com/image2.jpg", isPrimary: false },
+        {
+          id: "img-1",
+          url: "https://example.com/image1.jpg",
+          isPrimary: false,
+        },
+        {
+          id: "img-2",
+          url: "https://example.com/image2.jpg",
+          isPrimary: false,
+        },
       ],
     };
 
@@ -94,6 +107,8 @@ describe("TruckPreview", () => {
 
     // Should still render the truck info, just without an image
     expect(screen.getByText("עגלת הקפה")).toBeInTheDocument();
-    expect(screen.queryByRole("img", { name: "עגלת הקפה" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("img", { name: "עגלת הקפה" }),
+    ).not.toBeInTheDocument();
   });
 });

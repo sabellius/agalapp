@@ -1,7 +1,7 @@
+import { Map as MapIcon } from "lucide-react";
 import Link from "next/link";
-import { Map } from "lucide-react";
-import { TrucksSearch } from "@/components/trucks/trucks-search";
 import { TruckPreview } from "@/components/trucks/truck-preview";
+import { TrucksSearch } from "@/components/trucks/trucks-search";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 
@@ -25,22 +25,19 @@ async function getTrucks(params: SearchParams) {
       | { name: { contains: string; mode: "insensitive" } }
       | { address: { contains: string; mode: "insensitive" } }
       | { city: string }
-      | { reviews: { some: {} } }
+      | { reviews: { some: Record<string, never> } }
     >;
   } = {};
 
   const conditions = [];
 
-  if (search && search.trim()) {
+  if (search?.trim()) {
     conditions.push({
-      OR: [
-        { name: { contains: search } },
-        { address: { contains: search } },
-      ],
+      OR: [{ name: { contains: search } }, { address: { contains: search } }],
     });
   }
 
-  if (normalizedCity && normalizedCity.trim()) {
+  if (normalizedCity?.trim()) {
     conditions.push({ city: normalizedCity });
   }
 
@@ -85,9 +82,10 @@ async function getTrucks(params: SearchParams) {
   });
 
   const minRatingNum = minRating ? Number.parseFloat(minRating) : 0;
-  const filtered = minRatingNum > 0
-    ? trucksWithRating.filter((t) => t.avgRating >= minRatingNum)
-    : trucksWithRating;
+  const filtered =
+    minRatingNum > 0
+      ? trucksWithRating.filter((t) => t.avgRating >= minRatingNum)
+      : trucksWithRating;
 
   return filtered;
 }
@@ -107,7 +105,7 @@ export default async function TrucksPage({ searchParams }: TrucksPageProps) {
         </div>
         <Link href="/trucks/map">
           <Button variant="outline" className="gap-2">
-            <Map className="h-4 w-4" />
+            <MapIcon className="h-4 w-4" />
             מפה
           </Button>
         </Link>

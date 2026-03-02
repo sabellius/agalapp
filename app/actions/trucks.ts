@@ -1,20 +1,20 @@
 "use server";
 
+import type { Role } from "@generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { geocodeAddress } from "@/lib/geocoding";
-import {
-  createTruckSchema,
-  updateTruckSchema,
-  deleteTruckSchema,
-  type CreateTruckInput,
-  type UpdateTruckInput,
-  type DeleteTruckInput,
-} from "@/lib/validations";
 import { ZodError } from "zod";
-import type { Role } from "@generated/prisma/client";
+import { auth } from "@/lib/auth";
+import { geocodeAddress } from "@/lib/geocoding";
+import { prisma } from "@/lib/prisma";
+import {
+  type CreateTruckInput,
+  createTruckSchema,
+  type DeleteTruckInput,
+  deleteTruckSchema,
+  type UpdateTruckInput,
+  updateTruckSchema,
+} from "@/lib/validations";
 
 type ActionResult<T = void> =
   | { success: true; data?: T }
@@ -30,7 +30,7 @@ async function getUserRole(userId: string): Promise<Role | null> {
 
 async function canModifyTruck(
   userId: string,
-  truckOwnerId: string
+  truckOwnerId: string,
 ): Promise<boolean> {
   if (userId === truckOwnerId) return true;
   const role = await getUserRole(userId);
@@ -132,15 +132,15 @@ export async function updateTruck(
       return { success: false, message: "אינך מורשה לערוך עגלה זו" };
     }
 
-    const existingImageIds = new Set(truck.images.map((img) => img.publicId));
+    const _existingImageIds = new Set(truck.images.map((img) => img.publicId));
     const newImageIds = new Set(
       validated.images
         .filter((img) => !img.id?.startsWith("temp-"))
-        .map((img) => img.publicId)
+        .map((img) => img.publicId),
     );
 
     const imagesToDelete = truck.images.filter(
-      (img) => !newImageIds.has(img.publicId)
+      (img) => !newImageIds.has(img.publicId),
     );
     for (const image of imagesToDelete) {
       try {
@@ -153,7 +153,7 @@ export async function updateTruck(
     }
 
     const imagesToCreate = validated.images.filter((img) =>
-      img.id?.startsWith("temp-")
+      img.id?.startsWith("temp-"),
     );
     if (imagesToCreate.length > 0) {
       await prisma.coffeeTruckImage.createMany({
@@ -168,7 +168,7 @@ export async function updateTruck(
     }
 
     const imagesToUpdate = validated.images.filter(
-      (img) => !img.id?.startsWith("temp-")
+      (img) => !img.id?.startsWith("temp-"),
     );
     for (const image of imagesToUpdate) {
       await prisma.coffeeTruckImage.updateMany({
@@ -208,7 +208,9 @@ export async function updateTruck(
   }
 }
 
-export async function deleteTruck(input: DeleteTruckInput): Promise<ActionResult> {
+export async function deleteTruck(
+  input: DeleteTruckInput,
+): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),

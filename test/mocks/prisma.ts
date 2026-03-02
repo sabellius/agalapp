@@ -1,10 +1,4 @@
 import { vi } from "vitest";
-import type {
-  CoffeeTruck,
-  CoffeeTruckImage,
-  Review,
-  User,
-} from "@/generated/prisma/client";
 
 const mockTruckFindMany = vi.fn();
 const mockTruckFindUnique = vi.fn();

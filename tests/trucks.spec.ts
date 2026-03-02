@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Trucks Listing", () => {
   test("shows trucks page", async ({ page }) => {
@@ -9,8 +9,10 @@ test.describe("Trucks Listing", () => {
   test("displays truck cards", async ({ page }) => {
     await page.goto("/trucks");
 
-    const truckCards = page.locator('[class*="card"]').or(page.locator('a[href*="/trucks/"]'));
-    const count = await truckCards.count();
+    const truckCards = page
+      .locator('[class*="card"]')
+      .or(page.locator('a[href*="/trucks/"]'));
+    const _count = await truckCards.count();
 
     await expect(page.locator("body")).toBeVisible();
   });
@@ -39,8 +41,11 @@ test.describe("Trucks Listing", () => {
     const searchInput = page.locator('input[placeholder*="חיפוש"]');
     await searchInput.fill("test");
 
-    const clearButton = page.locator("button").filter({ hasText: "" }).or(page.locator('button[aria-label="clear"]'));
-    const hasClearButton = await clearButton.count() > 0;
+    const clearButton = page
+      .locator("button")
+      .filter({ hasText: "" })
+      .or(page.locator('button[aria-label="clear"]'));
+    const hasClearButton = (await clearButton.count()) > 0;
 
     expect(hasClearButton).toBe(true);
   });
@@ -54,7 +59,9 @@ test.describe("Trucks Listing", () => {
     expect(count).toBeGreaterThan(0);
   });
 
-  test("clear filters button appears when filters are active", async ({ page }) => {
+  test("clear filters button appears when filters are active", async ({
+    page,
+  }) => {
     await page.goto("/trucks?search=test");
 
     await expect(page.getByRole("button", { name: /נקה סינון/ })).toBeVisible();
@@ -68,7 +75,9 @@ test.describe("Trucks Listing", () => {
     await expect(page).toHaveURL("/trucks");
   });
 
-  test("navigates to truck detail page when clicking a truck", async ({ page }) => {
+  test("navigates to truck detail page when clicking a truck", async ({
+    page,
+  }) => {
     await page.goto("/trucks");
 
     const truckLink = page.locator('a[href*="/trucks/"]').first();

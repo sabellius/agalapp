@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { TruckMap } from "./truck-map";
 import type { TruckMarkerData } from "./truck-marker";
 
@@ -97,13 +97,13 @@ describe("TruckMap", () => {
 
   it("accepts custom height prop without error", () => {
     expect(() =>
-      render(<TruckMap trucks={mockTrucks} height="500px" />)
+      render(<TruckMap trucks={mockTrucks} height="500px" />),
     ).not.toThrow();
   });
 
   it("accepts custom className prop without error", () => {
     expect(() =>
-      render(<TruckMap trucks={mockTrucks} className="custom" />)
+      render(<TruckMap trucks={mockTrucks} className="custom" />),
     ).not.toThrow();
   });
 });

@@ -1,4 +1,4 @@
-import type { CoffeeTruck, CoffeeTruckImage, Review } from "@/generated/prisma/client";
+import type { CoffeeTruck, CoffeeTruckImage } from "@/generated/prisma/client";
 
 export const mockTruck: CoffeeTruck = {
   id: "truck-1",
