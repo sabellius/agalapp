@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReviewActions } from "@/components/reviews/review-actions";
 import { ReviewForm } from "@/components/reviews/review-form";
-import { TruckMap } from "@/components/map/truck-map";
+import { TruckMapClient } from "@/components/map/truck-map-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
@@ -131,7 +131,7 @@ export default async function TruckPage({
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <TruckMap
+                <TruckMapClient
                   trucks={[
                     {
                       id: truck.id,

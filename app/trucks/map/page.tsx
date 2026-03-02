@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TruckMap } from "@/components/map/truck-map";
+import { TruckMapClient } from "@/components/map/truck-map-client";
 import { prisma } from "@/lib/prisma";
 
 async function getTrucksWithCoords() {
@@ -66,7 +66,7 @@ export default async function TruckMapPage() {
       </div>
 
       <div className="flex-1 relative">
-        <TruckMap
+        <TruckMapClient
           trucks={trucks}
           height="100%"
           className="absolute inset-0"
