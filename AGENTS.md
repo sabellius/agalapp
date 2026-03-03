@@ -350,26 +350,53 @@ pnpm run seed        # Seed database with test data
 
 ### Git Commit Convention
 
-After completing a logical unit of work (fixing a bug, adding a feature, refactoring a component), create a commit following **conventional commits** format:
+After completing a logical unit of work, create a commit following the [Conventional Commits v1.0.0](https://www.conventionalcommits.org/) specification:
 
 ```
-<type>(<scope>): <description>
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
 ```
 
-**Types:**
-| Type | Usage |
-|------|-------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `refactor` | Code refactoring without behavior change |
+#### Specification
+
+The Conventional Commits specification **mandates** two types that correlate with Semantic Versioning:
+
+| Type | SemVer | Description |
+|------|--------|-------------|
+| `feat` | MINOR | Introduces a new feature |
+| `fix` | PATCH | Patches a bug |
+
+Additionally, `BREAKING CHANGE:` as a footer (or `!` after type/scope) indicates a **MAJOR** release.
+
+#### Additional Types (Angular Convention)
+
+The specification references `@commitlint/config-conventional` (based on Angular) for additional types:
+
+| Type | Description |
+|------|-------------|
+| `build` | Build system changes (webpack, tsconfig, etc.) |
 | `chore` | Maintenance tasks, dependencies, config |
-| `test` | Adding or updating tests |
+| `ci` | CI configuration changes (GitHub Actions, Jenkins, etc.) |
 | `docs` | Documentation changes |
-| `style` | Code style changes (formatting, linting) |
+| `style` | Code style changes (formatting, linting, semicolons) |
+| `refactor` | Code refactoring without behavior change |
+| `perf` | Performance improvements |
+| `test` | Adding or updating tests |
+| `revert` | Reverting a previous commit |
 
-**Scopes:** Use the area of code affected (e.g., `trucks`, `reviews`, `auth`, `map`, `ui`)
+#### Scopes
 
-**Examples:**
+Use the area of code affected in parentheses, e.g., `trucks`, `reviews`, `auth`, `map`, `ui`
+
+```
+feat(parser): add ability to parse arrays
+```
+
+#### Examples
+
 ```
 feat(trucks): add image upload functionality
 fix(auth): resolve session timeout issue
@@ -377,13 +404,20 @@ refactor(reviews): extract star rating into shared component
 test(map): add marker clustering tests
 chore: upgrade biome to 2.0
 docs: update AGENTS.md with commit convention
+build: update webpack configuration
+ci: add GitHub Actions workflow for tests
+perf(trucks): optimize database queries for listing
+revert: let us never again speak of the noodle incident
+feat(trucks)!: change truck ID format to UUID
 ```
 
-**Guidelines:**
+#### Guidelines
+
 - Commit in logical segments — group related changes together
 - Use lowercase for type and scope
 - Keep description brief (imperative mood, no period at end)
 - Run `pnpm run lint:fix` before committing when applicable
+- Append `!` after type/scope for breaking changes: `feat(api)!: remove legacy endpoint`
 
 ## Documentation Lookup
 
