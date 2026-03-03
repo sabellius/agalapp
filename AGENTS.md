@@ -348,9 +348,42 @@ npx prisma generate  # Generate Prisma client
 pnpm run seed        # Seed database with test data
 ```
 
-### Git Commit Pattern
-- Commit after completing todos in a task
-- Keep messages concise but descriptive
+### Git Commit Convention
+
+After completing a logical unit of work (fixing a bug, adding a feature, refactoring a component), create a commit following **conventional commits** format:
+
+```
+<type>(<scope>): <description>
+```
+
+**Types:**
+| Type | Usage |
+|------|-------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `refactor` | Code refactoring without behavior change |
+| `chore` | Maintenance tasks, dependencies, config |
+| `test` | Adding or updating tests |
+| `docs` | Documentation changes |
+| `style` | Code style changes (formatting, linting) |
+
+**Scopes:** Use the area of code affected (e.g., `trucks`, `reviews`, `auth`, `map`, `ui`)
+
+**Examples:**
+```
+feat(trucks): add image upload functionality
+fix(auth): resolve session timeout issue
+refactor(reviews): extract star rating into shared component
+test(map): add marker clustering tests
+chore: upgrade biome to 2.0
+docs: update AGENTS.md with commit convention
+```
+
+**Guidelines:**
+- Commit in logical segments — group related changes together
+- Use lowercase for type and scope
+- Keep description brief (imperative mood, no period at end)
+- Run `pnpm run lint:fix` before committing when applicable
 
 ## Documentation Lookup
 
