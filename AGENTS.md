@@ -55,7 +55,8 @@ agalapp/
 │       ├── common.ts         # Shared schemas (truckName, city, etc.)
 │       ├── truck-schema.ts   # Truck validation
 │       ├── review-schema.ts  # Review validation
-│       └── image-schema.ts   # Image validation
+│       ├── image-schema.ts   # Image validation
+│       └── vote-schema.ts    # Vote validation
 ├── prisma/
 │   ├── schema.prisma         # Database schema
 │   └── seed.ts               # Database seeding script
@@ -260,14 +261,15 @@ test("signs in with valid credentials", async ({ page }) => {
 });
 ```
 
-#### Current Test Coverage (218 tests)
+#### Current Test Coverage (228 tests)
 | Category | Tests | Files |
 |----------|-------|-------|
-| Validation schemas | 88 | 4 files |
+| Validation schemas | 91 | 5 files (common, truck, review, image, vote) |
 | Server actions (trucks) | 16 | trucks.test.ts |
 | Server actions (reviews) | 19 | reviews.test.ts |
 | Server actions (images) | 23 | images.test.ts |
-| Component tests | 37 | star-rating, truck-preview, review-form, trucks-search, map components |
+| Server actions (votes) | 6 | votes.test.ts |
+| Component tests | 44 | star-rating, truck-preview, review-form, vote-button, trucks-search, map components |
 | Geocoding utility | 5 | geocoding.test.ts |
 | E2E tests | 22 | auth, trucks, reviews, map |
 
@@ -289,12 +291,13 @@ test("signs in with valid credentials", async ({ page }) => {
 1. **Truck Management**: Create, edit, delete coffee trucks
 2. **Image Upload**: Cloudinary integration with signed uploads
 3. **Reviews**: Star ratings with text content
-4. **Authentication**: Email/password with role-based access
-5. **Seeding**: Faker-based seed script for development
-6. **Navigation Header**: Responsive sticky header with mobile sheet drawer
-7. **Search & Filtering**: Text search, city filter, rating filter with URL params
-8. **Map Integration**: Leaflet + OpenStreetMap with automatic geocoding via Nominatim
-9. **Testing**: 218 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
+4. **Review Votes**: "Was this helpful?" voting on reviews with toggle functionality
+5. **Authentication**: Email/password with role-based access
+6. **Seeding**: Faker-based seed script for development
+7. **Navigation Header**: Responsive sticky header with mobile sheet drawer
+8. **Search & Filtering**: Text search, city filter, rating filter with URL params
+9. **Map Integration**: Leaflet + OpenStreetMap with automatic geocoding via Nominatim
+10. **Testing**: 228 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
 
 ### Navigation Structure
 
