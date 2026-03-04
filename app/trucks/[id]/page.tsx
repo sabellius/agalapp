@@ -6,12 +6,13 @@ import { notFound } from "next/navigation";
 import { TruckMapClient } from "@/components/map/truck-map-client";
 import { ReviewActions } from "@/components/reviews/review-actions";
 import { ReviewForm } from "@/components/reviews/review-form";
+import { VoteButton } from "@/components/reviews/vote-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-async function getTruck(id: string) {
+async function getTruck(id: string, userId?: string) {
   const truck = await prisma.coffeeTruck.findUnique({
     where: { id },
     include: {
@@ -25,6 +26,15 @@ async function getTruck(id: string) {
               name: true,
               image: true,
             },
+          },
+          votes: userId
+            ? {
+                where: { userId },
+                select: { id: true },
+              }
+            : false,
+          _count: {
+            select: { votes: true },
           },
         },
         orderBy: {
@@ -61,18 +71,17 @@ export default async function TruckPage({
   params: { id: string };
 }) {
   const { id } = await params;
-  const truck = await getTruck(id);
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const truck = await getTruck(id, session?.user?.id);
 
   if (!truck) {
     notFound();
   }
 
-  // Get session to check if user can edit this truck
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  // Check if user has already reviewed this truck
   const hasReviewed = session?.user?.id
     ? truck.reviews.some((review) => review.userId === session.user.id)
     : false;
@@ -207,9 +216,21 @@ export default async function TruckPage({
                       <p className="text-sm text-muted-foreground mb-2">
                         {review.content}
                       </p>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
-                        {new Date(review.createdAt).toLocaleDateString()}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </div>
+                        <VoteButton
+                          reviewId={review.id}
+                          initialVoteCount={review._count.votes}
+                          initialHasVoted={
+                            session?.user?.id
+                              ? (review.votes as { id: string }[]).length > 0
+                              : false
+                          }
+                          isOwner={session?.user?.id === review.userId}
+                        />
                       </div>
                     </div>
                   ))}
