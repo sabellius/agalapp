@@ -26,6 +26,7 @@ model User {
   accounts      Account[]
   coffeeTrucks  CoffeeTruck[]
   reviews       Review[]
+  votes         Vote[]
 
   @@unique([email])
   @@map("users")
@@ -113,12 +114,13 @@ model CoffeeTruckImage {
 
 model Review {
   id        String      @id @default(cuid())
-  rating    Int // 1-5 stars
+  rating    Int
   content   String      @db.Text
   truckId   String
   truck     CoffeeTruck @relation(fields: [truckId], references: [id], onDelete: Cascade)
   userId    String
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  votes     Vote[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
@@ -127,4 +129,18 @@ model Review {
   @@index([userId])
   @@index([rating])
   @@map("reviews")
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([reviewId, userId])
+  @@index([reviewId])
+  @@index([userId])
+  @@map("votes")
 }
