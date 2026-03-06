@@ -13,6 +13,11 @@ enum Role {
   ADMIN
 }
 
+enum TruckTier {
+  FREE
+  PREMIUM
+}
+
 model User {
   id            String        @id @default(cuid())
   name          String        @db.Text
@@ -44,7 +49,7 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
-  @@index([userId(length: 191)])
+  @@index([userId])
   @@map("sessions")
 }
 
@@ -64,7 +69,7 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  @@index([userId(length: 191)])
+  @@index([userId])
   @@map("accounts")
 }
 
@@ -87,6 +92,8 @@ model CoffeeTruck {
   address   String             @db.Text
   latitude  Float?
   longitude Float?
+  tier      TruckTier          @default(FREE)
+  tierExpiryAt DateTime?
   ownerId   String
   owner     User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   images    CoffeeTruckImage[]
