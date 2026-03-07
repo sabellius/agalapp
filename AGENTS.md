@@ -31,8 +31,11 @@ agalapp/
 ├── app/
 │   ├── (protected)/          # Auth-protected routes
 │   │   ├── dashboard/        # User dashboard
+│   │   ├── subscription/     # Subscription management page
 │   │   └── trucks/           # Truck management (new/edit)
 │   ├── actions/              # Server Actions for mutations
+│   │   ├── subscription.ts   # Upgrade/downgrade account tier
+│   │   └── ...
 │   ├── api/                  # API routes (auth, cloudinary signatures)
 │   ├── auth/                 # Auth pages (sign-in, sign-up)
 │   ├── trucks/               # Public truck listing and details
@@ -50,6 +53,8 @@ agalapp/
 │   ├── cloudinary.ts         # Cloudinary setup
 │   ├── geocoding.ts          # Nominatim geocoding utility
 │   ├── prisma.ts             # Prisma client with MariaDB adapter
+│   ├── tiers.ts              # User tier system (FREE/PREMIUM)
+│   ├── truck-permissions.ts # Permission checking based on user tier
 │   ├── utils.ts              # Utility functions
 │   └── validations/          # Zod validation schemas
 │       ├── common.ts         # Shared schemas (truckName, city, etc.)
@@ -190,6 +195,8 @@ export async function actionName(
 ```
 app/
   actions/
+    subscription.ts
+    subscription.test.ts    # Server action tests
     truck.ts
     truck.test.ts           # Server action tests
     reviews.test.ts
@@ -198,7 +205,16 @@ components/
   reviews/
     star-rating.tsx
     star-rating.test.tsx    # Component tests
+  trucks/
+    user-tier-badge.tsx
+    user-tier-badge.test.tsx
+    upgrade-prompt.tsx
+    upgrade-prompt.test.tsx
 lib/
+  tiers.ts
+  tiers.test.ts            # Tier utility tests
+  truck-permissions.ts
+  truck-permissions.test.ts # Permission tests
   validations/
     truck-schema.ts
     truck-schema.test.ts     # Validation tests
@@ -207,6 +223,7 @@ test/
   mocks/                    # Prisma and other mocks
 tests/
   auth.spec.ts              # E2E tests (Playwright)
+  subscription.spec.ts      # Subscription E2E tests
 ```
 
 #### Running Tests
@@ -261,7 +278,7 @@ test("signs in with valid credentials", async ({ page }) => {
 });
 ```
 
-#### Current Test Coverage (228 tests)
+#### Current Test Coverage (259 tests)
 | Category | Tests | Files |
 |----------|-------|-------|
 | Validation schemas | 91 | 5 files (common, truck, review, image, vote) |
@@ -269,9 +286,13 @@ test("signs in with valid credentials", async ({ page }) => {
 | Server actions (reviews) | 19 | reviews.test.ts |
 | Server actions (images) | 23 | images.test.ts |
 | Server actions (votes) | 6 | votes.test.ts |
-| Component tests | 44 | star-rating, truck-preview, review-form, vote-button, trucks-search, map components |
+| Server actions (subscription) | 5 | subscription.test.ts |
+| Tier utilities | 11 | tiers.test.ts |
+| Permission utilities | 19 | truck-permissions.test.ts |
+| Component tests | 50 | star-rating, truck-preview, review-form, vote-button, trucks-search, map, user-tier-badge, upgrade-prompt |
 | Geocoding utility | 5 | geocoding.test.ts |
 | E2E tests | 22 | auth, trucks, reviews, map |
+| E2E stubs | - | subscription.spec.ts |
 
 ### Environment Variables
 - Use `env-config.ts` to load environment variables
@@ -286,6 +307,99 @@ test("signs in with valid credentials", async ({ page }) => {
 | TRUCK_OWNER | Can create and edit their own coffee trucks |
 | ADMIN | Full access, can edit any truck |
 
+## Subscription / Tier System
+
+### Overview
+The platform uses an **account-level subscription system** (not per-truck). Users can upgrade to PREMIUM to access additional features.
+
+### User Tiers
+
+| Tier | Description | Expiry |
+|------|-------------|--------|
+| FREE | Basic access - can browse and review | No expiry |
+| PREMIUM | Full access - working hours, menu display | 30 days (configurable) |
+
+### Database Schema
+```prisma
+model User {
+  // ...
+  tier            UserTier     @default(FREE)
+  tierExpiryAt    DateTime?
+  // ...
+}
+
+enum UserTier {
+  FREE
+  PREMIUM
+}
+```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `lib/tiers.ts` | Tier types, constants, utility functions |
+| `lib/truck-permissions.ts` | Permission checking based on user tier |
+| `app/actions/subscription.ts` | Server actions for upgrade/downgrade |
+| `app/(protected)/subscription/page.tsx` | Subscription management page |
+| `components/trucks/user-tier-badge.tsx` | Badge component showing tier status |
+| `components/trucks/upgrade-prompt.tsx` | Prompt for free users to upgrade |
+
+### Permission Utilities
+
+```typescript
+import { isCurrentlyPremium } from "@/lib/tiers";
+import { canShowWorkingHours, canEditWorkingHours, isUserVerified } from "@/lib/truck-permissions";
+
+// Check if user has premium access (considers expiry)
+isCurrentlyPremium(user.tier, user.tierExpiryAt) // boolean
+
+// Permission checks for premium features
+canShowWorkingHours(user)  // boolean - can view working hours
+canEditWorkingHours(user)  // boolean - can edit working hours
+isUserVerified(user)       // boolean - user is verified (premium)
+```
+
+### Premium Features
+
+| Feature | FREE | PREMIUM |
+|---------|------|---------|
+| Browse trucks | ✓ | ✓ |
+| Create reviews | ✓ | ✓ |
+| Working hours display | ✗ | ✓ |
+| Menu display | ✗ | ✓ |
+| Verified badge | ✗ | ✓ |
+
+### Pricing
+
+| Period | Price |
+|--------|-------|
+| Monthly | ₪30/חודש |
+| Yearly | ₪300/שנה (25% savings) |
+
+### Server Actions
+
+```typescript
+import { upgradeAccount, downgradeAccount } from "@/app/actions/subscription";
+
+// Upgrade user to premium (30 days)
+const result = await upgradeAccount();
+// Returns: { success: true, data: { expiryDate: Date } }
+
+// Downgrade to free tier
+const result = await downgradeAccount();
+// Returns: { success: true }
+```
+
+### Testing
+
+All subscription/tier features are tested:
+- `app/actions/subscription.test.ts` - Server action tests (5 tests)
+- `lib/tiers.test.ts` - Utility function tests (11 tests)
+- `lib/truck-permissions.test.ts` - Permission tests (19 tests)
+- `components/trucks/user-tier-badge.test.tsx` - Component tests (6 tests)
+- `components/trucks/upgrade-prompt.test.tsx` - Component tests (6 tests)
+
 ## Key Features Implemented
 
 1. **Truck Management**: Create, edit, delete coffee trucks
@@ -293,11 +407,14 @@ test("signs in with valid credentials", async ({ page }) => {
 3. **Reviews**: Star ratings with text content
 4. **Review Votes**: "Was this helpful?" voting on reviews with toggle functionality
 5. **Authentication**: Email/password with role-based access
-6. **Seeding**: Faker-based seed script for development
-7. **Navigation Header**: Responsive sticky header with mobile sheet drawer
-8. **Search & Filtering**: Text search, city filter, rating filter with URL params
-9. **Map Integration**: Leaflet + OpenStreetMap with automatic geocoding via Nominatim
-10. **Testing**: 228 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
+6. **User Tiers**: Account-level subscription system (FREE/PREMIUM) with expiry
+7. **Premium Features**: Working hours, menu display (tier-gated)
+8. **Subscription Management**: Upgrade/downgrade via `/subscription` page
+9. **Seeding**: Faker-based seed script for development
+10. **Navigation Header**: Responsive sticky header with mobile sheet drawer
+11. **Search & Filtering**: Text search, city filter, rating filter with URL params
+12. **Map Integration**: Leaflet + OpenStreetMap with automatic geocoding via Nominatim
+13. **Testing**: 259 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
 
 ### Navigation Structure
 
@@ -308,6 +425,7 @@ test("signs in with valid credentials", async ({ page }) => {
 
 **Authenticated:**
 - לוח בקרה → `/dashboard`
+- הגדרות מנוי → `/subscription`
 
 **Truck Owner / Admin:**
 - הוסף עגלה → `/trucks/new`
@@ -316,6 +434,8 @@ test("signs in with valid credentials", async ({ page }) => {
 - `components/site-header.tsx` - Main responsive header
 - `components/ui/dropdown-menu.tsx` - User menu dropdown
 - `components/ui/sheet.tsx` - Mobile navigation drawer
+- `components/trucks/user-tier-badge.tsx` - Badge showing user's tier status
+- `components/trucks/upgrade-prompt.tsx` - Upgrade prompt for premium features
 
 ## Development Workflow
 
