@@ -37,6 +37,17 @@ export default async function EditTruckPage({
       hours: {
         orderBy: { dayOfWeek: "asc" },
       },
+      attributes: {
+        include: {
+          attribute: {
+            select: {
+              id: true,
+              name: true,
+              icon: true,
+            },
+          },
+        },
+      },
       owner: {
         select: {
           id: true,
@@ -73,6 +84,7 @@ export default async function EditTruckPage({
           ...img,
           alt: img.alt || "",
         }))}
+        attributes={truck.attributes.map((a) => a.attribute)}
       />
     </div>
   );

@@ -7,6 +7,7 @@ import { TruckMapClient } from "@/components/map/truck-map-client";
 import { ReviewActions } from "@/components/reviews/review-actions";
 import { ReviewForm } from "@/components/reviews/review-form";
 import { VoteButton } from "@/components/reviews/vote-button";
+import { AttributesGrid } from "@/components/trucks/attributes-grid";
 import { HoursDisplay } from "@/components/trucks/hours-display";
 import { OpenStatusBadge } from "@/components/trucks/open-status-badge";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,16 @@ async function getTruck(id: string, userId?: string) {
       },
       hours: {
         orderBy: { dayOfWeek: "asc" },
+      },
+      attributes: {
+        include: {
+          attribute: {
+            select: {
+              name: true,
+              icon: true,
+            },
+          },
+        },
       },
     },
   });
@@ -325,6 +336,19 @@ export default async function TruckPage({
             <Card>
               <CardContent className="p-6">
                 <HoursDisplay hours={truck.hours} />
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {truck.attributes.length > 0 && (
+          <div className="lg:col-span-1">
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="font-medium mb-3">מאפיינים</h3>
+                <AttributesGrid
+                  attributes={truck.attributes.map((a) => a.attribute)}
+                />
               </CardContent>
             </Card>
           </div>

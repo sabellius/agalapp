@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   deleteImage,
   setPrimaryImage,
   updateImageAlt,
 } from "@/app/actions/images";
 import { createTruck, updateTruck } from "@/app/actions/trucks";
+import { AttributesEditor } from "@/components/trucks/attributes-editor";
 import { HoursEditor } from "@/components/trucks/hours-editor";
 import { HoursLocked } from "@/components/trucks/hours-locked";
 import { ImagePreview } from "@/components/trucks/image-preview";
@@ -19,6 +20,8 @@ import { Label } from "@/components/ui/label";
 import type { TruckHours } from "@/generated/prisma/client";
 import { CITIES } from "@/lib/constants";
 import { canEditWorkingHours } from "@/lib/truck-permissions";
+import { isCurrentlyPremium } from "@/lib/tiers";
+import { addTruckAttribute, getTruckAttributes, removeTruckAttribute } from "@/app/actions/attributes";
 import type { CreateTruckInput, UpdateTruckInput } from "@/lib/validations";
 
 interface TruckFormProps {
@@ -40,6 +43,11 @@ interface TruckFormProps {
     publicId: string;
     alt: string;
     isPrimary: boolean;
+  }>;
+  attributes?: Array<{
+    id: string;
+    name: string;
+    icon: string;
   }>;
 }
 
@@ -63,6 +71,7 @@ export function TruckForm({
   owner,
   hours = [],
   images: initialImages = [],
+  attributes: initialAttributes = [],
 }: TruckFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>(
@@ -79,6 +88,23 @@ export function TruckForm({
   const [serverError, setServerError] = useState<string | null>(null);
   const [images, setImages] = useState<TruckImageData[]>(initialImages);
   const [imageError, setImageError] = useState<string | null>(null);
+  const [availableAttributes, setAvailableAttributes] = useState<
+    Array<{ id: string; name: string; nameEn: string; icon: string }>
+  >([]);
+  const [assignedAttributes, setAssignedAttributes] = useState<
+    Array<{ id: string; name: string; icon: string }>
+  >(initialAttributes);
+
+  // Fetch available attributes on mount (only for editing)
+  useEffect(() => {
+    if (truck) {
+      getTruckAttributes().then((result) => {
+        if (result.success && result.data) {
+          setAvailableAttributes(result.data);
+        }
+      });
+    }
+  }, [truck]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
@@ -246,6 +272,47 @@ export function TruckForm({
     }
   };
 
+  const handleToggleAttribute = async (
+    attributeId: string,
+    isAssigned: boolean,
+  ) => {
+    const truckId = truck?.id;
+    if (!truckId) {
+      // Client-side only update for new trucks
+      if (isAssigned) {
+        setAssignedAttributes((prev) =>
+          prev.filter((a) => a.id !== attributeId),
+        );
+      } else {
+        const attr = availableAttributes.find((a) => a.id === attributeId);
+        if (attr) {
+          setAssignedAttributes((prev) => [...prev, attr]);
+        }
+      }
+      return { success: true };
+    }
+
+    // Server call for existing trucks
+    const result = isAssigned
+      ? await removeTruckAttribute({ truckId, attributeId })
+      : await addTruckAttribute({ truckId, attributeId });
+
+    if (result.success) {
+      if (isAssigned) {
+        setAssignedAttributes((prev) =>
+          prev.filter((a) => a.id !== attributeId),
+        );
+      } else {
+        const attr = availableAttributes.find((a) => a.id === attributeId);
+        if (attr) {
+          setAssignedAttributes((prev) => [...prev, attr]);
+        }
+      }
+    }
+
+    return result;
+  };
+
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
@@ -360,6 +427,22 @@ export function TruckForm({
               ) : (
                 <HoursLocked featureName="שעות פעילות" />
               )}
+            </div>
+          )}
+
+          {truck && owner && (
+            <div className="pt-4 border-t">
+              <AttributesEditor
+                truckId={truck.id}
+                availableAttributes={availableAttributes}
+                assignedAttributes={assignedAttributes}
+                maxAttributes={3}
+                isPremium={isCurrentlyPremium(
+                  owner.tier as "FREE" | "PREMIUM",
+                  owner.tierExpiryAt,
+                )}
+                onToggle={handleToggleAttribute}
+              />
             </div>
           )}
 
