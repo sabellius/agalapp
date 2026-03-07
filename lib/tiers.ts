@@ -1,15 +1,15 @@
 /**
- * Truck tier system for owner subscriptions
+ * User tier system for owner subscriptions
  */
 
-export type TruckTier = "FREE" | "PREMIUM";
+export type UserTier = "FREE" | "PREMIUM";
 
 export interface TierConfig {
   name: string;
   nameEn: string;
 }
 
-export const TRUCK_TIERS: Record<TruckTier, TierConfig> = {
+export const USER_TIERS: Record<UserTier, TierConfig> = {
   FREE: {
     name: "חינם",
     nameEn: "Free",
@@ -38,7 +38,7 @@ export function isTierExpired(tierExpiryAt: Date | null): boolean {
 }
 
 export function isCurrentlyPremium(
-  tier: TruckTier,
+  tier: UserTier,
   tierExpiryAt: Date | null,
 ): boolean {
   return tier === "PREMIUM" && !isTierExpired(tierExpiryAt);

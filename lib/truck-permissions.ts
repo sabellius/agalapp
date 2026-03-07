@@ -1,31 +1,31 @@
 /**
- * Truck permission checking based on tier and expiry
+ * Truck permission checking based on owner's user tier and expiry
  */
 
-import type { CoffeeTruck } from "@/generated/prisma";
-import type { TruckTier } from "./tiers";
+import type { User } from "@/generated/prisma";
+import type { UserTier } from "./tiers";
 import { isCurrentlyPremium } from "./tiers";
 
 export function canShowWorkingHours(
-  truck: Pick<CoffeeTruck, "tier" | "tierExpiryAt">,
+  user: Pick<User, "tier" | "tierExpiryAt">,
 ): boolean {
-  return isCurrentlyPremium(truck.tier as TruckTier, truck.tierExpiryAt);
+  return isCurrentlyPremium(user.tier as UserTier, user.tierExpiryAt);
 }
 
 export function canEditWorkingHours(
-  truck: Pick<CoffeeTruck, "tier" | "tierExpiryAt">,
+  user: Pick<User, "tier" | "tierExpiryAt">,
 ): boolean {
-  return canShowWorkingHours(truck);
+  return canShowWorkingHours(user);
 }
 
-export function isTruckVerified(
-  truck: Pick<CoffeeTruck, "tier" | "tierExpiryAt">,
+export function isUserVerified(
+  user: Pick<User, "tier" | "tierExpiryAt">,
 ): boolean {
-  return isCurrentlyPremium(truck.tier as TruckTier, truck.tierExpiryAt);
+  return isCurrentlyPremium(user.tier as UserTier, user.tierExpiryAt);
 }
 
 export function getTierName(tier: string, tierExpiryAt: Date | null): string {
-  const tierKey = tier as TruckTier;
+  const tierKey = tier as UserTier;
 
   // Handle expired premium separately
   if (tierKey === "PREMIUM" && tierExpiryAt && new Date() > tierExpiryAt) {
