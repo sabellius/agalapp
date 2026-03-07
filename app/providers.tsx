@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthUIProvider } from "@daveyplate/better-auth-ui";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -38,7 +39,7 @@ export function Providers({ children }: { children: ReactNode }) {
         PASSWORD_TOO_SHORT: "הסיסמה חייבת להכיל לפחות 8 תווים",
       }}
     >
-      {children}
+      <TooltipProvider>{children}</TooltipProvider>
     </AuthUIProvider>
   );
 }
