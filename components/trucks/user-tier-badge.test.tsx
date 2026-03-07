@@ -50,7 +50,9 @@ describe("UserTierBadge", () => {
   });
 
   it("returns null when showVerified is true but user is not premium", () => {
-    const { container } = render(<UserTierBadge user={freeUser} showVerified />);
+    const { container } = render(
+      <UserTierBadge user={freeUser} showVerified />,
+    );
     expect(container.firstChild).toBeNull();
   });
 });

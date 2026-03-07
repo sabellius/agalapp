@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  isTierExpired,
-  isCurrentlyPremium,
   getPrice,
+  isCurrentlyPremium,
   isPremiumFeature,
+  isTierExpired,
   type UserTier,
 } from "./tiers";
 

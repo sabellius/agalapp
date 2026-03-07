@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { User } from "@/generated/prisma/client";
 import {
-  canShowWorkingHours,
   canEditWorkingHours,
-  isUserVerified,
-  getTierName,
+  canShowWorkingHours,
   getExpiryDateString,
+  getTierName,
   isExpiringSoon,
+  isUserVerified,
 } from "./truck-permissions";
 
 describe("truck-permissions", () => {
@@ -51,7 +51,9 @@ describe("truck-permissions", () => {
   describe("canEditWorkingHours", () => {
     it("returns same result as canShowWorkingHours", () => {
       expect(canEditWorkingHours(freeUser)).toBe(canShowWorkingHours(freeUser));
-      expect(canEditWorkingHours(premiumUser)).toBe(canShowWorkingHours(premiumUser));
+      expect(canEditWorkingHours(premiumUser)).toBe(
+        canShowWorkingHours(premiumUser),
+      );
       expect(canEditWorkingHours(expiredPremiumUser)).toBe(
         canShowWorkingHours(expiredPremiumUser),
       );
@@ -83,15 +85,15 @@ describe("truck-permissions", () => {
 
     it("returns 'פרימיום' for active PREMIUM tier", () => {
       expect(getTierName("PREMIUM", null)).toBe("פרימיום");
-      expect(getTierName("PREMIUM", new Date(Date.now() + 30 * 24 * 60 * 60 * 1000))).toBe(
-        "פרימיום",
-      );
+      expect(
+        getTierName("PREMIUM", new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
+      ).toBe("פרימיום");
     });
 
     it("returns 'פרימיום (פג תוקף)' for expired PREMIUM tier", () => {
-      expect(getTierName("PREMIUM", new Date(Date.now() - 10 * 24 * 60 * 60 * 1000))).toBe(
-        "פרימיום (פג תוקף)",
-      );
+      expect(
+        getTierName("PREMIUM", new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)),
+      ).toBe("פרימיום (פג תוקף)");
     });
   });
 
