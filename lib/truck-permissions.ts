@@ -6,15 +6,21 @@ import type { CoffeeTruck } from "@/generated/prisma";
 import type { TruckTier } from "./tiers";
 import { isCurrentlyPremium } from "./tiers";
 
-export function canShowWorkingHours(truck: Pick<CoffeeTruck, "tier" | "tierExpiryAt">): boolean {
+export function canShowWorkingHours(
+  truck: Pick<CoffeeTruck, "tier" | "tierExpiryAt">,
+): boolean {
   return isCurrentlyPremium(truck.tier as TruckTier, truck.tierExpiryAt);
 }
 
-export function canEditWorkingHours(truck: Pick<CoffeeTruck, "tier" | "tierExpiryAt">): boolean {
+export function canEditWorkingHours(
+  truck: Pick<CoffeeTruck, "tier" | "tierExpiryAt">,
+): boolean {
   return canShowWorkingHours(truck);
 }
 
-export function isTruckVerified(truck: Pick<CoffeeTruck, "tier" | "tierExpiryAt">): boolean {
+export function isTruckVerified(
+  truck: Pick<CoffeeTruck, "tier" | "tierExpiryAt">,
+): boolean {
   return isCurrentlyPremium(truck.tier as TruckTier, truck.tierExpiryAt);
 }
 
@@ -43,7 +49,7 @@ export function isExpiringSoon(tierExpiryAt: Date | null): boolean {
   if (!tierExpiryAt) return false;
 
   const daysUntilExpiry = Math.ceil(
-    (tierExpiryAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    (tierExpiryAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
   );
 
   return daysUntilExpiry > 0 && daysUntilExpiry <= 7;

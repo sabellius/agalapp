@@ -37,7 +37,10 @@ export function isTierExpired(tierExpiryAt: Date | null): boolean {
   return new Date() > tierExpiryAt;
 }
 
-export function isCurrentlyPremium(tier: TruckTier, tierExpiryAt: Date | null): boolean {
+export function isCurrentlyPremium(
+  tier: TruckTier,
+  tierExpiryAt: Date | null,
+): boolean {
   return tier === "PREMIUM" && !isTierExpired(tierExpiryAt);
 }
 
