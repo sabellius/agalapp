@@ -1,7 +1,7 @@
 "use client";
 
-import { Clock, Loader2 } from "lucide-react";
-import React, { useState, useTransition } from "react";
+import { Clock, Copy, Loader2 } from "lucide-react";
+import { useState, useTransition } from "react";
 import { setTruckHours } from "@/app/actions/truck-hours";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,15 +42,40 @@ export function HoursEditor({
     return defaults;
   };
 
-  const [localValues, setLocalValues] = useState<
-    Record<number, DayHoursInput>
-  >(getDefaultValues());
+  const [localValues, setLocalValues] = useState<Record<number, DayHoursInput>>(
+    getDefaultValues(),
+  );
 
   const updateDay = (dayOfWeek: number, updates: Partial<DayHoursInput>) => {
     setLocalValues((prev) => ({
       ...prev,
       [dayOfWeek]: { ...prev[dayOfWeek], ...updates },
     }));
+  };
+
+  const copyToDays = (sourceDay: number, targetDays: number[]) => {
+    const source = localValues[sourceDay];
+    targetDays.forEach((day) => {
+      updateDay(day, {
+        openTime: source.openTime,
+        closeTime: source.closeTime,
+        isClosed: source.isClosed,
+      });
+    });
+  };
+
+  const copyToWeekdays = () => {
+    // Copy Sunday's hours to Sunday-Thursday (0-4)
+    copyToDays(0, [1, 2, 3, 4]);
+  };
+
+  const copyToAll = () => {
+    const firstOpenDay = DAYS_OF_WEEK.find(
+      (day) => !localValues[day.value].isClosed,
+    );
+    if (firstOpenDay) {
+      copyToDays(firstOpenDay.value, [0, 1, 2, 3, 4, 5, 6]);
+    }
   };
 
   const handleSubmit = () => {
@@ -64,7 +89,9 @@ export function HoursEditor({
 
       setState({
         success: result.success ?? false,
-        message: result.success ? "שעות פעילות נשמרו" : result.message ?? "שגיאה",
+        message: result.success
+          ? "שעות פעילות נשמרו"
+          : (result.message ?? "שגיאה"),
       });
 
       if (result.success && onSuccess) {
@@ -75,18 +102,34 @@ export function HoursEditor({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Clock className="h-5 w-5" />
-        <h3 className="text-lg font-semibold">שעות פעילות</h3>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Clock className="h-5 w-5" />
+          <h3 className="text-lg font-semibold">שעות פעילות</h3>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={copyToWeekdays}
+          >
+            <Copy className="h-4 w-4 ml-1" />
+            העתק לימות השבוע
+          </Button>
+          <Button type="button" variant="outline" size="sm" onClick={copyToAll}>
+            <Copy className="h-4 w-4 ml-1" />
+            העתק לכל הימים
+          </Button>
+        </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {DAYS_OF_WEEK.map((day) => {
           const values = localValues[day.value];
           return (
-            <div key={day.value} className="flex items-center gap-4">
-              <span className="w-12 text-sm font-medium">{day.shortHe}</span>
-              <span className="w-16 text-sm text-muted-foreground">
+            <div key={day.value} className="flex items-center gap-3 py-1">
+              <span className="w-20 text-sm font-medium shrink-0">
                 {day.nameHe}
               </span>
 
@@ -95,51 +138,48 @@ export function HoursEditor({
                 onCheckedChange={(checked) =>
                   updateDay(day.value, { isClosed: !checked })
                 }
+                className="shrink-0"
               />
 
               {!values.isClosed && (
-                <>
+                <div className="flex items-center gap-2">
                   <Input
                     type="time"
                     value={values.openTime ?? ""}
                     onChange={(e) =>
                       updateDay(day.value, { openTime: e.target.value })
                     }
-                    className="w-32"
+                    className="w-36 h-9"
                   />
-                  <span>עד</span>
+                  <span className="text-xs text-muted-foreground">עד</span>
                   <Input
                     type="time"
                     value={values.closeTime ?? ""}
                     onChange={(e) =>
                       updateDay(day.value, { closeTime: e.target.value })
                     }
-                    className="w-32"
+                    className="w-36 h-9"
                   />
-                </>
+                </div>
               )}
             </div>
           );
         })}
+      </div>
 
-        <div className="flex items-center gap-4 pt-2">
-          <Button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isPending}
+      <div className="flex items-center gap-4 pt-2">
+        <Button type="button" onClick={handleSubmit} disabled={isPending}>
+          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          שמור שעות פעילות
+        </Button>
+
+        {state.message && (
+          <span
+            className={`text-sm ${state.success ? "text-green-600" : "text-destructive"}`}
           >
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            שמור שעות פעילות
-          </Button>
-
-          {state.message && (
-            <span
-              className={`text-sm ${state.success ? "text-green-600" : "text-destructive"}`}
-            >
-              {state.message}
-            </span>
-          )}
-        </div>
+            {state.message}
+          </span>
+        )}
       </div>
     </div>
   );
