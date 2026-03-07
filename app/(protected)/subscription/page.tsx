@@ -1,9 +1,9 @@
 import { Calendar, Crown, Info } from "lucide-react";
 import { headers } from "next/headers";
-import { notFound, redirect } from "next/navigation";
-import { downgradeTruck } from "@/app/actions/subscription";
-import { TruckTierBadge } from "@/components/trucks/truck-tier-badge";
+import { redirect } from "next/navigation";
+import { downgradeAccount } from "@/app/actions/subscription";
 import { UpgradePrompt } from "@/components/trucks/upgrade-prompt";
+import { UserTierBadge } from "@/components/trucks/user-tier-badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,19 +12,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { prisma } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import {
   getExpiryDateString,
   getTierName,
   isExpiringSoon,
 } from "@/lib/truck-permissions";
 
-export default async function TruckSettingsPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function SubscriptionPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -33,36 +29,30 @@ export default async function TruckSettingsPage({
     redirect("/auth/sign-in");
   }
 
-  const { id } = await params;
-
-  const truck = await prisma.coffeeTruck.findUnique({
-    where: { id },
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
     select: {
       id: true,
       name: true,
+      email: true,
       tier: true,
       tierExpiryAt: true,
-      ownerId: true,
     },
   });
 
-  if (!truck) {
-    notFound();
+  if (!user) {
+    redirect("/auth/sign-in");
   }
 
-  if (truck.ownerId !== session.user.id) {
-    redirect("/dashboard");
-  }
-
-  const tierName = getTierName(truck.tier, truck.tierExpiryAt);
-  const expiryDate = getExpiryDateString(truck.tierExpiryAt);
-  const isExpiring = isExpiringSoon(truck.tierExpiryAt);
+  const tierName = getTierName(user.tier, user.tierExpiryAt);
+  const expiryDate = getExpiryDateString(user.tierExpiryAt);
+  const isExpiring = isExpiringSoon(user.tierExpiryAt);
 
   return (
     <div className="container max-w-2xl mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">הגדרות מנוי</h1>
       <p className="text-muted-foreground mb-8">
-        {truck.name} • {tierName}
+        {user.name || user.email} • {tierName}
       </p>
 
       <div className="space-y-6">
@@ -74,9 +64,9 @@ export default async function TruckSettingsPage({
               סטטוס מנוי
             </CardTitle>
             <CardDescription>
-              {truck.tier === "PREMIUM" && !truck.tierExpiryAt
+              {user.tier === "PREMIUM" && !user.tierExpiryAt
                 ? "מנוי פרימיום"
-                : truck.tier === "PREMIUM"
+                : user.tier === "PREMIUM"
                   ? `מנוי פרימיום עד ${expiryDate}`
                   : "מנוי חינם"}
             </CardDescription>
@@ -91,20 +81,20 @@ export default async function TruckSettingsPage({
 
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">סטטוס:</span>
-              <TruckTierBadge truck={truck} showVerified />
+              <UserTierBadge user={user} showVerified />
             </div>
           </CardContent>
         </Card>
 
         {/* Upgrade or Downgrade */}
-        {truck.tier === "FREE" ? (
-          <UpgradePrompt truckId={truck.id} featureName="שעות פעילות" />
+        {user.tier === "FREE" ? (
+          <UpgradePrompt featureName="שעות פעילות" />
         ) : (
           <Card>
             <CardHeader>
               <CardTitle>ניהול מנוי</CardTitle>
               <CardDescription>
-                ביטול המנוי יחזיר את העגלה למנוי חינם
+                ביטול המנוי יחזיר את החשבון למנוי חינם
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -120,7 +110,7 @@ export default async function TruckSettingsPage({
               <form
                 action={async () => {
                   "use server";
-                  await downgradeTruck(truck.id);
+                  await downgradeAccount();
                 }}
               >
                 <Button variant="outline" type="submit">
