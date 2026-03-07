@@ -216,7 +216,7 @@ export async function addTruckAttribute(input: {
     });
 
     if (!attribute) {
-      return { success: false, message: "התכונה לא קיימת" };
+      return { success: false, message: "המאפיין לא קיים" };
     }
 
     // Check if already assigned
@@ -230,7 +230,7 @@ export async function addTruckAttribute(input: {
     });
 
     if (existing) {
-      return { success: false, message: "התכונה כבר משויכת לעגלה זו" };
+      return { success: false, message: "המאפיין כבר משויך לעגלה זו" };
     }
 
     // Create assignment
@@ -254,7 +254,7 @@ export async function addTruckAttribute(input: {
       };
     }
     console.error("Add attribute error:", error);
-    return { success: false, message: "שגיאה בהוספת התכונה" };
+    return { success: false, message: "שגיאה בהוספת המאפיין" };
   }
 }
 
@@ -301,6 +301,6 @@ export async function removeTruckAttribute(input: {
     return { success: true };
   } catch (error) {
     console.error("Remove attribute error:", error);
-    return { success: false, message: "שגיאה בהסרת התכונה" };
+    return { success: false, message: "שגיאה בהסרת המאפיין" };
   }
 }
