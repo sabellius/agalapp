@@ -279,7 +279,7 @@ test("signs in with valid credentials", async ({ page }) => {
 });
 ```
 
-#### Current Test Coverage (259 tests)
+#### Current Test Coverage (306 tests)
 | Category | Tests | Files |
 |----------|-------|-------|
 | Validation schemas | 91 | 5 files (common, truck, review, image, vote) |
@@ -288,9 +288,10 @@ test("signs in with valid credentials", async ({ page }) => {
 | Server actions (images) | 23 | images.test.ts |
 | Server actions (votes) | 6 | votes.test.ts |
 | Server actions (subscription) | 5 | subscription.test.ts |
+| Server actions (attributes) | 14 | attributes.test.ts |
 | Tier utilities | 11 | tiers.test.ts |
-| Permission utilities | 19 | truck-permissions.test.ts |
-| Component tests | 50 | star-rating, truck-preview, review-form, vote-button, trucks-search, map, user-tier-badge, upgrade-prompt |
+| Permission utilities | 29 | truck-permissions.test.ts |
+| Component tests | 65 | star-rating, truck-preview, review-form, vote-button, trucks-search, map, user-tier-badge, upgrade-prompt, attribute-badge, attributes-grid, attributes-editor, feature-lock |
 | Geocoding utility | 5 | geocoding.test.ts |
 | E2E tests | 22 | auth, trucks, reviews, map |
 | E2E stubs | - | subscription.spec.ts |
@@ -404,10 +405,15 @@ const result = await downgradeAccount();
 
 All subscription/tier features are tested:
 - `app/actions/subscription.test.ts` - Server action tests (5 tests)
+- `app/actions/attributes.test.ts` - Server action tests (14 tests)
 - `lib/tiers.test.ts` - Utility function tests (11 tests)
-- `lib/truck-permissions.test.ts` - Permission tests (19 tests)
+- `lib/truck-permissions.test.ts` - Permission tests (29 tests)
 - `components/trucks/user-tier-badge.test.tsx` - Component tests (6 tests)
 - `components/trucks/upgrade-prompt.test.tsx` - Component tests (6 tests)
+- `components/trucks/attribute-badge.test.tsx` - Component tests (4 tests)
+- `components/trucks/attributes-grid.test.tsx` - Component tests (5 tests)
+- `components/trucks/attributes-editor.test.tsx` - Component tests (9 tests)
+- `components/trucks/feature-lock.test.tsx` - Component tests (5 tests)
 
 ## Key Features Implemented
 
@@ -424,15 +430,7 @@ All subscription/tier features are tested:
 11. **Navigation Header**: Responsive sticky header with mobile sheet drawer
 12. **Search & Filtering**: Text search, city filter, rating filter with URL params
 13. **Map Integration**: Leaflet + OpenStreetMap with automatic geocoding via Nominatim
-14. **Testing**: 259 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
-
-### Pending Tests
-
-| Feature | Status |
-|---------|--------|
-| Attributes (server actions) | Not tested |
-| Attributes (components) | Not tested |
-| Attributes (permissions) | Not tested |
+14. **Testing**: 306 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
 
 ### Navigation Structure
 
