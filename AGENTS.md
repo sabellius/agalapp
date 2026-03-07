@@ -34,6 +34,7 @@ agalapp/
 │   │   ├── subscription/     # Subscription management page
 │   │   └── trucks/           # Truck management (new/edit)
 │   ├── actions/              # Server Actions for mutations
+│   │   ├── attributes.ts      # Truck attribute management
 │   │   ├── subscription.ts   # Upgrade/downgrade account tier
 │   │   └── ...
 │   ├── api/                  # API routes (auth, cloudinary signatures)
@@ -341,15 +342,20 @@ enum UserTier {
 | `lib/tiers.ts` | Tier types, constants, utility functions |
 | `lib/truck-permissions.ts` | Permission checking based on user tier |
 | `app/actions/subscription.ts` | Server actions for upgrade/downgrade |
+| `app/actions/attributes.ts` | Server actions for attribute management |
 | `app/(protected)/subscription/page.tsx` | Subscription management page |
 | `components/trucks/user-tier-badge.tsx` | Badge component showing tier status |
 | `components/trucks/upgrade-prompt.tsx` | Prompt for free users to upgrade |
+| `components/trucks/feature-lock.tsx` | Lock indicator for premium features |
+| `components/trucks/attributes-editor.tsx` | Attribute selection with tier limits |
+| `components/trucks/attributes-grid.tsx` | Display attributes for a truck |
+| `components/trucks/attribute-badge.tsx` | Single attribute badge with icon |
 
 ### Permission Utilities
 
 ```typescript
 import { isCurrentlyPremium } from "@/lib/tiers";
-import { canShowWorkingHours, canEditWorkingHours, isUserVerified } from "@/lib/truck-permissions";
+import { canShowWorkingHours, canEditWorkingHours, isUserVerified, getMaxAttributes, canAddAttribute } from "@/lib/truck-permissions";
 
 // Check if user has premium access (considers expiry)
 isCurrentlyPremium(user.tier, user.tierExpiryAt) // boolean
@@ -358,6 +364,8 @@ isCurrentlyPremium(user.tier, user.tierExpiryAt) // boolean
 canShowWorkingHours(user)  // boolean - can view working hours
 canEditWorkingHours(user)  // boolean - can edit working hours
 isUserVerified(user)       // boolean - user is verified (premium)
+getMaxAttributes(user)     // number - 3 for FREE, Infinity for PREMIUM
+canAddAttribute(user, n)   // boolean - can add n more attributes
 ```
 
 ### Premium Features
@@ -368,6 +376,7 @@ isUserVerified(user)       // boolean - user is verified (premium)
 | Create reviews | ✓ | ✓ |
 | Working hours display | ✗ | ✓ |
 | Menu display | ✗ | ✓ |
+| Truck attributes | 3 max | Unlimited |
 | Verified badge | ✗ | ✓ |
 
 ### Pricing
@@ -408,13 +417,22 @@ All subscription/tier features are tested:
 4. **Review Votes**: "Was this helpful?" voting on reviews with toggle functionality
 5. **Authentication**: Email/password with role-based access
 6. **User Tiers**: Account-level subscription system (FREE/PREMIUM) with expiry
-7. **Premium Features**: Working hours, menu display (tier-gated)
+7. **Premium Features**: Working hours, menu display, attributes (tier-gated)
 8. **Subscription Management**: Upgrade/downgrade via `/subscription` page
-9. **Seeding**: Faker-based seed script for development
-10. **Navigation Header**: Responsive sticky header with mobile sheet drawer
-11. **Search & Filtering**: Text search, city filter, rating filter with URL params
-12. **Map Integration**: Leaflet + OpenStreetMap with automatic geocoding via Nominatim
-13. **Testing**: 259 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
+9. **Truck Attributes**: Predefined attributes (accessibility, seating, amenities, payment, dietary, products, service, vibe)
+10. **Seeding**: Faker-based seed script for development
+11. **Navigation Header**: Responsive sticky header with mobile sheet drawer
+12. **Search & Filtering**: Text search, city filter, rating filter with URL params
+13. **Map Integration**: Leaflet + OpenStreetMap with automatic geocoding via Nominatim
+14. **Testing**: 259 tests (Vitest + Playwright) covering validations, server actions, components, and E2E flows
+
+### Pending Tests
+
+| Feature | Status |
+|---------|--------|
+| Attributes (server actions) | Not tested |
+| Attributes (components) | Not tested |
+| Attributes (permissions) | Not tested |
 
 ### Navigation Structure
 
@@ -434,8 +452,17 @@ All subscription/tier features are tested:
 - `components/site-header.tsx` - Main responsive header
 - `components/ui/dropdown-menu.tsx` - User menu dropdown
 - `components/ui/sheet.tsx` - Mobile navigation drawer
+- `components/ui/tooltip.tsx` - shadcn tooltip component
 - `components/trucks/user-tier-badge.tsx` - Badge showing user's tier status
 - `components/trucks/upgrade-prompt.tsx` - Upgrade prompt for premium features
+- `components/trucks/feature-lock.tsx` - Lock indicator for premium features
+- `components/trucks/attributes-editor.tsx` - Attribute selection with tier limits
+- `components/trucks/attributes-grid.tsx` - Display attributes for a truck
+- `components/trucks/attribute-badge.tsx` - Single attribute badge with icon
+- `components/trucks/hours-display.tsx` - Display working hours
+- `components/trucks/hours-editor.tsx` - Edit working hours
+- `components/trucks/hours-locked.tsx` - Lock message for working hours
+- `components/trucks/open-status-badge.tsx` - Show if truck is currently open
 
 ## Development Workflow
 
