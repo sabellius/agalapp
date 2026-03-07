@@ -98,6 +98,7 @@ model CoffeeTruck {
   owner     User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   images    CoffeeTruckImage[]
   reviews   Review[]
+  hours     TruckHours[]
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
 
@@ -150,4 +151,20 @@ model Vote {
   @@index([reviewId])
   @@index([userId])
   @@map("votes")
+}
+
+model TruckHours {
+  id        String      @id @default(cuid())
+  truckId   String
+  truck     CoffeeTruck @relation(fields: [truckId], references: [id], onDelete: Cascade)
+  dayOfWeek Int         // 0 = Sunday, 6 = Saturday
+  openTime  String?     @db.VarChar(5)  // "09:00"
+  closeTime String?     @db.VarChar(5)  // "17:00"
+  isClosed  Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([truckId, dayOfWeek])
+  @@index([truckId])
+  @@map("truck_hours")
 }
