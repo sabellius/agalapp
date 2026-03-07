@@ -34,6 +34,16 @@ export default async function EditTruckPage({
           createdAt: "asc",
         },
       },
+      hours: {
+        orderBy: { dayOfWeek: "asc" },
+      },
+      owner: {
+        select: {
+          id: true,
+          tier: true,
+          tierExpiryAt: true,
+        },
+      },
     },
   });
 
@@ -57,6 +67,8 @@ export default async function EditTruckPage({
       <h1 className="text-3xl font-bold mb-6">עריכת עגלת קפה</h1>
       <TruckForm
         truck={truck}
+        owner={truck.owner}
+        hours={truck.hours}
         images={truck.images.map((img) => ({
           ...img,
           alt: img.alt || "",

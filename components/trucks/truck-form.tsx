@@ -8,13 +8,17 @@ import {
   updateImageAlt,
 } from "@/app/actions/images";
 import { createTruck, updateTruck } from "@/app/actions/trucks";
+import { HoursEditor } from "@/components/trucks/hours-editor";
+import { HoursLocked } from "@/components/trucks/hours-locked";
 import { ImagePreview } from "@/components/trucks/image-preview";
 import { ImageUpload } from "@/components/trucks/image-upload";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { TruckHours } from "@/generated/prisma/client";
 import { CITIES } from "@/lib/constants";
+import { canEditWorkingHours } from "@/lib/truck-permissions";
 import type { CreateTruckInput, UpdateTruckInput } from "@/lib/validations";
 
 interface TruckFormProps {
@@ -24,6 +28,12 @@ interface TruckFormProps {
     city: string;
     address: string;
   };
+  owner?: {
+    id: string;
+    tier: string;
+    tierExpiryAt: Date | null;
+  };
+  hours?: TruckHours[];
   images?: Array<{
     id: string;
     url: string;
@@ -50,6 +60,8 @@ interface TruckImageData {
 
 export function TruckForm({
   truck,
+  owner,
+  hours = [],
   images: initialImages = [],
 }: TruckFormProps) {
   const router = useRouter();
@@ -336,6 +348,20 @@ export function TruckForm({
               disabled={isSubmitting}
             />
           </div>
+
+          {truck && (
+            <div className="pt-4 border-t">
+              {owner && canEditWorkingHours(owner) ? (
+                <HoursEditor
+                  truckId={truck.id}
+                  existingHours={hours}
+                  onSuccess={() => router.refresh()}
+                />
+              ) : (
+                <HoursLocked featureName="שעות פעילות" />
+              )}
+            </div>
+          )}
 
           <div className="flex gap-4 justify-end pt-4">
             <Button

@@ -7,10 +7,13 @@ import { TruckMapClient } from "@/components/map/truck-map-client";
 import { ReviewActions } from "@/components/reviews/review-actions";
 import { ReviewForm } from "@/components/reviews/review-form";
 import { VoteButton } from "@/components/reviews/vote-button";
+import { HoursDisplay } from "@/components/trucks/hours-display";
+import { OpenStatusBadge } from "@/components/trucks/open-status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { canShowWorkingHours } from "@/lib/truck-permissions";
 
 async function getTruck(id: string, userId?: string) {
   const truck = await prisma.coffeeTruck.findUnique({
@@ -44,7 +47,13 @@ async function getTruck(id: string, userId?: string) {
       owner: {
         select: {
           name: true,
+          role: true,
+          tier: true,
+          tierExpiryAt: true,
         },
+      },
+      hours: {
+        orderBy: { dayOfWeek: "asc" },
       },
     },
   });
@@ -85,6 +94,8 @@ export default async function TruckPage({
   const hasReviewed = session?.user?.id
     ? truck.reviews.some((review) => review.userId === session.user.id)
     : false;
+
+  const canShowHours = canShowWorkingHours(truck.owner);
 
   const primaryImage =
     truck.images.find((img) => img.isPrimary) || truck.images[0];
@@ -243,7 +254,10 @@ export default async function TruckPage({
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">{truck.name}</CardTitle>
+              <div className="flex items-start justify-between gap-2">
+                <CardTitle className="text-2xl">{truck.name}</CardTitle>
+                <OpenStatusBadge hours={truck.hours} />
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2">
@@ -264,6 +278,12 @@ export default async function TruckPage({
                   </p>
                 </div>
               </div>
+
+              {canShowHours && truck.hours.length > 0 && (
+                <div className="pt-4 border-t">
+                  <HoursDisplay hours={truck.hours} />
+                </div>
+              )}
 
               <div className="pt-4 border-t">
                 <p className="text-sm text-muted-foreground mb-2">בבעלות</p>
