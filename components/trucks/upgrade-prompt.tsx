@@ -2,7 +2,7 @@
 
 import { Check, Crown } from "lucide-react";
 import { useActionState } from "react";
-import { upgradeTruck } from "@/app/actions/subscription";
+import { upgradeAccount } from "@/app/actions/subscription";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 
 interface UpgradePromptProps {
-  truckId: string;
   featureName: string;
 }
 
@@ -22,14 +21,11 @@ const PREMIUM_FEATURES = [
   { key: "menu", label: "תפריט מלא" },
 ] as const;
 
-export function UpgradePrompt({ truckId, featureName }: UpgradePromptProps) {
-  const [state, formAction, isPending] = useActionState(
-    upgradeTruck.bind(null, truckId),
-    {
-      success: false,
-      message: "",
-    },
-  );
+export function UpgradePrompt({ featureName }: UpgradePromptProps) {
+  const [state, formAction, isPending] = useActionState(upgradeAccount, {
+    success: false,
+    message: "",
+  });
 
   if (state.success) {
     return (
@@ -38,7 +34,7 @@ export function UpgradePrompt({ truckId, featureName }: UpgradePromptProps) {
           <Crown className="h-12 w-12 text-primary mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">המנוי שודרג!</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            העגלה שלך כעת במנוי פרימיום ל-30 יום
+            החשבון שלך כעת במנוי פרימיום ל-30 יום
           </p>
         </CardContent>
       </Card>
@@ -55,7 +51,7 @@ export function UpgradePrompt({ truckId, featureName }: UpgradePromptProps) {
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-4">
-          כדי להוסיף <strong>{featureName}</strong>, עליך לשדרג את העגלה למנוי
+          כדי להוסיף <strong>{featureName}</strong>, עליך לשדרג את החשבון למנוי
           פרימיום
         </p>
 
