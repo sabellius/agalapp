@@ -1,18 +1,18 @@
 import { CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import type { CoffeeTruck } from "@/generated/prisma/client";
+import type { User } from "@/generated/prisma/client";
 import { isCurrentlyPremium } from "@/lib/tiers";
 
-interface TruckTierBadgeProps {
-  truck: Pick<CoffeeTruck, "tier" | "tierExpiryAt">;
+interface UserTierBadgeProps {
+  user: Pick<User, "tier" | "tierExpiryAt">;
   showVerified?: boolean;
 }
 
-export function TruckTierBadge({
-  truck,
+export function UserTierBadge({
+  user,
   showVerified = false,
-}: TruckTierBadgeProps) {
-  const isPremium = isCurrentlyPremium(truck.tier, truck.tierExpiryAt);
+}: UserTierBadgeProps) {
+  const isPremium = isCurrentlyPremium(user.tier, user.tierExpiryAt);
 
   if (isPremium && showVerified) {
     return (
