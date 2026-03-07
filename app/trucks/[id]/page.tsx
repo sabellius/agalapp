@@ -279,12 +279,6 @@ export default async function TruckPage({
                 </div>
               </div>
 
-              {canShowHours && truck.hours.length > 0 && (
-                <div className="pt-4 border-t">
-                  <HoursDisplay hours={truck.hours} />
-                </div>
-              )}
-
               <div className="pt-4 border-t">
                 <p className="text-sm text-muted-foreground mb-2">בבעלות</p>
                 <p className="font-medium">{truck.owner.name}</p>
@@ -325,6 +319,16 @@ export default async function TruckPage({
             </CardContent>
           </Card>
         </div>
+
+        {canShowHours && truck.hours.length > 0 && (
+          <div className="lg:col-span-1">
+            <Card>
+              <CardContent className="p-6">
+                <HoursDisplay hours={truck.hours} />
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { Clock } from "lucide-react";
 import type { TruckHours } from "@/generated/prisma/client";
-import { DAYS_OF_WEEK, groupHoursForDisplay } from "@/lib/truck-hours";
+import { DAYS_OF_WEEK } from "@/lib/truck-hours";
 
 interface HoursDisplayProps {
   hours: TruckHours[];
@@ -12,13 +12,12 @@ export function HoursDisplay({ hours }: HoursDisplayProps) {
     const hoursRecord = hours.find((h) => h.dayOfWeek === day.value);
     return {
       dayOfWeek: day.value as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+      nameHe: day.nameHe,
       openTime: hoursRecord?.openTime ?? null,
       closeTime: hoursRecord?.closeTime ?? null,
       isClosed: hoursRecord?.isClosed ?? true,
     };
   });
-
-  const grouped = groupHoursForDisplay(weeklyHours);
 
   return (
     <div className="space-y-3">
@@ -26,13 +25,17 @@ export function HoursDisplay({ hours }: HoursDisplayProps) {
         <Clock className="h-5 w-5" />
         שעות פעילות
       </h3>
-      <div className="grid grid-cols-2 gap-2 text-sm">
-        {grouped.map((group, index) => (
-          <div key={index} className="flex items-center gap-2">
+      <div className="space-y-1.5 text-sm">
+        {weeklyHours.map((dayHours) => (
+          <div key={dayHours.dayOfWeek} className="flex justify-between">
             <span className="font-medium text-muted-foreground">
-              {group.days}:
+              {dayHours.nameHe}:
             </span>
-            <span>{group.hours}</span>
+            <span>
+              {dayHours.isClosed || !dayHours.openTime
+                ? "סגור"
+                : `${dayHours.openTime}-${dayHours.closeTime}`}
+            </span>
           </div>
         ))}
       </div>
