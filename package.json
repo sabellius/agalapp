@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "biome check",
     "lint:fix": "biome check --write",
+    "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
