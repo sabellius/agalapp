@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `users` ADD COLUMN `tier` ENUM('FREE', 'PREMIUM') NOT NULL DEFAULT 'FREE',
+    ADD COLUMN `tierExpiryAt` DATETIME(3) NULL;

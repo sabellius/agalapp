@@ -13,7 +13,7 @@ enum Role {
   ADMIN
 }
 
-enum TruckTier {
+enum UserTier {
   FREE
   PREMIUM
 }
@@ -25,6 +25,8 @@ model User {
   emailVerified Boolean       @default(false)
   image         String?       @db.Text
   role          Role          @default(USER)
+  tier          UserTier     @default(FREE)
+  tierExpiryAt  DateTime?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   sessions      Session[]
@@ -92,8 +94,6 @@ model CoffeeTruck {
   address   String             @db.Text
   latitude  Float?
   longitude Float?
-  tier      TruckTier          @default(FREE)
-  tierExpiryAt DateTime?
   ownerId   String
   owner     User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   images    CoffeeTruckImage[]
