@@ -54,3 +54,17 @@ export function isExpiringSoon(tierExpiryAt: Date | null): boolean {
 
   return daysUntilExpiry > 0 && daysUntilExpiry <= 7;
 }
+
+export function getMaxAttributes(user: Pick<User, "tier" | "tierExpiryAt">): number {
+  return isCurrentlyPremium(user.tier as UserTier, user.tierExpiryAt)
+    ? Infinity
+    : 3;
+}
+
+export function canAddAttribute(
+  user: Pick<User, "tier" | "tierExpiryAt">,
+  currentAttributeCount: number,
+): boolean {
+  const max = getMaxAttributes(user);
+  return currentAttributeCount < max;
+}
