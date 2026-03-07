@@ -1,6 +1,6 @@
+import { getByText } from "@testing-library/dom";
 import { render, screen } from "@testing-library/react";
 import { UpgradePrompt } from "./upgrade-prompt";
-import { getByText } from "@testing-library/dom";
 
 // Mock useActionState from react
 vi.mock("react", async (importOriginal) => {
@@ -31,9 +31,14 @@ describe("UpgradePrompt", () => {
 
     expect(screen.getByText("שדרג לפרימיום")).toBeInTheDocument();
     // Text is split by <strong> tag, so use a matcher function
-    expect(screen.getByText((_content, element) => {
-      return element?.textContent === "כדי להוסיף שעות פעילות, עליך לשדרג את החשבון למנוי פרימיום";
-    })).toBeInTheDocument();
+    expect(
+      screen.getByText((_content, element) => {
+        return (
+          element?.textContent ===
+          "כדי להוסיף שעות פעילות, עליך לשדרג את החשבון למנוי פרימיום"
+        );
+      }),
+    ).toBeInTheDocument();
     // "שעות פעילות" appears in both the message and the feature list
     expect(screen.getAllByText("שעות פעילות")).toHaveLength(2);
     expect(screen.getByText("תפריט מלא")).toBeInTheDocument();

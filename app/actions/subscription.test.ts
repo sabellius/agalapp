@@ -29,7 +29,7 @@ vi.mock("next/headers", () => ({
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { mockTruckOwner, mockUser } from "@/test/fixtures/users";
+import { mockTruckOwner } from "@/test/fixtures/users";
 import { downgradeAccount, upgradeAccount } from "./subscription";
 
 const mockPrisma = prisma as typeof prisma & {
