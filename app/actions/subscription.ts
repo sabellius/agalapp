@@ -10,12 +10,12 @@ type ActionResult<T = void> =
   | { success: false; message: string };
 
 /**
- * Upgrade a truck to premium tier (mock payment for portfolio)
+ * Upgrade user account to premium tier (mock payment for portfolio)
  * Grants premium for 30 days
  */
-export async function upgradeTruck(
-  truckId: string,
-): Promise<ActionResult<{ expiryDate: Date }>> {
+export async function upgradeAccount(): Promise<
+  ActionResult<{ expiryDate: Date }>
+> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -25,32 +25,28 @@ export async function upgradeTruck(
       return { success: false, message: "אינך מחובר" };
     }
 
-    const truck = await prisma.coffeeTruck.findUnique({
-      where: { id: truckId },
-      select: { ownerId: true },
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { tier: true },
     });
 
-    if (!truck) {
-      return { success: false, message: "העגלה לא נמצאה" };
-    }
-
-    if (truck.ownerId !== session.user.id) {
-      return { success: false, message: "אין לך הרשאה לשדרג עגלה זו" };
+    if (!user) {
+      return { success: false, message: "משתמש לא נמצא" };
     }
 
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 30);
 
-    await prisma.coffeeTruck.update({
-      where: { id: truckId },
+    await prisma.user.update({
+      where: { id: session.user.id },
       data: {
         tier: "PREMIUM",
         tierExpiryAt: expiryDate,
       },
     });
 
-    revalidatePath(`/trucks/${truckId}`);
     revalidatePath("/dashboard");
+    revalidatePath("/subscription");
 
     return { success: true, data: { expiryDate } };
   } catch (error) {
@@ -60,9 +56,9 @@ export async function upgradeTruck(
 }
 
 /**
- * Downgrade a truck from premium to free tier
+ * Downgrade user account from premium to free tier
  */
-export async function downgradeTruck(truckId: string): Promise<ActionResult> {
+export async function downgradeAccount(): Promise<ActionResult> {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -72,29 +68,16 @@ export async function downgradeTruck(truckId: string): Promise<ActionResult> {
       return { success: false, message: "אינך מחובר" };
     }
 
-    const truck = await prisma.coffeeTruck.findUnique({
-      where: { id: truckId },
-      select: { ownerId: true },
-    });
-
-    if (!truck) {
-      return { success: false, message: "העגלה לא נמצאה" };
-    }
-
-    if (truck.ownerId !== session.user.id) {
-      return { success: false, message: "אין לך הרשאה" };
-    }
-
-    await prisma.coffeeTruck.update({
-      where: { id: truckId },
+    await prisma.user.update({
+      where: { id: session.user.id },
       data: {
         tier: "FREE",
         tierExpiryAt: null,
       },
     });
 
-    revalidatePath(`/trucks/${truckId}`);
     revalidatePath("/dashboard");
+    revalidatePath("/subscription");
 
     return { success: true };
   } catch (error) {
