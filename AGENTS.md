@@ -14,6 +14,7 @@ Hebrew (RTL) coffee cart review platform built with Next.js 16 App Router.
 | Validation | Zod 4.x |
 | UI Components | shadcn/ui (Radix UI) |
 | Formatting | Biome |
+| Git Hooks | Lefthook |
 | Testing | Vitest, Playwright, Testing Library |
 
 ## Commands
@@ -57,6 +58,16 @@ pnpm run test:e2e:ui             # E2E with UI
 ```bash
 npx prisma generate              # Generate Prisma client
 pnpm run seed                    # Seed database
+```
+
+### Git Hooks (Lefthook)
+Pre-commit hooks run automatically on commit:
+- **lint-fix**: Biome format + lint on staged files
+- **typecheck**: TypeScript check (when ts/tsx files changed)
+
+```bash
+pnpm exec lefthook run pre-commit   # Run hooks manually
+LEFTHOOK=0 git commit               # Skip hooks (not recommended)
 ```
 
 ## Project Structure
@@ -226,3 +237,8 @@ test(map): add marker clustering tests
 - Don't add unnecessary comments
 - Don't use Pages Router (we use App Router)
 - Don't switch from better-auth or MySQL/MariaDB
+
+## Package Management Notes
+
+- `pnpm.onlyBuiltDependencies` in package.json allows packages (like lefthook) to run postinstall scripts
+- Always use `pnpm exec` instead of `npx` for running local binaries
