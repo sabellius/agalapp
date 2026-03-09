@@ -51,8 +51,8 @@ export function TruckMarker({ truck }: TruckMarkerProps) {
 
   return (
     <Marker position={[truck.latitude, truck.longitude]} icon={icon}>
-      <Popup dir="rtl" className="truck-popup">
-        <div className="text-right" style={{ minWidth: "200px" }}>
+      <Popup className="truck-popup">
+        <div dir="rtl" className="text-right" style={{ minWidth: "200px" }}>
           <h3 className="font-bold text-lg mb-1">{truck.name}</h3>
           {truck.avgRating !== undefined && (
             <div className="flex items-center gap-1 mb-1">
