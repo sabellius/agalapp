@@ -10,29 +10,61 @@ test.describe("Subscription", () => {
     await expect(page).toHaveURL(/\/auth\/sign-in/);
   });
 
+  // TODO: Implement proper auth setup for E2E tests
+  // These tests require authenticated sessions to work properly
+
   test.describe("authenticated as free user", () => {
-    test.beforeEach(async ({ page, context }) => {
-      // Set up authenticated session as free user
-      // This would require seeding a free user and setting auth cookies
-      // For now, we'll test the UI structure assuming proper auth setup
-    });
+    test.skip(true, "E2E auth setup not yet implemented");
 
     test("displays upgrade prompt for free users", async ({ page }) => {
-      // After sign-in, redirect to subscription
-      // This test assumes we're signed in as a free user
-      // TODO: Add proper auth setup for E2E tests
+      // Verify the upgrade prompt is displayed
+      await expect(page.getByText("שדרג לפרימיום")).toBeVisible();
+      await expect(page.getByText("שעות פעילות")).toBeVisible();
+      await expect(page.getByText("תפריט מלא")).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: /שדרג עכשיו/ }),
+      ).toBeVisible();
     });
   });
 
   test.describe("authenticated as premium user", () => {
+    test.skip(true, "E2E auth setup not yet implemented");
+
     test("displays current status and downgrade option", async ({ page }) => {
-      // TODO: Add proper auth setup for premium user E2E tests
+      // Verify the premium status card is displayed
+      await expect(page.getByText("סטטוס מנוי")).toBeVisible();
+      await expect(page.getByText("ניהול מנוי")).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "בטל מנוי פרימיום" }),
+      ).toBeVisible();
     });
   });
 
   test.describe("upgrade flow", () => {
+    test.skip(true, "E2E auth setup not yet implemented");
+
     test("allows user to upgrade to premium", async ({ page }) => {
-      // TODO: Test the upgrade action flow
+      // Click the upgrade button
+      await page.getByRole("button", { name: /שדרג עכשיו/ }).click();
+
+      // Verify success message is displayed
+      await expect(page.getByText("המנוי שודרג!")).toBeVisible();
+      await expect(
+        page.getByText(/החשבון שלך כעת במנוי פרימיום/),
+      ).toBeVisible();
+    });
+  });
+
+  test.describe("pricing information", () => {
+    test.skip(true, "Requires authenticated user");
+
+    test("displays pricing options", async ({ page }) => {
+      // Verify pricing information is displayed
+      await expect(page.getByText("מחירות")).toBeVisible();
+      await expect(page.getByText("חודשי")).toBeVisible();
+      await expect(page.getByText(/₪30\/חודש/)).toBeVisible();
+      await expect(page.getByText("שנתי")).toBeVisible();
+      await expect(page.getByText(/₪300\/שנה/)).toBeVisible();
     });
   });
 });
