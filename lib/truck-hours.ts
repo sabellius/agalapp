@@ -112,7 +112,7 @@ export function groupHoursForDisplay(hours: WeeklyHours): Array<{
   for (const dayHours of sortedHours) {
     const dayInfo = DAYS_OF_WEEK[dayHours.dayOfWeek];
     const hoursText =
-      dayHours.isClosed || !dayHours.openTime
+      dayHours.isClosed || !dayHours.openTime || !dayHours.closeTime
         ? "סגור"
         : `${formatTime(dayHours.openTime)}-${formatTime(dayHours.closeTime)}`;
 
