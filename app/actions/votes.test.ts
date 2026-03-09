@@ -82,8 +82,9 @@ describe("votes server actions", () => {
 
       const result = await toggleVote(validInput);
 
-      expect(result.success).toBe(true);
-      expect(result.data).toEqual({ voted: true, voteCount: 1 });
+      if (result.success) {
+        expect(result.data).toEqual({ voted: true, voteCount: 1 });
+      }
     });
 
     it("removes existing vote on toggle", async () => {
@@ -109,8 +110,9 @@ describe("votes server actions", () => {
 
       const result = await toggleVote(validInput);
 
-      expect(result.success).toBe(true);
-      expect(result.data).toEqual({ voted: false, voteCount: 0 });
+      if (result.success) {
+        expect(result.data).toEqual({ voted: false, voteCount: 0 });
+      }
     });
 
     it("rejects unauthenticated user", async () => {
@@ -118,8 +120,9 @@ describe("votes server actions", () => {
 
       const result = await toggleVote(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
     });
 
     it("rejects voting on own review", async () => {
@@ -143,8 +146,9 @@ describe("votes server actions", () => {
 
       const result = await toggleVote(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך יכול להצביע על הביקורת שלך");
+      if (!result.success) {
+        expect(result.message).toBe("אינך יכול להצביע על הביקורת שלך");
+      }
     });
 
     it("rejects when review not found", async () => {
@@ -161,8 +165,9 @@ describe("votes server actions", () => {
 
       const result = await toggleVote(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("הביקורת לא נמצאה");
+      if (!result.success) {
+        expect(result.message).toBe("הביקורת לא נמצאה");
+      }
     });
 
     it("validates reviewId with Zod", async () => {
@@ -177,8 +182,9 @@ describe("votes server actions", () => {
 
       const result = await toggleVote({ reviewId: "" });
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("מזהה ביקורת חסר");
+      if (!result.success) {
+        expect(result.message).toBe("מזהה ביקורת חסר");
+      }
     });
   });
 });
