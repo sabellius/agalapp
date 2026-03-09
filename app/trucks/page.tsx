@@ -33,7 +33,10 @@ async function getTrucks(params: SearchParams) {
 
   if (search?.trim()) {
     conditions.push({
-      OR: [{ name: { contains: search } }, { address: { contains: search } }],
+      OR: [
+        { name: { contains: search, mode: "insensitive" } },
+        { address: { contains: search, mode: "insensitive" } },
+      ],
     });
   }
 
