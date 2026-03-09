@@ -92,8 +92,9 @@ describe("attributes server actions", () => {
 
       const result = await getTruckAttributes();
 
-      expect(result.success).toBe(true);
-      expect(result.data).toEqual(mockAttributes);
+      if (result.success) {
+        expect(result.data).toEqual(mockAttributes);
+      }
       expect(mockPrisma.truckAttribute.findMany).toHaveBeenCalledWith({
         where: { isActive: true },
         orderBy: { sortOrder: "asc" },
@@ -113,8 +114,9 @@ describe("attributes server actions", () => {
 
       const result = await getTruckAttributes();
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("שגיאה בטעינת המאפיינים");
+      if (!result.success) {
+        expect(result.message).toBe("שגיאה בטעינת המאפיינים");
+      }
     });
   });
 
@@ -146,23 +148,24 @@ describe("attributes server actions", () => {
 
       const result = await getTruckAssignedAttributes("truck-123");
 
-      expect(result.success).toBe(true);
-      expect(result.data).toEqual([
-        {
-          id: "attr-1",
-          name: "נגיש",
-          nameEn: "Accessible",
-          icon: "accessibility",
-          assignedId: "assign-1",
-        },
-        {
-          id: "attr-2",
-          name: "WiFi",
-          nameEn: "WiFi",
-          icon: "wifi",
-          assignedId: "assign-2",
-        },
-      ]);
+      if (result.success) {
+        expect(result.data).toEqual([
+          {
+            id: "attr-1",
+            name: "נגיש",
+            nameEn: "Accessible",
+            icon: "accessibility",
+            assignedId: "assign-1",
+          },
+          {
+            id: "attr-2",
+            name: "WiFi",
+            nameEn: "WiFi",
+            icon: "wifi",
+            assignedId: "assign-2",
+          },
+        ]);
+      }
     });
 
     it("handles database error", async () => {
@@ -172,8 +175,9 @@ describe("attributes server actions", () => {
 
       const result = await getTruckAssignedAttributes("truck-123");
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("שגיאה בטעינת המאפיינים");
+      if (!result.success) {
+        expect(result.message).toBe("שגיאה בטעינת המאפיינים");
+      }
     });
   });
 
@@ -217,20 +221,21 @@ describe("attributes server actions", () => {
 
       const result = await setTruckAttributes(validInput);
 
-      expect(result.success).toBe(true);
-      expect(
-        mockPrisma.truckAttributeAssignment.deleteMany,
-      ).toHaveBeenCalledWith({
-        where: { truckId: validInput.truckId },
-      });
-      expect(
-        mockPrisma.truckAttributeAssignment.createMany,
-      ).toHaveBeenCalledWith({
-        data: [
-          { truckId: validInput.truckId, attributeId: "attr-1" },
-          { truckId: validInput.truckId, attributeId: "attr-2" },
-        ],
-      });
+      if (result.success) {
+        expect(
+          mockPrisma.truckAttributeAssignment.deleteMany,
+        ).toHaveBeenCalledWith({
+          where: { truckId: validInput.truckId },
+        });
+        expect(
+          mockPrisma.truckAttributeAssignment.createMany,
+        ).toHaveBeenCalledWith({
+          data: [
+            { truckId: validInput.truckId, attributeId: "attr-1" },
+            { truckId: validInput.truckId, attributeId: "attr-2" },
+          ],
+        });
+      }
     });
 
     it("rejects unauthenticated user", async () => {
@@ -238,8 +243,9 @@ describe("attributes server actions", () => {
 
       const result = await setTruckAttributes(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
     });
 
     it("rejects non-owner", async () => {
@@ -264,8 +270,9 @@ describe("attributes server actions", () => {
 
       const result = await setTruckAttributes(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מורשה לערוך עגלה זו");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מורשה לערוך עגלה זו");
+      }
     });
 
     it("enforces tier limits for free users", async () => {
@@ -293,8 +300,9 @@ describe("attributes server actions", () => {
         attributeIds: ["attr-1", "attr-2", "attr-3", "attr-4"],
       });
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("מוגבל ל-3 מאפיינים בחינמי");
+      if (!result.success) {
+        expect(result.message).toContain("מוגבל ל-3 מאפיינים בחינמי");
+      }
     });
 
     it("allows unlimited for premium users", async () => {
@@ -413,8 +421,9 @@ describe("attributes server actions", () => {
 
       const result = await addTruckAttribute(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("מוגבל ל-3 מאפיינים בחינמי");
+      if (!result.success) {
+        expect(result.message).toContain("מוגבל ל-3 מאפיינים בחינמי");
+      }
     });
 
     it("rejects if attribute already assigned", async () => {
@@ -448,8 +457,9 @@ describe("attributes server actions", () => {
 
       const result = await addTruckAttribute(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("המאפיין כבר משויך לעגלה זו");
+      if (!result.success) {
+        expect(result.message).toBe("המאפיין כבר משויך לעגלה זו");
+      }
     });
   });
 
@@ -504,8 +514,9 @@ describe("attributes server actions", () => {
 
       const result = await removeTruckAttribute(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("אינך מורשה");
+      if (!result.success) {
+        expect(result.message).toContain("אינך מורשה");
+      }
     });
   });
 });

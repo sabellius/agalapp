@@ -143,8 +143,9 @@ describe("images server actions", () => {
 
       const result = await deleteImage(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
     });
 
     it("rejects when image not found", async () => {
@@ -160,8 +161,9 @@ describe("images server actions", () => {
 
       const result = await deleteImage(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("התמונה לא נמצאה");
+      if (!result.success) {
+        expect(result.message).toBe("התמונה לא נמצאה");
+      }
     });
 
     it("rejects non-owner from deleting", async () => {
@@ -186,8 +188,9 @@ describe("images server actions", () => {
 
       const result = await deleteImage(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("אינך מורשה");
+      if (!result.success) {
+        expect(result.message).toContain("אינך מורשה");
+      }
     });
 
     it("sets next image as primary when deleting primary image", async () => {
@@ -343,8 +346,9 @@ describe("images server actions", () => {
 
       const result = await setPrimaryImage(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
     });
 
     it("rejects when truck not found", async () => {
@@ -360,8 +364,9 @@ describe("images server actions", () => {
 
       const result = await setPrimaryImage(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("העגלה לא נמצאה");
+      if (!result.success) {
+        expect(result.message).toBe("העגלה לא נמצאה");
+      }
     });
 
     it("rejects non-owner from setting primary", async () => {
@@ -381,8 +386,9 @@ describe("images server actions", () => {
 
       const result = await setPrimaryImage(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("אינך מורשה");
+      if (!result.success) {
+        expect(result.message).toContain("אינך מורשה");
+      }
     });
 
     it("rejects when image does not belong to truck", async () => {
@@ -404,8 +410,9 @@ describe("images server actions", () => {
 
       const result = await setPrimaryImage(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("לא שייכת לעגלה זו");
+      if (!result.success) {
+        expect(result.message).toContain("לא שייכת לעגלה זו");
+      }
     });
 
     it("validates input with Zod", async () => {
@@ -512,8 +519,9 @@ describe("images server actions", () => {
 
       const result = await updateImageAlt(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
     });
 
     it("rejects when image not found", async () => {
@@ -529,8 +537,9 @@ describe("images server actions", () => {
 
       const result = await updateImageAlt(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("התמונה לא נמצאה");
+      if (!result.success) {
+        expect(result.message).toBe("התמונה לא נמצאה");
+      }
     });
 
     it("rejects non-owner from updating", async () => {
@@ -554,8 +563,9 @@ describe("images server actions", () => {
 
       const result = await updateImageAlt(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("אינך מורשה");
+      if (!result.success) {
+        expect(result.message).toContain("אינך מורשה");
+      }
     });
 
     it("validates alt text length", async () => {

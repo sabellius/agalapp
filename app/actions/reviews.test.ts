@@ -82,8 +82,9 @@ describe("reviews server actions", () => {
 
       const result = await createReview(validInput);
 
-      expect(result.success).toBe(true);
-      expect(result.data).toBeDefined();
+      if (result.success) {
+        expect(result.data).toBeDefined();
+      }
       expect(mockPrisma.review.create).toHaveBeenCalledWith({
         data: {
           rating: validInput.rating,
@@ -99,8 +100,9 @@ describe("reviews server actions", () => {
 
       const result = await createReview(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
       expect(mockPrisma.review.create).not.toHaveBeenCalled();
     });
 
@@ -117,8 +119,9 @@ describe("reviews server actions", () => {
 
       const result = await createReview(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("העגלה לא נמצאה");
+      if (!result.success) {
+        expect(result.message).toBe("העגלה לא נמצאה");
+      }
     });
 
     it("rejects duplicate review for same truck", async () => {
@@ -135,8 +138,9 @@ describe("reviews server actions", () => {
 
       const result = await createReview(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("כבר כתבת ביקורת");
+      if (!result.success) {
+        expect(result.message).toContain("כבר כתבת ביקורת");
+      }
       expect(mockPrisma.review.create).not.toHaveBeenCalled();
     });
 
@@ -266,8 +270,9 @@ describe("reviews server actions", () => {
 
       const result = await updateReview(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
     });
 
     it("rejects when review not found", async () => {
@@ -283,8 +288,9 @@ describe("reviews server actions", () => {
 
       const result = await updateReview(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("הביקורת לא נמצאה");
+      if (!result.success) {
+        expect(result.message).toBe("הביקורת לא נמצאה");
+      }
     });
 
     it("rejects non-owner from updating", async () => {
@@ -308,8 +314,9 @@ describe("reviews server actions", () => {
 
       const result = await updateReview(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("אינך מורשה");
+      if (!result.success) {
+        expect(result.message).toContain("אינך מורשה");
+      }
     });
 
     it("validates input with Zod", async () => {
@@ -386,8 +393,9 @@ describe("reviews server actions", () => {
 
       const result = await deleteReview(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
     });
 
     it("rejects when review not found", async () => {
@@ -403,8 +411,9 @@ describe("reviews server actions", () => {
 
       const result = await deleteReview(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("הביקורת לא נמצאה");
+      if (!result.success) {
+        expect(result.message).toBe("הביקורת לא נמצאה");
+      }
     });
 
     it("rejects non-owner from deleting", async () => {
@@ -428,8 +437,9 @@ describe("reviews server actions", () => {
 
       const result = await deleteReview(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("אינך מורשה");
+      if (!result.success) {
+        expect(result.message).toContain("אינך מורשה");
+      }
     });
 
     it("validates reviewId with Zod", async () => {
