@@ -1,6 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-
-// Mock dependencies before importing actions
 vi.mock("@/lib/auth", () => ({
   auth: {
     api: {

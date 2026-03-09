@@ -1,6 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-
-// Mock dependencies before importing actions
 vi.mock("@/lib/auth", () => ({
   auth: {
     api: {
@@ -67,7 +64,7 @@ const mockPrisma = prisma as typeof prisma & {
     delete: ReturnType<typeof vi.fn>;
     create: ReturnType<typeof vi.fn>;
     createMany: ReturnType<typeof vi.fn>;
-    count: { (args: { where: { truckId: string } }): Promise<number> };
+    count: (args: { where: { truckId: string } }) => Promise<number>;
   };
 };
 
@@ -83,7 +80,12 @@ describe("attributes server actions", () => {
   describe("getTruckAttributes", () => {
     it("returns all active attributes", async () => {
       const mockAttributes = [
-        { id: "attr-1", name: "נגיש", nameEn: "Accessible", icon: "accessibility" },
+        {
+          id: "attr-1",
+          name: "נגיש",
+          nameEn: "Accessible",
+          icon: "accessibility",
+        },
         { id: "attr-2", name: "WiFi", nameEn: "WiFi", icon: "wifi" },
       ];
       mockPrisma.truckAttribute.findMany.mockResolvedValue(mockAttributes);
@@ -121,21 +123,45 @@ describe("attributes server actions", () => {
       const mockAssignments = [
         {
           id: "assign-1",
-          attribute: { id: "attr-1", name: "נגיש", nameEn: "Accessible", icon: "accessibility" },
+          attribute: {
+            id: "attr-1",
+            name: "נגיש",
+            nameEn: "Accessible",
+            icon: "accessibility",
+          },
         },
         {
           id: "assign-2",
-          attribute: { id: "attr-2", name: "WiFi", nameEn: "WiFi", icon: "wifi" },
+          attribute: {
+            id: "attr-2",
+            name: "WiFi",
+            nameEn: "WiFi",
+            icon: "wifi",
+          },
         },
       ];
-      mockPrisma.truckAttributeAssignment.findMany.mockResolvedValue(mockAssignments);
+      mockPrisma.truckAttributeAssignment.findMany.mockResolvedValue(
+        mockAssignments,
+      );
 
       const result = await getTruckAssignedAttributes("truck-123");
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual([
-        { id: "attr-1", name: "נגיש", nameEn: "Accessible", icon: "accessibility", assignedId: "assign-1" },
-        { id: "attr-2", name: "WiFi", nameEn: "WiFi", icon: "wifi", assignedId: "assign-2" },
+        {
+          id: "attr-1",
+          name: "נגיש",
+          nameEn: "Accessible",
+          icon: "accessibility",
+          assignedId: "assign-1",
+        },
+        {
+          id: "attr-2",
+          name: "WiFi",
+          nameEn: "WiFi",
+          icon: "wifi",
+          assignedId: "assign-2",
+        },
       ]);
     });
 
@@ -160,7 +186,11 @@ describe("attributes server actions", () => {
     it("sets attributes for authenticated owner", async () => {
       mockAuth.api.getSession.mockResolvedValue({
         user: { ...mockUser, tier: "FREE", tierExpiryAt: null },
-        session: { id: "session-1", userId: mockUser.id, expiresAt: new Date() },
+        session: {
+          id: "session-1",
+          userId: mockUser.id,
+          expiresAt: new Date(),
+        },
       } as any);
 
       mockPrisma.user.findUnique.mockResolvedValue({
@@ -178,16 +208,24 @@ describe("attributes server actions", () => {
         { id: "attr-2" },
       ]);
 
-      mockPrisma.truckAttributeAssignment.deleteMany.mockResolvedValue({ count: 2 });
-      mockPrisma.truckAttributeAssignment.createMany.mockResolvedValue(undefined);
+      mockPrisma.truckAttributeAssignment.deleteMany.mockResolvedValue({
+        count: 2,
+      });
+      mockPrisma.truckAttributeAssignment.createMany.mockResolvedValue(
+        undefined,
+      );
 
       const result = await setTruckAttributes(validInput);
 
       expect(result.success).toBe(true);
-      expect(mockPrisma.truckAttributeAssignment.deleteMany).toHaveBeenCalledWith({
+      expect(
+        mockPrisma.truckAttributeAssignment.deleteMany,
+      ).toHaveBeenCalledWith({
         where: { truckId: validInput.truckId },
       });
-      expect(mockPrisma.truckAttributeAssignment.createMany).toHaveBeenCalledWith({
+      expect(
+        mockPrisma.truckAttributeAssignment.createMany,
+      ).toHaveBeenCalledWith({
         data: [
           { truckId: validInput.truckId, attributeId: "attr-1" },
           { truckId: validInput.truckId, attributeId: "attr-2" },
@@ -207,7 +245,11 @@ describe("attributes server actions", () => {
     it("rejects non-owner", async () => {
       mockAuth.api.getSession.mockResolvedValue({
         user: { ...mockUser },
-        session: { id: "session-1", userId: mockUser.id, expiresAt: new Date() },
+        session: {
+          id: "session-1",
+          userId: mockUser.id,
+          expiresAt: new Date(),
+        },
       } as any);
 
       mockPrisma.user.findUnique.mockResolvedValue({
@@ -229,7 +271,11 @@ describe("attributes server actions", () => {
     it("enforces tier limits for free users", async () => {
       mockAuth.api.getSession.mockResolvedValue({
         user: { ...mockUser, tier: "FREE", tierExpiryAt: null },
-        session: { id: "session-1", userId: mockUser.id, expiresAt: new Date() },
+        session: {
+          id: "session-1",
+          userId: mockUser.id,
+          expiresAt: new Date(),
+        },
       } as any);
 
       mockPrisma.user.findUnique.mockResolvedValue({
@@ -253,8 +299,16 @@ describe("attributes server actions", () => {
 
     it("allows unlimited for premium users", async () => {
       mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser, tier: "PREMIUM", tierExpiryAt: new Date(Date.now() + 86400000) },
-        session: { id: "session-1", userId: mockUser.id, expiresAt: new Date() },
+        user: {
+          ...mockUser,
+          tier: "PREMIUM",
+          tierExpiryAt: new Date(Date.now() + 86400000),
+        },
+        session: {
+          id: "session-1",
+          userId: mockUser.id,
+          expiresAt: new Date(),
+        },
       } as any);
 
       mockPrisma.user.findUnique.mockResolvedValue({
@@ -274,8 +328,12 @@ describe("attributes server actions", () => {
         { id: "attr-4" },
       ]);
 
-      mockPrisma.truckAttributeAssignment.deleteMany.mockResolvedValue({ count: 2 });
-      mockPrisma.truckAttributeAssignment.createMany.mockResolvedValue(undefined);
+      mockPrisma.truckAttributeAssignment.deleteMany.mockResolvedValue({
+        count: 2,
+      });
+      mockPrisma.truckAttributeAssignment.createMany.mockResolvedValue(
+        undefined,
+      );
 
       const result = await setTruckAttributes({
         truckId: "truck-123",
@@ -295,7 +353,11 @@ describe("attributes server actions", () => {
     it("adds attribute for authenticated owner", async () => {
       mockAuth.api.getSession.mockResolvedValue({
         user: { ...mockUser },
-        session: { id: "session-1", userId: mockUser.id, expiresAt: new Date() },
+        session: {
+          id: "session-1",
+          userId: mockUser.id,
+          expiresAt: new Date(),
+        },
       } as any);
 
       mockPrisma.user.findUnique.mockResolvedValue({
@@ -320,14 +382,21 @@ describe("attributes server actions", () => {
 
       expect(result.success).toBe(true);
       expect(mockPrisma.truckAttributeAssignment.create).toHaveBeenCalledWith({
-        data: { truckId: validInput.truckId, attributeId: validInput.attributeId },
+        data: {
+          truckId: validInput.truckId,
+          attributeId: validInput.attributeId,
+        },
       });
     });
 
     it("enforces tier limits", async () => {
       mockAuth.api.getSession.mockResolvedValue({
         user: { ...mockUser, tier: "FREE", tierExpiryAt: null },
-        session: { id: "session-1", userId: mockUser.id, expiresAt: new Date() },
+        session: {
+          id: "session-1",
+          userId: mockUser.id,
+          expiresAt: new Date(),
+        },
       } as any);
 
       mockPrisma.user.findUnique.mockResolvedValue({
@@ -351,7 +420,11 @@ describe("attributes server actions", () => {
     it("rejects if attribute already assigned", async () => {
       mockAuth.api.getSession.mockResolvedValue({
         user: { ...mockUser },
-        session: { id: "session-1", userId: mockUser.id, expiresAt: new Date() },
+        session: {
+          id: "session-1",
+          userId: mockUser.id,
+          expiresAt: new Date(),
+        },
       } as any);
 
       mockPrisma.user.findUnique.mockResolvedValue({
@@ -389,7 +462,11 @@ describe("attributes server actions", () => {
     it("removes attribute for authenticated owner", async () => {
       mockAuth.api.getSession.mockResolvedValue({
         user: { ...mockUser },
-        session: { id: "session-1", userId: mockUser.id, expiresAt: new Date() },
+        session: {
+          id: "session-1",
+          userId: mockUser.id,
+          expiresAt: new Date(),
+        },
       } as any);
 
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
@@ -403,7 +480,10 @@ describe("attributes server actions", () => {
       expect(result.success).toBe(true);
       expect(mockPrisma.truckAttributeAssignment.delete).toHaveBeenCalledWith({
         where: {
-          truckId_attributeId: { truckId: validInput.truckId, attributeId: validInput.attributeId },
+          truckId_attributeId: {
+            truckId: validInput.truckId,
+            attributeId: validInput.attributeId,
+          },
         },
       });
     });
@@ -411,7 +491,11 @@ describe("attributes server actions", () => {
     it("rejects non-owner", async () => {
       mockAuth.api.getSession.mockResolvedValue({
         user: { ...mockUser },
-        session: { id: "session-1", userId: mockUser.id, expiresAt: new Date() },
+        session: {
+          id: "session-1",
+          userId: mockUser.id,
+          expiresAt: new Date(),
+        },
       } as any);
 
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({

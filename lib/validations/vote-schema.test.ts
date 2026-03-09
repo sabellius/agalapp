@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import { toggleVoteSchema } from "./vote-schema";
 
 describe("toggleVoteSchema", () => {

@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import type { User } from "@/generated/prisma/client";
 import {
   canAddAttribute,

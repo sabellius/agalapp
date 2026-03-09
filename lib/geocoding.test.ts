@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { geocodeAddress } from "./geocoding";
 
 global.fetch = vi.fn();

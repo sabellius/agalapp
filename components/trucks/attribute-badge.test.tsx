@@ -8,23 +8,21 @@ describe("AttributeBadge", () => {
   });
 
   it("renders icon when provided", () => {
-    const { container } = render(
-      <AttributeBadge name="WiFi" icon="wifi" />,
-    );
+    const { container } = render(<AttributeBadge name="WiFi" icon="wifi" />);
     const svg = container.querySelector("svg");
     expect(svg).toBeInTheDocument();
   });
 
   it("renders default icon when none provided", () => {
-    const { container } = render(<AttributeBadge name="Test" icon="invalid-icon" />);
+    const { container } = render(
+      <AttributeBadge name="Test" icon="invalid-icon" />,
+    );
     const svg = container.querySelector("svg");
     expect(svg).toBeInTheDocument();
   });
 
   it("has correct styling classes", () => {
-    const { container } = render(
-      <AttributeBadge name="Test" icon="tag" />,
-    );
+    const { container } = render(<AttributeBadge name="Test" icon="tag" />);
 
     const badge = container.firstChild as HTMLElement;
     expect(badge).toHaveClass("bg-secondary");
