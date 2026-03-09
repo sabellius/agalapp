@@ -3,6 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
+  addTruckAttribute,
+  getTruckAttributes,
+  removeTruckAttribute,
+} from "@/app/actions/attributes";
+import {
   deleteImage,
   setPrimaryImage,
   updateImageAlt,
@@ -19,9 +24,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { TruckHours } from "@/generated/prisma/client";
 import { CITIES } from "@/lib/constants";
+import { isCurrentlyPremium, type UserTier } from "@/lib/tiers";
 import { canEditWorkingHours } from "@/lib/truck-permissions";
-import { isCurrentlyPremium } from "@/lib/tiers";
-import { addTruckAttribute, getTruckAttributes, removeTruckAttribute } from "@/app/actions/attributes";
 import type { CreateTruckInput, UpdateTruckInput } from "@/lib/validations";
 
 interface TruckFormProps {
@@ -33,7 +37,7 @@ interface TruckFormProps {
   };
   owner?: {
     id: string;
-    tier: string;
+    tier: UserTier;
     tierExpiryAt: Date | null;
   };
   hours?: TruckHours[];
@@ -91,9 +95,10 @@ export function TruckForm({
   const [availableAttributes, setAvailableAttributes] = useState<
     Array<{ id: string; name: string; nameEn: string; icon: string }>
   >([]);
-  const [assignedAttributes, setAssignedAttributes] = useState<
-    Array<{ id: string; name: string; icon: string }>
-  >(initialAttributes);
+  const [assignedAttributes, setAssignedAttributes] =
+    useState<Array<{ id: string; name: string; icon: string }>>(
+      initialAttributes,
+    );
 
   // Fetch available attributes on mount (only for editing)
   useEffect(() => {
