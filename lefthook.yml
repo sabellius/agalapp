@@ -6,4 +6,6 @@ pre-commit:
       stage_fixed: true
     typecheck:
       glob: "*.{ts,tsx}"
+      skip:
+        - run: test "$NO_TEST" -eq 1
       run: pnpm exec tsc --noEmit
