@@ -19,6 +19,8 @@ describe("TruckPreview", () => {
     ownerId: "owner-1",
     createdAt: new Date(),
     updatedAt: new Date(),
+    latitude: 32.0853 as number | null,
+    longitude: 34.7818 as number | null,
     images: [
       { id: "img-1", url: "https://example.com/image.jpg", isPrimary: true },
     ],
