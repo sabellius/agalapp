@@ -1,5 +1,4 @@
-import type { LucideIcon } from "lucide-react";
-import * as icons from "lucide-react";
+import { icons, type LucideIcon } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = icons;
 
