@@ -7,6 +7,8 @@ export const mockUser: User = {
   emailVerified: true,
   image: null,
   role: "USER",
+  tier: "FREE",
+  tierExpiryAt: null,
   createdAt: new Date("2025-01-01"),
   updatedAt: new Date("2025-01-01"),
 };
@@ -33,6 +35,8 @@ export function buildUser(overrides: Partial<User> = {}): User {
     emailVerified: true,
     image: null,
     role: "USER",
+    tier: "FREE",
+    tierExpiryAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,

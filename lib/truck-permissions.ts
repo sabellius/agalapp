@@ -2,7 +2,7 @@
  * Truck permission checking based on owner's user tier and expiry
  */
 
-import type { User } from "@/generated/prisma";
+import type { User } from "@/generated/prisma/client";
 import type { UserTier } from "./tiers";
 import { isCurrentlyPremium } from "./tiers";
 
@@ -55,7 +55,9 @@ export function isExpiringSoon(tierExpiryAt: Date | null): boolean {
   return daysUntilExpiry > 0 && daysUntilExpiry <= 7;
 }
 
-export function getMaxAttributes(user: Pick<User, "tier" | "tierExpiryAt">): number {
+export function getMaxAttributes(
+  user: Pick<User, "tier" | "tierExpiryAt">,
+): number {
   return isCurrentlyPremium(user.tier as UserTier, user.tierExpiryAt)
     ? Infinity
     : 3;

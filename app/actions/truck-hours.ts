@@ -6,6 +6,7 @@ import type { TruckHours } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import type { DayOfWeek } from "@/lib/truck-hours";
+import { getBlankWeeklyHours } from "@/lib/truck-hours";
 import { canEditWorkingHours } from "@/lib/truck-permissions";
 import type { WeeklyHoursInput } from "@/lib/validations/truck-hours-schema";
 import { weeklyHoursSchema } from "@/lib/validations/truck-hours-schema";

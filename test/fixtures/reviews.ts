@@ -5,11 +5,9 @@ export const mockReview: Review = {
   truckId: "truck-1",
   userId: "user-1",
   rating: 5,
-  comment: "קפה מעולה!",
+  content: "קפה מעולה!",
   createdAt: new Date("2025-01-01"),
   updatedAt: new Date("2025-01-01"),
-  truck: null,
-  user: null,
 };
 
 export function buildReview(overrides: Partial<Review> = {}): Review {
@@ -18,11 +16,9 @@ export function buildReview(overrides: Partial<Review> = {}): Review {
     truckId: "truck-1",
     userId: "user-1",
     rating: 5,
-    comment: "תגובה",
+    content: "תגובה",
     createdAt: new Date(),
     updatedAt: new Date(),
-    truck: null,
-    user: null,
     ...overrides,
   };
 }

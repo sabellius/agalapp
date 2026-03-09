@@ -35,4 +35,4 @@ vi.mock("next/headers", () => ({
   ),
 }));
 
-process.env.NODE_ENV = "test";
+vi.stubEnv("NODE_ENV", "test");

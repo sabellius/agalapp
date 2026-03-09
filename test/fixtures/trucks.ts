@@ -5,28 +5,21 @@ export const mockTruck: CoffeeTruck = {
   name: "עגלת הקפה",
   city: "תל אביב",
   address: "רוטשילד 1",
-  description: "הקפה הכי טוב בעיר",
+  latitude: 32.0636,
+  longitude: 34.7706,
   ownerId: "user-1",
   createdAt: new Date("2025-01-01"),
   updatedAt: new Date("2025-01-01"),
-  images: [],
-  reviews: [],
-  owner: null,
 };
 
-export const mockTruckWithImage: CoffeeTruck = {
-  ...mockTruck,
-  id: "truck-2",
-  images: [
-    {
-      id: "img-1",
-      truckId: "truck-2",
-      url: "https://example.com/image.jpg",
-      isPrimary: true,
-      alt: "תמונה",
-      createdAt: new Date(),
-    } as CoffeeTruckImage,
-  ],
+export const mockTruckImage: CoffeeTruckImage = {
+  id: "img-1",
+  truckId: "truck-2",
+  url: "https://example.com/image.jpg",
+  publicId: "test-public-id",
+  isPrimary: true,
+  alt: "תמונה",
+  createdAt: new Date(),
 };
 
 export function buildTruck(overrides: Partial<CoffeeTruck> = {}): CoffeeTruck {
@@ -35,13 +28,11 @@ export function buildTruck(overrides: Partial<CoffeeTruck> = {}): CoffeeTruck {
     name: "עגלת קפה",
     city: "תל אביב",
     address: "רוטשילד 1",
-    description: "קפה מעולה",
+    latitude: 32.0636,
+    longitude: 34.7706,
     ownerId: "user-1",
     createdAt: new Date(),
     updatedAt: new Date(),
-    images: [],
-    reviews: [],
-    owner: null,
     ...overrides,
   };
 }
