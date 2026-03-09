@@ -64,7 +64,7 @@ const mockPrisma = prisma as typeof prisma & {
     delete: ReturnType<typeof vi.fn>;
     create: ReturnType<typeof vi.fn>;
     createMany: ReturnType<typeof vi.fn>;
-    count: (args: { where: { truckId: string } }) => Promise<number>;
+    count: ReturnType<typeof vi.fn>;
   };
 };
 

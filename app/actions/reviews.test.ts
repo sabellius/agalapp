@@ -76,8 +76,8 @@ describe("reviews server actions", () => {
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({ id: "truck-123" });
       mockPrisma.review.findUnique.mockResolvedValue(null);
       mockPrisma.review.create.mockResolvedValue({
-        id: "review-123",
         ...mockReview,
+        id: "review-123",
       });
 
       const result = await createReview(validInput);
@@ -191,8 +191,8 @@ describe("reviews server actions", () => {
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({ id: "truck-123" });
       mockPrisma.review.findUnique.mockResolvedValue(null);
       mockPrisma.review.create.mockResolvedValue({
-        id: "review-123",
         ...mockReview,
+        id: "review-123",
       });
 
       const validMinInput = { ...validInput, content: "0123456789" };
@@ -214,8 +214,8 @@ describe("reviews server actions", () => {
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({ id: "truck-123" });
       mockPrisma.review.findUnique.mockResolvedValue(null);
       mockPrisma.review.create.mockResolvedValue({
-        id: "review-123",
         ...mockReview,
+        id: "review-123",
       });
 
       const result1 = await createReview({ ...validInput, rating: 1 });

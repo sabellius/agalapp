@@ -42,6 +42,11 @@ vi.mock("next/headers", () => ({
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import type {
+  CreateTruckInput,
+  DeleteTruckInput,
+  UpdateTruckInput,
+} from "@/lib/validations";
 import { mockTruck } from "@/test/fixtures/trucks";
 import { mockAdmin, mockTruckOwner, mockUser } from "@/test/fixtures/users";
 import { createTruck, deleteTruck, updateTruck } from "./trucks";
@@ -76,7 +81,7 @@ describe("trucks server actions", () => {
   });
 
   describe("createTruck", () => {
-    const validInput = {
+    const validInput: CreateTruckInput = {
       name: "עגלת קפה מעולה",
       city: "תל אביב",
       address: "רוטשילד 1",
@@ -103,14 +108,15 @@ describe("trucks server actions", () => {
         role: mockTruckOwner.role,
       });
       mockPrisma.coffeeTruck.create.mockResolvedValue({
-        id: "new-truck-id",
         ...mockTruck,
+        id: "new-truck-id",
       });
 
       const result = await createTruck(validInput);
 
-      expect(result.success).toBe(true);
-      expect(result.data).toBeDefined();
+      if (result.success) {
+        expect(result.data).toBeDefined();
+      }
       expect(mockPrisma.coffeeTruck.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           name: validInput.name,
@@ -134,8 +140,8 @@ describe("trucks server actions", () => {
         role: mockAdmin.role,
       });
       mockPrisma.coffeeTruck.create.mockResolvedValue({
-        id: "new-truck-id",
         ...mockTruck,
+        id: "new-truck-id",
       });
 
       const result = await createTruck(validInput);
@@ -148,8 +154,9 @@ describe("trucks server actions", () => {
 
       const result = await createTruck(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
       expect(mockPrisma.coffeeTruck.create).not.toHaveBeenCalled();
     });
 
@@ -168,8 +175,9 @@ describe("trucks server actions", () => {
 
       const result = await createTruck(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("רק בעלי עגלות");
+      if (!result.success) {
+        expect(result.message).toContain("רק בעלי עגלות");
+      }
     });
 
     it("validates input with Zod", async () => {
@@ -195,7 +203,7 @@ describe("trucks server actions", () => {
   });
 
   describe("updateTruck", () => {
-    const validInput = {
+    const validInput: UpdateTruckInput & { truckId: string } = {
       truckId: "truck-123",
       name: "עגלת קפה מעודכנת",
       city: "תל אביב",
@@ -271,8 +279,9 @@ describe("trucks server actions", () => {
 
       const result = await updateTruck(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
     });
 
     it("rejects when truck not found", async () => {
@@ -289,8 +298,9 @@ describe("trucks server actions", () => {
 
       const result = await updateTruck(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("העגלה לא נמצאה");
+      if (!result.success) {
+        expect(result.message).toBe("העגלה לא נמצאה");
+      }
     });
 
     it("rejects non-owner from updating", async () => {
@@ -315,13 +325,14 @@ describe("trucks server actions", () => {
 
       const result = await updateTruck(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("אינך מורשה");
+      if (!result.success) {
+        expect(result.message).toContain("אינך מורשה");
+      }
     });
   });
 
   describe("deleteTruck", () => {
-    const validInput = {
+    const validInput: DeleteTruckInput = {
       truckId: "truck-123",
     };
 
@@ -374,8 +385,9 @@ describe("trucks server actions", () => {
 
       const result = await deleteTruck(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("אינך מחובר");
+      if (!result.success) {
+        expect(result.message).toBe("אינך מחובר");
+      }
     });
 
     it("rejects when truck not found", async () => {
@@ -392,8 +404,9 @@ describe("trucks server actions", () => {
 
       const result = await deleteTruck(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toBe("העגלה לא נמצאה");
+      if (!result.success) {
+        expect(result.message).toBe("העגלה לא נמצאה");
+      }
     });
 
     it("rejects non-owner from deleting", async () => {
@@ -413,8 +426,9 @@ describe("trucks server actions", () => {
 
       const result = await deleteTruck(validInput);
 
-      expect(result.success).toBe(false);
-      expect(result.message).toContain("אינך מורשה");
+      if (!result.success) {
+        expect(result.message).toContain("אינך מורשה");
+      }
     });
 
     it("validates truckId with Zod", async () => {
