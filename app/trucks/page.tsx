@@ -32,10 +32,11 @@ async function getTrucks(params: SearchParams) {
   const conditions = [];
 
   if (search?.trim()) {
+    const mode = "insensitive" as const;
     conditions.push({
       OR: [
-        { name: { contains: search, mode: "insensitive" } },
-        { address: { contains: search, mode: "insensitive" } },
+        { name: { contains: search, mode } },
+        { address: { contains: search, mode } },
       ],
     });
   }
@@ -45,7 +46,7 @@ async function getTrucks(params: SearchParams) {
   }
 
   if (conditions.length > 0) {
-    where.AND = conditions;
+    where.AND = conditions as typeof where.AND;
   }
 
   const trucks = await prisma.coffeeTruck.findMany({
