@@ -101,20 +101,40 @@ async function main() {
   await prisma.truckAttribute.createMany({
     data: [
       // Accessibility
-      { name: "נגיש", nameEn: "Accessible", icon: "accessibility", sortOrder: 1 },
+      {
+        name: "נגיש",
+        nameEn: "Accessible",
+        icon: "accessibility",
+        sortOrder: 1,
+      },
       // Seating
-      { name: "ישיבה בחוץ", nameEn: "Outdoor Seating", icon: "sun", sortOrder: 10 },
+      {
+        name: "ישיבה בחוץ",
+        nameEn: "Outdoor Seating",
+        icon: "sun",
+        sortOrder: 10,
+      },
       { name: "מזגן", nameEn: "AC", icon: "wind", sortOrder: 11 },
       { name: "חימום", nameEn: "Heated", icon: "flame", sortOrder: 12 },
       // Amenities
       { name: "WiFi", nameEn: "WiFi", icon: "wifi", sortOrder: 20 },
       { name: "שירותים", nameEn: "Restrooms", icon: "doorOpen", sortOrder: 21 },
       // Payment
-      { name: "אשראי", nameEn: "Credit Card", icon: "creditCard", sortOrder: 30 },
+      {
+        name: "אשראי",
+        nameEn: "Credit Card",
+        icon: "creditCard",
+        sortOrder: 30,
+      },
       { name: "ביט", nameEn: "Bit", icon: "smartphone", sortOrder: 31 },
       // Dietary
       { name: "טבעוני", nameEn: "Vegan", icon: "leaf", sortOrder: 40 },
-      { name: "ללא גלוטן", nameEn: "Gluten Free", icon: "wheatOff", sortOrder: 41 },
+      {
+        name: "ללא גלוטן",
+        nameEn: "Gluten Free",
+        icon: "wheatOff",
+        sortOrder: 41,
+      },
       { name: "חלבי", nameEn: "Dairy", icon: "milk", sortOrder: 42 },
       // Products
       { name: "מתוקים", nameEn: "Desserts", icon: "cakeSlice", sortOrder: 50 },
@@ -124,8 +144,18 @@ async function main() {
       { name: "משלוחים", nameEn: "Delivery", icon: "truck", sortOrder: 60 },
       { name: "איסוף", nameEn: "Takeaway", icon: "shoppingBag", sortOrder: 61 },
       // Vibe
-      { name: "ידידותי לכלבים", nameEn: "Dog Friendly", icon: "dog", sortOrder: 70 },
-      { name: "ידידותי לילדים", nameEn: "Kid Friendly", icon: "baby", sortOrder: 71 },
+      {
+        name: "ידידותי לכלבים",
+        nameEn: "Dog Friendly",
+        icon: "dog",
+        sortOrder: 70,
+      },
+      {
+        name: "ידידותי לילדים",
+        nameEn: "Kid Friendly",
+        icon: "baby",
+        sortOrder: 71,
+      },
     ],
   });
 

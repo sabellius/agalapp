@@ -3,7 +3,6 @@ import {
   isCurrentlyPremium,
   isPremiumFeature,
   isTierExpired,
-  type UserTier,
 } from "./tiers";
 
 describe("tiers", () => {

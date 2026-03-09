@@ -1,24 +1,30 @@
 "use client";
 
+import { Lock } from "lucide-react";
 import { useState } from "react";
-import { AttributeBadge } from "./attribute-badge";
-import { FeatureLock } from "./feature-lock";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Lock } from "lucide-react";
+import { FeatureLock } from "./feature-lock";
 
 interface AttributesEditorProps {
   truckId: string;
-  availableAttributes: Array<{ id: string; name: string; nameEn: string; icon: string }>;
+  availableAttributes: Array<{
+    id: string;
+    name: string;
+    nameEn: string;
+    icon: string;
+  }>;
   assignedAttributes: Array<{ id: string; name: string; icon: string }>;
   maxAttributes: number;
   isPremium: boolean;
-  onToggle: (attributeId: string, isAssigned: boolean) => Promise<{ success: boolean; message?: string }>;
+  onToggle: (
+    attributeId: string,
+    isAssigned: boolean,
+  ) => Promise<{ success: boolean; message?: string }>;
 }
 
 export function AttributesEditor({
@@ -34,7 +40,10 @@ export function AttributesEditor({
 
   const canAddMore = isPremium || assignedAttributes.length < maxAttributes;
 
-  const handleToggle = async (attributeId: string, currentlyAssigned: boolean) => {
+  const handleToggle = async (
+    attributeId: string,
+    currentlyAssigned: boolean,
+  ) => {
     setToggling(attributeId);
     setError(null);
 

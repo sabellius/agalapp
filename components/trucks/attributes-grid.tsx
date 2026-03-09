@@ -10,9 +10,7 @@ export function AttributesGrid({
   emptyMessage = "אין מאפיינים",
 }: AttributesGridProps) {
   if (attributes.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">{emptyMessage}</p>
-    );
+    return <p className="text-sm text-muted-foreground">{emptyMessage}</p>;
   }
 
   return (

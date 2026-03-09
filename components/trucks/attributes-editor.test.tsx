@@ -183,7 +183,9 @@ describe("AttributesEditor", () => {
     );
 
     expect(screen.getByText("עוד מאפיינים בפרימיום")).toBeInTheDocument();
-    expect(screen.getByText("מנוי פרימיום מאפשר להוסיף מאפיינים ללא הגבלה")).toBeInTheDocument();
+    expect(
+      screen.getByText("מנוי פרימיום מאפשר להוסיף מאפיינים ללא הגבלה"),
+    ).toBeInTheDocument();
   });
 
   it("does not show FeatureLock for premium users", () => {

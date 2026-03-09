@@ -39,11 +39,15 @@ export async function getTruckAttributes(): Promise<
 /**
  * Get attributes assigned to a specific truck
  */
-export async function getTruckAssignedAttributes(
-  truckId: string,
-): Promise<
+export async function getTruckAssignedAttributes(truckId: string): Promise<
   ActionResult<
-    { id: string; name: string; nameEn: string; icon: string; assignedId: string }[]
+    {
+      id: string;
+      name: string;
+      nameEn: string;
+      icon: string;
+      assignedId: string;
+    }[]
   >
 > {
   try {
