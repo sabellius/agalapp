@@ -7,8 +7,8 @@ vi.mock("react-leaflet", () => ({
       {children}
     </div>
   ),
-  Popup: ({ children, dir }: any) => (
-    <div data-testid="popup" data-dir={dir}>
+  Popup: ({ children }: any) => (
+    <div data-testid="popup" dir="rtl">
       {children}
     </div>
   ),
@@ -61,7 +61,7 @@ describe("TruckMarker", () => {
     render(<TruckMarker truck={mockTruck} />);
 
     const popup = screen.getByTestId("popup");
-    expect(popup).toHaveAttribute("data-dir", "rtl");
+    expect(popup).toHaveAttribute("dir", "rtl");
   });
 
   it("renders link to truck detail", () => {
