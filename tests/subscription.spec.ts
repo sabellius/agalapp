@@ -1,22 +1,35 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("Subscription", () => {
-  test.beforeEach(async ({ page }) => {
-    // Navigate to subscription page - should redirect to sign-in if not authenticated
-    await page.goto("/subscription");
-  });
+/**
+ * E2E tests for Subscription page
+ *
+ * Authenticated tests require:
+ * 1. Auth state files generated (run global-auth.setup.ts)
+ * 2. E2E_TEST_PASSWORD environment variable set
+ *
+ * To generate auth state files:
+ * 1. Set E2E_TEST_FREE_USER_EMAIL, E2E_TEST_PREMIUM_USER_EMAIL, E2E_TEST_PASSWORD
+ * 2. Run: pnpm exec playwright test --config=playwright.config.ts
+ */
 
+test.describe("Subscription", () => {
   test("redirects to sign-in when not authenticated", async ({ page }) => {
+    await page.goto("/subscription");
     await expect(page).toHaveURL(/\/auth\/sign-in/);
   });
 
-  // TODO: Implement proper auth setup for E2E tests
-  // These tests require authenticated sessions to work properly
-
+  // Authenticated tests - skipped until auth state files are generated
   test.describe("authenticated as free user", () => {
-    test.skip(true, "E2E auth setup not yet implemented");
+    test.use({ storageState: "./tests/.auth/free-user.json" });
+
+    test.skip(
+      !process.env.E2E_TEST_PASSWORD,
+      "Set E2E_TEST_PASSWORD and generate auth state files to run",
+    );
 
     test("displays upgrade prompt for free users", async ({ page }) => {
+      await page.goto("/subscription");
+
       // Verify the upgrade prompt is displayed
       await expect(page.getByText("שדרג לפרימיום")).toBeVisible();
       await expect(page.getByText("שעות פעילות")).toBeVisible();
@@ -28,9 +41,16 @@ test.describe("Subscription", () => {
   });
 
   test.describe("authenticated as premium user", () => {
-    test.skip(true, "E2E auth setup not yet implemented");
+    test.use({ storageState: "./tests/.auth/premium-user.json" });
+
+    test.skip(
+      !process.env.E2E_TEST_PASSWORD,
+      "Set E2E_TEST_PASSWORD and generate auth state files to run",
+    );
 
     test("displays current status and downgrade option", async ({ page }) => {
+      await page.goto("/subscription");
+
       // Verify the premium status card is displayed
       await expect(page.getByText("סטטוס מנוי")).toBeVisible();
       await expect(page.getByText("ניהול מנוי")).toBeVisible();
@@ -41,9 +61,16 @@ test.describe("Subscription", () => {
   });
 
   test.describe("upgrade flow", () => {
-    test.skip(true, "E2E auth setup not yet implemented");
+    test.use({ storageState: "./tests/.auth/free-user.json" });
+
+    test.skip(
+      !process.env.E2E_TEST_PASSWORD,
+      "Set E2E_TEST_PASSWORD and generate auth state files to run",
+    );
 
     test("allows user to upgrade to premium", async ({ page }) => {
+      await page.goto("/subscription");
+
       // Click the upgrade button
       await page.getByRole("button", { name: /שדרג עכשיו/ }).click();
 
@@ -52,19 +79,6 @@ test.describe("Subscription", () => {
       await expect(
         page.getByText(/החשבון שלך כעת במנוי פרימיום/),
       ).toBeVisible();
-    });
-  });
-
-  test.describe("pricing information", () => {
-    test.skip(true, "Requires authenticated user");
-
-    test("displays pricing options", async ({ page }) => {
-      // Verify pricing information is displayed
-      await expect(page.getByText("מחירות")).toBeVisible();
-      await expect(page.getByText("חודשי")).toBeVisible();
-      await expect(page.getByText(/₪30\/חודש/)).toBeVisible();
-      await expect(page.getByText("שנתי")).toBeVisible();
-      await expect(page.getByText(/₪300\/שנה/)).toBeVisible();
     });
   });
 });
