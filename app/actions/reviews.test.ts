@@ -232,14 +232,8 @@ describe("reviews server actions", () => {
     });
 
     it("rejects non-owner from updating", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser, id: "other-user-id" },
-        session: {
-          id: "session-1",
-          userId: "other-user-id",
-          expiresAt: new Date(),
-        },
-      } as any);
+      const otherUser = { ...mockUser, id: "other-user-id" };
+      mockAuthSession(otherUser);
 
       const existingReview = {
         ...mockReview,
@@ -327,14 +321,8 @@ describe("reviews server actions", () => {
     });
 
     it("rejects non-owner from deleting", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser, id: "other-user-id" },
-        session: {
-          id: "session-1",
-          userId: "other-user-id",
-          expiresAt: new Date(),
-        },
-      } as any);
+      const otherUser = { ...mockUser, id: "other-user-id" };
+      mockAuthSession(otherUser);
 
       const existingReview = {
         ...mockReview,
