@@ -36,6 +36,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { mockReview } from "@/test/fixtures/reviews";
 import { mockUser } from "@/test/fixtures/users";
+import { mockAuthSession } from "@/test/utils/test-helpers";
 import { createReview, deleteReview, updateReview } from "./reviews";
 
 const mockPrisma = prisma as typeof prisma & {
@@ -65,14 +66,7 @@ describe("reviews server actions", () => {
     };
 
     it("creates review for authenticated user", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({ id: "truck-123" });
       mockPrisma.review.findUnique.mockResolvedValue(null);
       mockPrisma.review.create.mockResolvedValue({
@@ -107,14 +101,7 @@ describe("reviews server actions", () => {
     });
 
     it("rejects when truck not found", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue(null);
 
       const result = await createReview(validInput);
@@ -125,14 +112,7 @@ describe("reviews server actions", () => {
     });
 
     it("rejects duplicate review for same truck", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({ id: "truck-123" });
       mockPrisma.review.findUnique.mockResolvedValue({ id: "existing-review" });
 
@@ -145,14 +125,7 @@ describe("reviews server actions", () => {
     });
 
     it("validates input with Zod", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const invalidInput = { ...validInput, rating: 6 };
 
@@ -163,14 +136,7 @@ describe("reviews server actions", () => {
     });
 
     it("validates content length", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const invalidInput = { ...validInput, content: "קצר" };
 
@@ -180,14 +146,7 @@ describe("reviews server actions", () => {
     });
 
     it("accepts minimum valid content (10 characters)", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({ id: "truck-123" });
       mockPrisma.review.findUnique.mockResolvedValue(null);
       mockPrisma.review.create.mockResolvedValue({
@@ -203,14 +162,7 @@ describe("reviews server actions", () => {
     });
 
     it("accepts rating boundaries", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({ id: "truck-123" });
       mockPrisma.review.findUnique.mockResolvedValue(null);
       mockPrisma.review.create.mockResolvedValue({
@@ -234,14 +186,7 @@ describe("reviews server actions", () => {
     };
 
     it("updates review for owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const existingReview = {
         ...mockReview,
@@ -276,14 +221,7 @@ describe("reviews server actions", () => {
     });
 
     it("rejects when review not found", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
       mockPrisma.review.findUnique.mockResolvedValue(null);
 
       const result = await updateReview(validInput);
@@ -320,14 +258,7 @@ describe("reviews server actions", () => {
     });
 
     it("validates input with Zod", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const invalidInput = { ...validInput, rating: 0 };
 
@@ -338,14 +269,7 @@ describe("reviews server actions", () => {
     });
 
     it("validates content length", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const invalidInput = { ...validInput, content: "קצר" };
 
@@ -361,14 +285,7 @@ describe("reviews server actions", () => {
     };
 
     it("deletes review for owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const existingReview = {
         ...mockReview,
@@ -399,14 +316,7 @@ describe("reviews server actions", () => {
     });
 
     it("rejects when review not found", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
       mockPrisma.review.findUnique.mockResolvedValue(null);
 
       const result = await deleteReview(validInput);
@@ -443,14 +353,7 @@ describe("reviews server actions", () => {
     });
 
     it("validates reviewId with Zod", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const result = await deleteReview({ reviewId: "" });
 
