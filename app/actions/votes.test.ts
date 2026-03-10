@@ -31,6 +31,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { mockReview } from "@/test/fixtures/reviews";
 import { mockUser } from "@/test/fixtures/users";
+import { mockAuthSession } from "@/test/utils/test-helpers";
 import { toggleVote } from "./votes";
 
 const mockPrisma = prisma as typeof prisma & {
@@ -56,14 +57,7 @@ describe("votes server actions", () => {
     };
 
     it("creates vote for authenticated user", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.review.findUnique.mockResolvedValue({
         ...mockReview,
@@ -88,14 +82,7 @@ describe("votes server actions", () => {
     });
 
     it("removes existing vote on toggle", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.review.findUnique.mockResolvedValue({
         ...mockReview,
@@ -126,14 +113,7 @@ describe("votes server actions", () => {
     });
 
     it("rejects voting on own review", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.review.findUnique.mockResolvedValue({
         ...mockReview,
@@ -152,14 +132,7 @@ describe("votes server actions", () => {
     });
 
     it("rejects when review not found", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.review.findUnique.mockResolvedValue(null);
 
@@ -171,14 +144,7 @@ describe("votes server actions", () => {
     });
 
     it("validates reviewId with Zod", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const result = await toggleVote({ reviewId: "" });
 
