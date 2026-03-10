@@ -42,6 +42,7 @@ vi.mock("next/headers", () => ({
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { mockUser } from "@/test/fixtures/users";
+import { mockAuthSession } from "@/test/utils/test-helpers";
 import {
   addTruckAttribute,
   getTruckAssignedAttributes,
@@ -249,14 +250,7 @@ describe("attributes server actions", () => {
     });
 
     it("rejects non-owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.user.findUnique.mockResolvedValue({
         id: mockUser.id,
@@ -359,14 +353,7 @@ describe("attributes server actions", () => {
     };
 
     it("adds attribute for authenticated owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.user.findUnique.mockResolvedValue({
         id: mockUser.id,
@@ -427,14 +414,7 @@ describe("attributes server actions", () => {
     });
 
     it("rejects if attribute already assigned", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.user.findUnique.mockResolvedValue({
         id: mockUser.id,
@@ -470,14 +450,7 @@ describe("attributes server actions", () => {
     };
 
     it("removes attribute for authenticated owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
         ownerId: mockUser.id,
@@ -499,14 +472,7 @@ describe("attributes server actions", () => {
     });
 
     it("rejects non-owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
         ownerId: "other-user-id",
