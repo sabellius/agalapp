@@ -189,14 +189,12 @@ describe("attributes server actions", () => {
     };
 
     it("sets attributes for authenticated owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser, tier: "FREE", tierExpiryAt: null },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      const freeUser = {
+        ...mockUser,
+        tier: "FREE" as const,
+        tierExpiryAt: null,
+      };
+      mockAuthSession(freeUser);
 
       mockPrisma.user.findUnique.mockResolvedValue({
         id: mockUser.id,
@@ -270,14 +268,12 @@ describe("attributes server actions", () => {
     });
 
     it("enforces tier limits for free users", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser, tier: "FREE", tierExpiryAt: null },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      const freeUser = {
+        ...mockUser,
+        tier: "FREE" as const,
+        tierExpiryAt: null,
+      };
+      mockAuthSession(freeUser);
 
       mockPrisma.user.findUnique.mockResolvedValue({
         id: mockUser.id,
@@ -300,18 +296,12 @@ describe("attributes server actions", () => {
     });
 
     it("allows unlimited for premium users", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: {
-          ...mockUser,
-          tier: "PREMIUM",
-          tierExpiryAt: new Date(Date.now() + 86400000),
-        },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      const premiumUser = {
+        ...mockUser,
+        tier: "PREMIUM" as const,
+        tierExpiryAt: new Date(Date.now() + 86400000),
+      };
+      mockAuthSession(premiumUser);
 
       mockPrisma.user.findUnique.mockResolvedValue({
         id: mockUser.id,
@@ -385,14 +375,12 @@ describe("attributes server actions", () => {
     });
 
     it("enforces tier limits", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser, tier: "FREE", tierExpiryAt: null },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      const freeUser = {
+        ...mockUser,
+        tier: "FREE" as const,
+        tierExpiryAt: null,
+      };
+      mockAuthSession(freeUser);
 
       mockPrisma.user.findUnique.mockResolvedValue({
         id: mockUser.id,
