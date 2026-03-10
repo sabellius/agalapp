@@ -49,6 +49,7 @@ import type {
 } from "@/lib/validations";
 import { mockTruck } from "@/test/fixtures/trucks";
 import { mockAdmin, mockTruckOwner, mockUser } from "@/test/fixtures/users";
+import { mockAuthSession } from "@/test/utils/test-helpers";
 import { createTruck, deleteTruck, updateTruck } from "./trucks";
 
 const mockPrisma = prisma as typeof prisma & {
@@ -96,14 +97,7 @@ describe("trucks server actions", () => {
     };
 
     it("creates truck for truck owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
       mockPrisma.user.findUnique.mockResolvedValue({
         role: mockTruckOwner.role,
       });
@@ -128,14 +122,7 @@ describe("trucks server actions", () => {
     });
 
     it("creates truck for admin", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockAdmin },
-        session: {
-          id: "session-1",
-          userId: mockAdmin.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockAdmin);
       mockPrisma.user.findUnique.mockResolvedValue({
         role: mockAdmin.role,
       });
@@ -161,14 +148,7 @@ describe("trucks server actions", () => {
     });
 
     it("rejects regular user (not truck owner or admin)", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
       mockPrisma.user.findUnique.mockResolvedValue({
         role: mockUser.role,
       });
@@ -181,14 +161,7 @@ describe("trucks server actions", () => {
     });
 
     it("validates input with Zod", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
       mockPrisma.user.findUnique.mockResolvedValue({
         role: mockTruckOwner.role,
       });
@@ -220,14 +193,7 @@ describe("trucks server actions", () => {
     };
 
     it("updates truck for owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const truck = {
         ...mockTruck,
@@ -248,14 +214,7 @@ describe("trucks server actions", () => {
     });
 
     it("updates truck for admin", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockAdmin },
-        session: {
-          id: "session-1",
-          userId: mockAdmin.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockAdmin);
 
       const truck = {
         ...mockTruck,
@@ -285,14 +244,7 @@ describe("trucks server actions", () => {
     });
 
     it("rejects when truck not found", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue(null);
 
@@ -304,14 +256,7 @@ describe("trucks server actions", () => {
     });
 
     it("rejects non-owner from updating", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const truck = {
         ...mockTruck,
@@ -337,14 +282,7 @@ describe("trucks server actions", () => {
     };
 
     it("deletes truck for owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
         ownerId: mockTruckOwner.id,
@@ -360,14 +298,7 @@ describe("trucks server actions", () => {
     });
 
     it("deletes truck for admin", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockAdmin },
-        session: {
-          id: "session-1",
-          userId: mockAdmin.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockAdmin);
 
       mockPrisma.user.findUnique.mockResolvedValue({ role: "ADMIN" });
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
@@ -391,14 +322,7 @@ describe("trucks server actions", () => {
     });
 
     it("rejects when truck not found", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue(null);
 
@@ -410,14 +334,7 @@ describe("trucks server actions", () => {
     });
 
     it("rejects non-owner from deleting", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.user.findUnique.mockResolvedValue({ role: "USER" });
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
@@ -432,14 +349,7 @@ describe("trucks server actions", () => {
     });
 
     it("validates truckId with Zod", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const result = await deleteTruck({ truckId: "" });
 
