@@ -87,7 +87,9 @@ components/
   trucks/            # Truck components
   reviews/           # Review components
 test/                # Test fixtures & mocks
+  utils/             # Test helper utilities (type-safe auth mocks)
 tests/               # E2E tests (Playwright)
+  .auth/             # Generated auth state files for E2E tests
 ```
 
 ## Naming Conventions
@@ -197,6 +199,7 @@ export type CreateTruckInput = z.infer<typeof createTruckSchema>;
 ### Testing
 - Co-located: `*.test.ts` / `*.test.tsx` next to source
 - Mock Prisma inline with `vi.mock()`
+- Use type-safe test helpers from `@/test/utils/test-helpers.ts`
 - Test behavior, not implementation
 
 ```typescript
@@ -204,12 +207,21 @@ vi.mock("@/lib/prisma", () => ({
   prisma: { coffeeTruck: { create: vi.fn() } },
 }));
 
+// ✅ Use type-safe helper instead of `as any`
+import { mockAuthSession } from "@/test/utils/test-helpers";
+
 test("creates truck with valid data", async () => {
+  mockAuthSession(mockTruckOwner); // Type-safe!
   mockPrisma.coffeeTruck.create.mockResolvedValue({ id: "1" });
   const result = await createTruck(validInput);
   expect(result.success).toBe(true);
 });
 ```
+
+### E2E Testing (Playwright)
+- Auth tests use `storageState` for pre-generated sessions
+- Tests are skipped until auth state files exist
+- Generate auth state via `tests/global-auth.setup.ts`
 
 ## Git Commits
 
