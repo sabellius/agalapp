@@ -27,7 +27,15 @@ export const mockAdmin: User = {
   role: "ADMIN",
 };
 
-export function buildUser(overrides: Partial<User> = {}): User {
+export const mockPremiumUser: User = {
+  ...mockTruckOwner,
+  id: "premium-owner-1",
+  email: "premium@example.com",
+  tier: "PREMIUM",
+  tierExpiryAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+};
+
+export const buildUser = (overrides: Partial<User> = {}): User => {
   return {
     id: `user-${Math.random().toString(36).slice(2, 9)}`,
     name: "Test User",
@@ -41,4 +49,4 @@ export function buildUser(overrides: Partial<User> = {}): User {
     updatedAt: new Date(),
     ...overrides,
   };
-}
+};
