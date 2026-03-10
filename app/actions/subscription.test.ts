@@ -27,6 +27,7 @@ vi.mock("next/headers", () => ({
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { mockTruckOwner } from "@/test/fixtures/users";
+import { mockAuthSession } from "@/test/utils/test-helpers";
 import { downgradeAccount, upgradeAccount } from "./subscription";
 
 const mockPrisma = prisma as typeof prisma & {
@@ -47,14 +48,7 @@ describe("subscription server actions", () => {
 
   describe("upgradeAccount", () => {
     it("upgrades user to premium for 30 days", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       mockPrisma.user.findUnique.mockResolvedValue({
         tier: "FREE",
@@ -97,14 +91,7 @@ describe("subscription server actions", () => {
     });
 
     it("handles user not found gracefully", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       mockPrisma.user.findUnique.mockResolvedValue(null);
 
@@ -119,14 +106,7 @@ describe("subscription server actions", () => {
 
   describe("downgradeAccount", () => {
     it("downgrades user from premium to free", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       mockPrisma.user.update.mockResolvedValue({
         id: mockTruckOwner.id,
