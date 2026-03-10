@@ -45,6 +45,7 @@ import { auth } from "@/lib/auth";
 import cloudinary from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
 import { mockAdmin, mockTruckOwner, mockUser } from "@/test/fixtures/users";
+import { mockAuthSession } from "@/test/utils/test-helpers";
 import { deleteImage, setPrimaryImage, updateImageAlt } from "./images";
 
 const mockPrisma = prisma as typeof prisma & {
@@ -80,14 +81,7 @@ describe("images server actions", () => {
     };
 
     it("deletes image for owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const image = {
         id: validInput.imageId,
@@ -112,14 +106,7 @@ describe("images server actions", () => {
     });
 
     it("deletes image for admin", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockAdmin },
-        session: {
-          id: "session-1",
-          userId: mockAdmin.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockAdmin);
 
       const image = {
         id: validInput.imageId,
@@ -149,14 +136,7 @@ describe("images server actions", () => {
     });
 
     it("rejects when image not found", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
       mockPrisma.coffeeTruckImage.findUnique.mockResolvedValue(null);
 
       const result = await deleteImage(validInput);
@@ -167,14 +147,7 @@ describe("images server actions", () => {
     });
 
     it("rejects non-owner from deleting", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const image = {
         id: validInput.imageId,
@@ -194,14 +167,7 @@ describe("images server actions", () => {
     });
 
     it("sets next image as primary when deleting primary image", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const primaryImage = {
         id: validInput.imageId,
@@ -233,14 +199,7 @@ describe("images server actions", () => {
     });
 
     it("handles Cloudinary deletion error gracefully", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const image = {
         id: validInput.imageId,
@@ -262,14 +221,7 @@ describe("images server actions", () => {
     });
 
     it("validates input with Zod", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const result = await deleteImage({ imageId: "", truckId: "truck-123" });
 
@@ -285,14 +237,7 @@ describe("images server actions", () => {
     };
 
     it("sets primary image for owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
         ownerId: mockTruckOwner.id,
@@ -317,14 +262,7 @@ describe("images server actions", () => {
     });
 
     it("sets primary image for admin", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockAdmin },
-        session: {
-          id: "session-1",
-          userId: mockAdmin.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockAdmin);
 
       mockPrisma.user.findUnique.mockResolvedValue({ role: "ADMIN" });
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
@@ -352,14 +290,7 @@ describe("images server actions", () => {
     });
 
     it("rejects when truck not found", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue(null);
 
       const result = await setPrimaryImage(validInput);
@@ -370,14 +301,7 @@ describe("images server actions", () => {
     });
 
     it("rejects non-owner from setting primary", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       mockPrisma.user.findUnique.mockResolvedValue({ role: "USER" });
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
@@ -392,14 +316,7 @@ describe("images server actions", () => {
     });
 
     it("rejects when image does not belong to truck", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
         ownerId: mockTruckOwner.id,
@@ -416,14 +333,7 @@ describe("images server actions", () => {
     });
 
     it("validates input with Zod", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const result = await setPrimaryImage({ imageId: "", truckId: "" });
 
@@ -438,14 +348,7 @@ describe("images server actions", () => {
     };
 
     it("updates alt text for owner", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const image = {
         id: validInput.imageId,
@@ -466,14 +369,7 @@ describe("images server actions", () => {
     });
 
     it("updates alt text for admin", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockAdmin },
-        session: {
-          id: "session-1",
-          userId: mockAdmin.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockAdmin);
 
       const image = {
         id: validInput.imageId,
@@ -491,14 +387,7 @@ describe("images server actions", () => {
     });
 
     it("allows empty alt text", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const image = {
         id: validInput.imageId,
@@ -525,14 +414,7 @@ describe("images server actions", () => {
     });
 
     it("rejects when image not found", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
       mockPrisma.coffeeTruckImage.findUnique.mockResolvedValue(null);
 
       const result = await updateImageAlt(validInput);
@@ -543,14 +425,7 @@ describe("images server actions", () => {
     });
 
     it("rejects non-owner from updating", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockUser },
-        session: {
-          id: "session-1",
-          userId: mockUser.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockUser);
 
       const image = {
         id: validInput.imageId,
@@ -569,14 +444,7 @@ describe("images server actions", () => {
     });
 
     it("validates alt text length", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const result = await updateImageAlt({
         ...validInput,
@@ -587,14 +455,7 @@ describe("images server actions", () => {
     });
 
     it("validates input with Zod", async () => {
-      mockAuth.api.getSession.mockResolvedValue({
-        user: { ...mockTruckOwner },
-        session: {
-          id: "session-1",
-          userId: mockTruckOwner.id,
-          expiresAt: new Date(),
-        },
-      } as any);
+      mockAuthSession(mockTruckOwner);
 
       const result = await updateImageAlt({ imageId: "", alt: "תמונה" });
 
