@@ -6,15 +6,15 @@ Complete guide to setting up AgalApp for local development.
 
 Ensure you have the following installed:
 
-- **Node.js** 20 or higher ([nvm](https://github.com/nvm-sh/nvm) recommended)
-- **pnpm** 9 or higher (`npm install -g pnpm`)
-- **Docker** and Docker Compose (for local MariaDB)
+- **Node.js** 18+ ([Download](https://nodejs.org/) | recommend a version manager like [nvm](https://github.com/nvm-sh/nvm) or [mise](https://mise.jdx.dev/))
+- **pnpm** 8+ ([Installation guide](https://pnpm.io/installation))
+- **Docker** ([Download](https://www.docker.com/products/docker-desktop/)) for local MySQL
 
 ### Verify Installation
 
 ```bash
-node --version   # v20.x.x or higher
-pnpm --version   # 9.x.x or higher
+node --version   # v18.x.x or higher
+pnpm --version   # 8.x.x or higher
 docker --version # 20.x.x or higher
 ```
 
@@ -23,7 +23,7 @@ docker --version # 20.x.x or higher
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/agalapp.git
+git clone https://github.com/sabellius/agalapp.git
 cd agalapp
 ```
 
@@ -70,15 +70,15 @@ GOOGLE_MAPS_API_KEY="your-google-maps-key"
 Using Docker Compose:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
-This starts a MariaDB container on port 3306.
+This starts a MySQL container on port 3306.
 
 To verify the database is running:
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 ### 5. Initialize the Database
@@ -86,13 +86,13 @@ docker-compose ps
 Generate the Prisma client:
 
 ```bash
-npx prisma generate
+pnpm exec prisma generate
 ```
 
 Run migrations to create the database schema:
 
 ```bash
-npx prisma migrate deploy
+pnpm exec prisma migrate deploy
 ```
 
 Seed the database with initial data:
@@ -130,14 +130,14 @@ To verify everything is working:
 If you see `Can't reach database server`:
 
 ```bash
-# Check if MariaDB container is running
-docker-compose ps
+# Check if MySQL container is running
+docker compose ps
 
 # View database logs
-docker-compose logs mariadb
+docker compose logs mysql
 
 # Restart the database
-docker-compose restart mariadb
+docker compose restart mysql
 ```
 
 ### Prisma Client Issues
@@ -146,10 +146,10 @@ If Prisma commands fail:
 
 ```bash
 # Regenerate the client
-npx prisma generate
+pnpm exec prisma generate
 
 # Reset database (WARNING: deletes all data)
-npx prisma migrate reset
+pnpm exec prisma migrate reset
 ```
 
 ### Port Already in Use

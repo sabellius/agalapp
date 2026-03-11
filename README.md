@@ -40,7 +40,7 @@ AgalApp is a production-ready full-stack application for discovering and reviewi
 | **Framework** | Next.js 16 (App Router), React 19 |
 | **Language** | TypeScript (strict mode) |
 | **Styling** | Tailwind CSS v4, shadcn/ui |
-| **Database** | MySQL/MariaDB via Prisma ORM |
+| **Database** | MySQL 9 via Prisma ORM |
 | **Auth** | better-auth |
 | **Validation** | Zod 4.x |
 | **Testing** | Vitest, Playwright |
@@ -52,7 +52,7 @@ AgalApp is a production-ready full-stack application for discovering and reviewi
 
 - **Node.js** 18+
 - **pnpm** 8+
-- **Docker** (for local MariaDB)
+- **Docker** (for local MySQL)
 - **Cloudinary account** (free tier works, for image uploads)
 
 ---
@@ -61,7 +61,7 @@ AgalApp is a production-ready full-stack application for discovering and reviewi
 
 ```bash
 # Clone and install
-git clone https://github.com/yourusername/agalapp.git
+git clone https://github.com/sabellius/agalapp.git
 cd agalapp
 pnpm install
 
@@ -69,10 +69,10 @@ pnpm install
 cp .env.example .env
 
 # Start database
-docker-compose up -d
+docker compose up -d
 
 # Initialize database
-npx prisma generate && pnpm run seed
+pnpm exec prisma generate && pnpm run seed
 
 # Start dev server
 pnpm run dev
@@ -126,4 +126,4 @@ Visit [http://localhost:3000](http://localhost:3000)
 
 ## License
 
-MIT &copy; 2026 Saveliy Shiryaev
+[MIT](LICENSE) &copy; 2026 Saveliy Shiryaev

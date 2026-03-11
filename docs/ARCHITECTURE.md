@@ -26,7 +26,7 @@ Technical design decisions and system architecture for AgalApp.
 └────┬────┘    └──────────┘    └───────────┘
      │
 ┌────▼────┐
-│ MariaDB │
+│  MySQL  │
 └─────────┘
 ```
 
@@ -51,7 +51,7 @@ Technical design decisions and system architecture for AgalApp.
 | TypeScript | First-class | Good but verbose |
 | App Router | Native | Added later |
 
-### Prisma + MySQL/MariaDB
+### Prisma + MySQL 9
 
 **Why:** Type-safe queries, excellent DX, battle-tested database.
 
