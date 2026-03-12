@@ -135,15 +135,16 @@ export async function setPrimaryImage(
       return { success: false, message: "התמונה לא שייכת לעגלה זו" };
     }
 
-    await prisma.coffeeTruckImage.updateMany({
-      where: { truckId: validated.truckId },
-      data: { isPrimary: false },
-    });
-
-    await prisma.coffeeTruckImage.update({
-      where: { id: validated.imageId },
-      data: { isPrimary: true },
-    });
+    await prisma.$transaction([
+      prisma.coffeeTruckImage.updateMany({
+        where: { truckId: validated.truckId },
+        data: { isPrimary: false },
+      }),
+      prisma.coffeeTruckImage.update({
+        where: { id: validated.imageId },
+        data: { isPrimary: true },
+      }),
+    ]);
 
     revalidatePath("/trucks");
     revalidatePath(`/trucks/${validated.truckId}`);
