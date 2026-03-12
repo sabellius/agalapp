@@ -112,7 +112,6 @@ export async function updateTruck(
       return { success: false, message: "אינך מורשה לערוך עגלה זו" };
     }
 
-    const _existingImageIds = new Set(truck.images.map((img) => img.publicId));
     const newImageIds = new Set(
       validated.images
         .filter((img) => !img.id?.startsWith("temp-"))
