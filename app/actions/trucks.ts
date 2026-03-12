@@ -1,12 +1,13 @@
 "use server";
 
-import type { Role } from "@generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { ZodError } from "zod";
+import type { ActionResult } from "@/lib/actions";
 import { auth } from "@/lib/auth";
 import { geocodeAddress } from "@/lib/geocoding";
 import { prisma } from "@/lib/prisma";
+import { canModifyTruck, getUserRole } from "@/lib/truck-permissions";
 import {
   type CreateTruckInput,
   createTruckSchema,
@@ -15,27 +16,6 @@ import {
   type UpdateTruckInput,
   updateTruckSchema,
 } from "@/lib/validations";
-
-type ActionResult<T = void> =
-  | { success: true; data?: T }
-  | { success: false; message: string };
-
-async function getUserRole(userId: string): Promise<Role | null> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { role: true },
-  });
-  return user?.role ?? null;
-}
-
-async function canModifyTruck(
-  userId: string,
-  truckOwnerId: string,
-): Promise<boolean> {
-  if (userId === truckOwnerId) return true;
-  const role = await getUserRole(userId);
-  return role === "ADMIN";
-}
 
 export async function createTruck(
   input: CreateTruckInput,

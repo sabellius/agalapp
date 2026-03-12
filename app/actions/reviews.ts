@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { ZodError } from "zod";
+import type { ActionResult } from "@/lib/actions";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
@@ -13,10 +14,6 @@ import {
   type UpdateReviewInput,
   updateReviewSchema,
 } from "@/lib/validations";
-
-type ActionResult<T = void> =
-  | { success: true; data?: T }
-  | { success: false; message: string };
 
 export async function createReview(
   input: CreateReviewInput,

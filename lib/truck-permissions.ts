@@ -2,9 +2,27 @@
  * Truck permission checking based on owner's user tier and expiry
  */
 
-import type { User } from "@/generated/prisma/client";
+import type { Role, User } from "@/generated/prisma/client";
+import { prisma } from "./prisma";
 import type { UserTier } from "./tiers";
 import { isCurrentlyPremium } from "./tiers";
+
+export async function getUserRole(userId: string): Promise<Role | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+  return user?.role ?? null;
+}
+
+export async function canModifyTruck(
+  userId: string,
+  truckOwnerId: string,
+): Promise<boolean> {
+  if (userId === truckOwnerId) return true;
+  const role = await getUserRole(userId);
+  return role === "ADMIN";
+}
 
 export function canShowWorkingHours(
   user: Pick<User, "tier" | "tierExpiryAt">,
