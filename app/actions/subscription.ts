@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import type { ActionResult } from "@/lib/actions";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { PREMIUM_DURATION_DAYS } from "@/lib/tiers";
 
 /**
  * Upgrade user account to premium tier (mock payment for portfolio)
@@ -32,7 +33,7 @@ export async function upgradeAccount(): Promise<
     }
 
     const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 30);
+    expiryDate.setDate(expiryDate.getDate() + PREMIUM_DURATION_DAYS);
 
     await prisma.user.update({
       where: { id: session.user.id },

@@ -4,6 +4,11 @@
 
 export type UserTier = "FREE" | "PREMIUM";
 
+export const PREMIUM_DURATION_DAYS = 30;
+export const FREE_TIER_MAX_ATTRIBUTES = 3;
+export const EXPIRY_WARNING_DAYS = 7;
+export const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
 export interface TierConfig {
   name: string;
   nameEn: string;

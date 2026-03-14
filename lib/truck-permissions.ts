@@ -5,7 +5,12 @@
 import type { Role, User } from "@/generated/prisma/client";
 import { prisma } from "./prisma";
 import type { UserTier } from "./tiers";
-import { isCurrentlyPremium } from "./tiers";
+import {
+  EXPIRY_WARNING_DAYS,
+  FREE_TIER_MAX_ATTRIBUTES,
+  isCurrentlyPremium,
+  MS_PER_DAY,
+} from "./tiers";
 
 export async function getUserRole(userId: string): Promise<Role | null> {
   const user = await prisma.user.findUnique({
@@ -67,10 +72,10 @@ export function isExpiringSoon(tierExpiryAt: Date | null): boolean {
   if (!tierExpiryAt) return false;
 
   const daysUntilExpiry = Math.ceil(
-    (tierExpiryAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+    (tierExpiryAt.getTime() - Date.now()) / MS_PER_DAY,
   );
 
-  return daysUntilExpiry > 0 && daysUntilExpiry <= 7;
+  return daysUntilExpiry > 0 && daysUntilExpiry <= EXPIRY_WARNING_DAYS;
 }
 
 export function getMaxAttributes(
@@ -78,7 +83,7 @@ export function getMaxAttributes(
 ): number {
   return isCurrentlyPremium(user.tier as UserTier, user.tierExpiryAt)
     ? Infinity
-    : 3;
+    : FREE_TIER_MAX_ATTRIBUTES;
 }
 
 export function canAddAttribute(
