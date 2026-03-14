@@ -254,3 +254,21 @@ test(map): add marker clustering tests
 
 - `pnpm.onlyBuiltDependencies` in package.json allows packages (like lefthook) to run postinstall scripts
 - Always use `pnpm exec` instead of `npx` for running local binaries
+
+## Known Issues
+
+| ID | File | Issue | Plan |
+|----|------|-------|------|
+| BUG-001 | `app/actions/images.test.ts` | `setPrimaryImage` tests fail — Prisma mock missing `$transaction` | [test-fixes.md](plans/test-fixes.md) |
+| LINT-001 | `app/actions/truck-hours.test.ts:10` | Unused `auth` import (Biome warning) | [test-fixes.md](plans/test-fixes.md) |
+
+## Constants & Magic Numbers
+
+All domain values are named constants — never use raw literals. Import from:
+
+| Constant | Source |
+|----------|--------|
+| `MAX_TRUCK_IMAGES`, `MAX_TRUCK_NAME_LENGTH`, `MAX_ADDRESS_LENGTH`, `MAX_IMAGE_ALT_LENGTH`, `MAX_PAGE_SIZE`, `DEFAULT_PAGE_SIZE` | `lib/validations/common.ts` |
+| `MIN_REVIEW_RATING`, `MAX_REVIEW_RATING`, `MIN_REVIEW_LENGTH`, `MAX_REVIEW_LENGTH` | `lib/validations/review-schema.ts` |
+| `DAYS_PER_WEEK` | `lib/validations/truck-hours-schema.ts` |
+| `PREMIUM_DURATION_DAYS`, `FREE_TIER_MAX_ATTRIBUTES`, `EXPIRY_WARNING_DAYS`, `MS_PER_DAY` | `lib/tiers.ts` |
