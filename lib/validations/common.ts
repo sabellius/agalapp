@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+export const MAX_TRUCK_NAME_LENGTH = 100;
+export const MAX_ADDRESS_LENGTH = 500;
+export const MAX_TRUCK_IMAGES = 10;
+export const MAX_IMAGE_ALT_LENGTH = 200;
+export const MAX_PAGE_SIZE = 100;
+export const DEFAULT_PAGE_SIZE = 12;
+
 export const israeliCities = [
   "תל אביב",
   "ירושלים",
@@ -44,7 +51,7 @@ export const truckNameSchema = z
   .string()
   .trim()
   .min(2, "שם העגלה חייב להכיל לפחות 2 תווים")
-  .max(100, "שם העגלה לא יכול לעלות על 100 תווים");
+  .max(MAX_TRUCK_NAME_LENGTH, "שם העגלה לא יכול לעלות על 100 תווים");
 
 export const citySchema = z.enum(israeliCities, {
   message: "יש לבחור עיר מהרשימה",
@@ -54,12 +61,12 @@ export const addressSchema = z
   .string()
   .trim()
   .min(5, "כתובת חייבת להכיל לפחות 5 תווים")
-  .max(500, "הכתובת ארוכה מדי");
+  .max(MAX_ADDRESS_LENGTH, "הכתובת ארוכה מדי");
 
 export const imageSchema = z.object({
   url: z.string().url("כתובת תמונה לא תקינה"),
   publicId: z.string().min(1, "מזהה תמונה חסר"),
-  alt: z.string().max(200, "טקסט תמונה ארוך מדי").nullable(),
+  alt: z.string().max(MAX_IMAGE_ALT_LENGTH, "טקסט תמונה ארוך מדי").nullable(),
   isPrimary: z.boolean().default(false),
 });
 
@@ -73,5 +80,10 @@ export const truckImageSchema = z.object({
 
 export const paginationSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(12),
+  limit: z.coerce
+    .number()
+    .int()
+    .positive()
+    .max(MAX_PAGE_SIZE)
+    .default(DEFAULT_PAGE_SIZE),
 });

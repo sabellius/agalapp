@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const DAYS_PER_WEEK = 7;
+
 export const dayHoursSchema = z
   .object({
     dayOfWeek: z.number().int().min(0).max(6),
@@ -40,7 +42,7 @@ export type DayHoursInput = z.infer<typeof dayHoursSchema>;
 
 export const weeklyHoursSchema = z.object({
   truckId: z.string().cuid(),
-  hours: z.array(dayHoursSchema).length(7),
+  hours: z.array(dayHoursSchema).length(DAYS_PER_WEEK),
 });
 
 export type WeeklyHoursInput = z.infer<typeof weeklyHoursSchema>;
