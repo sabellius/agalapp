@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MAX_IMAGE_ALT_LENGTH } from "@/lib/validations/common";
 
 interface TruckImage {
   id: string;
@@ -127,7 +128,7 @@ export function ImagePreview({
                 value={altText}
                 onChange={(e) => setAltText(e.target.value)}
                 placeholder="תיאור קצר של התמונה..."
-                maxLength={100}
+                maxLength={MAX_IMAGE_ALT_LENGTH}
                 autoFocus
               />
               <div className="flex gap-2 mt-auto">

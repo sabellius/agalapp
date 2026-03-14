@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { FREE_TIER_MAX_ATTRIBUTES } from "@/lib/tiers";
 import { FeatureLock } from "./feature-lock";
 
 interface AttributesEditorProps {
@@ -50,7 +51,9 @@ export function AttributesEditor({
     try {
       // If adding and not premium, check limit
       if (!currentlyAssigned && !canAddMore) {
-        setError("מוגבל ל-3 מאפיינים בחינמי. שדרג לפרימיום להוספת עוד.");
+        setError(
+          `מוגבל ל-${FREE_TIER_MAX_ATTRIBUTES} מאפיינים בחינמי. שדרג לפרימיום להוספת עוד.`,
+        );
         return;
       }
 

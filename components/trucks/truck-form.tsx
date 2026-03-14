@@ -24,9 +24,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { TruckHours } from "@/generated/prisma/client";
 import { CITIES } from "@/lib/constants";
-import { isCurrentlyPremium, type UserTier } from "@/lib/tiers";
+import {
+  FREE_TIER_MAX_ATTRIBUTES,
+  isCurrentlyPremium,
+  type UserTier,
+} from "@/lib/tiers";
 import { canEditWorkingHours } from "@/lib/truck-permissions";
 import type { CreateTruckInput, UpdateTruckInput } from "@/lib/validations";
+import {
+  MAX_ADDRESS_LENGTH,
+  MAX_TRUCK_IMAGES,
+  MAX_TRUCK_NAME_LENGTH,
+} from "@/lib/validations/common";
 
 interface TruckFormProps {
   truck?: {
@@ -116,7 +125,7 @@ export function TruckForm({
 
     if (!formData.name.trim()) {
       newErrors.name = "שם העגלה נדרש";
-    } else if (formData.name.length > 100) {
+    } else if (formData.name.length > MAX_TRUCK_NAME_LENGTH) {
       newErrors.name = "שם העגלה לא יכול לעלות על 100 תווים";
     }
 
@@ -126,7 +135,7 @@ export function TruckForm({
 
     if (!formData.address.trim()) {
       newErrors.address = "כתובת נדרשת";
-    } else if (formData.address.length > 500) {
+    } else if (formData.address.length > MAX_ADDRESS_LENGTH) {
       newErrors.address = "הכתובת לא יכולה לעלות על 500 תווים";
     }
 
@@ -343,7 +352,7 @@ export function TruckForm({
               onChange={handleChange}
               placeholder="לדוגמה: קפה המומחים"
               required
-              maxLength={100}
+              maxLength={MAX_TRUCK_NAME_LENGTH}
               className={errors.name ? "border-red-500" : ""}
             />
             {errors.name && (
@@ -382,7 +391,7 @@ export function TruckForm({
               onChange={handleChange}
               placeholder="לדוגמה: רחוב דיזנגוף 1"
               required
-              maxLength={500}
+              maxLength={MAX_ADDRESS_LENGTH}
               rows={3}
               className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
@@ -395,14 +404,14 @@ export function TruckForm({
             <div>
               <Label>תמונות *</Label>
               <p className="text-sm text-muted-foreground mb-2">
-                העלה עד 10 תמונות. סמן אחת כראשית.
+                העלה עד {MAX_TRUCK_IMAGES} תמונות. סמן אחת כראשית.
               </p>
             </div>
 
             <ImageUpload
               onUpload={handleImageUpload}
               disabled={isSubmitting}
-              maxImages={10}
+              maxImages={MAX_TRUCK_IMAGES}
               currentImageCount={images.length}
             />
 
@@ -441,7 +450,7 @@ export function TruckForm({
                 truckId={truck.id}
                 availableAttributes={availableAttributes}
                 assignedAttributes={assignedAttributes}
-                maxAttributes={3}
+                maxAttributes={FREE_TIER_MAX_ATTRIBUTES}
                 isPremium={isCurrentlyPremium(
                   owner.tier as "FREE" | "PREMIUM",
                   owner.tierExpiryAt,

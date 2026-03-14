@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { PREMIUM_DURATION_DAYS, PRICING } from "@/lib/tiers";
 
 interface UpgradePromptProps {
   featureName: string;
@@ -34,7 +35,7 @@ export function UpgradePrompt({ featureName }: UpgradePromptProps) {
           <Crown className="h-12 w-12 text-primary mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">המנוי שודרג!</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            החשבון שלך כעת במנוי פרימיום ל-30 יום
+            החשבון שלך כעת במנוי פרימיום ל-{PREMIUM_DURATION_DAYS} יום
           </p>
         </CardContent>
       </Card>
@@ -74,7 +75,9 @@ export function UpgradePrompt({ featureName }: UpgradePromptProps) {
       <CardFooter>
         <form action={formAction}>
           <Button type="submit" disabled={isPending} className="w-full">
-            {isPending ? "משדרג..." : "שדרג עכשיו - ₪30/חודש"}
+            {isPending
+              ? "משדרג..."
+              : `שדרג עכשיו - ${PRICING.currency}${PRICING.monthly}/חודש`}
           </Button>
         </form>
       </CardFooter>

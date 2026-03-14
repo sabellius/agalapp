@@ -4,6 +4,7 @@ import { Crown } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FREE_TIER_MAX_ATTRIBUTES } from "@/lib/tiers";
 
 interface FeatureLockProps {
   title: string;
@@ -16,7 +17,7 @@ export function FeatureLock({
   title,
   description,
   currentCount = 0,
-  maxCount = 3,
+  maxCount = FREE_TIER_MAX_ATTRIBUTES,
 }: FeatureLockProps) {
   return (
     <Card className="border-primary/50 bg-primary/5">

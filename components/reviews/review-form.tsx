@@ -15,6 +15,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { CreateReviewInput, UpdateReviewInput } from "@/lib/validations";
+import {
+  MAX_REVIEW_LENGTH,
+  MIN_REVIEW_LENGTH,
+} from "@/lib/validations/review-schema";
 import { StarRating } from "./star-rating";
 
 type ActionResult<T = void> =
@@ -65,12 +69,12 @@ export function ReviewForm({ truckId, children, review }: ReviewFormProps) {
       return;
     }
 
-    if (trimmedContent.length < 10) {
+    if (trimmedContent.length < MIN_REVIEW_LENGTH) {
       setError("התוכן קצר מדי (מינימום 10 תווים)");
       return;
     }
 
-    if (trimmedContent.length > 1000) {
+    if (trimmedContent.length > MAX_REVIEW_LENGTH) {
       setError("התוכן ארוך מדי (מקסימום 1000 תווים)");
       return;
     }
@@ -149,7 +153,7 @@ export function ReviewForm({ truckId, children, review }: ReviewFormProps) {
               className="resize-none"
             />
             <p className="text-xs text-muted-foreground">
-              {content.length} / 1000 תווים
+              {content.length} / {MAX_REVIEW_LENGTH} תווים
             </p>
           </div>
 
