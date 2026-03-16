@@ -257,10 +257,7 @@ test(map): add marker clustering tests
 
 ## Known Issues
 
-| ID | File | Issue | Plan |
-|----|------|-------|------|
-| BUG-001 | `app/actions/images.test.ts` | `setPrimaryImage` tests fail — Prisma mock missing `$transaction` | [test-fixes.md](plans/test-fixes.md) |
-| LINT-001 | `app/actions/truck-hours.test.ts:10` | Unused `auth` import (Biome warning) | [test-fixes.md](plans/test-fixes.md) |
+No known issues.
 
 ## Constants & Magic Numbers
 
