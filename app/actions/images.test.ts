@@ -9,6 +9,7 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     $disconnect: vi.fn(),
+    $transaction: vi.fn((ops: unknown[]) => Promise.all(ops)),
     user: {
       findUnique: vi.fn(),
     },

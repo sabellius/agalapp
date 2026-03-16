@@ -7,7 +7,6 @@ vi.mock("@/lib/auth", () => ({
 }));
 
 import type { TruckHours } from "@/generated/prisma/client";
-import { auth } from "@/lib/auth";
 import type { WeeklyHoursInput } from "@/lib/validations/truck-hours-schema";
 import { mockPremiumUser, mockTruckOwner } from "@/test/fixtures/users";
 import { mockPrismaClient, mockReset } from "@/test/mocks/prisma";
