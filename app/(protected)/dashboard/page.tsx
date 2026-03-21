@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { authClient, useSession } from "@/lib/auth-client";
 
 export default function DashboardPage() {
@@ -106,13 +107,9 @@ export default function DashboardPage() {
         {/* <div className="flex flex-col gap-4">
           <SignOut redirectTo="/" />
         </div> */}
-        <button
-          type="button"
-          onClick={handleSignOut}
-          className="rounded-md bg-primary px-4 py-2 text-primary-foreground"
-        >
+        <Button onClick={handleSignOut} variant="secondary">
           התנתקות
-        </button>
+        </Button>
 
         <Link
           href="/"
