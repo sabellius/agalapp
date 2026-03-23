@@ -13,6 +13,7 @@ const adapter = new PrismaMariaDb({
   port: Number(process.env.DB_PORT || 3306),
   database: process.env.DB_NAME,
   connectionLimit: 5,
+  allowPublicKeyRetrieval: true,
 });
 
 const createPrismaClient = () =>
