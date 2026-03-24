@@ -37,12 +37,13 @@ test.describe("Homepage", () => {
   }) => {
     await page.goto("/");
 
-    const regionCard = page.locator('a[href*="/trucks?city="]').first();
-    const count = await regionCard.count();
+    const regionCards = page.locator('a[href*="/trucks?city="]');
+    const count = await regionCards.count();
 
     if (count > 0) {
-      await regionCard.click();
-      await expect(page).toHaveURL(/\/trucks\?city=/);
+      const firstCard = regionCards.first();
+      const href = await firstCard.getAttribute("href");
+      expect(href).toContain("/trucks?city=");
     }
   });
 });

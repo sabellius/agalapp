@@ -14,8 +14,9 @@ async function globalSetup(config: FullConfig) {
     throw new Error("baseURL is required for auth setup");
   }
 
+  console.log(`🔐 Setting up auth for baseURL: ${baseURL}`);
+
   const browser = await chromium.launch();
-  const context = await browser.newContext();
 
   // Helper to login and save state
   async function loginAndSaveState(
@@ -23,25 +24,28 @@ async function globalSetup(config: FullConfig) {
     password: string,
     outputPath: string,
   ) {
+    // Create fresh context for each login to avoid session pollution
+    const context = await browser.newContext();
     const page = await context.newPage();
 
     // Navigate to sign-in page
     await page.goto(`${baseURL}/auth/sign-in`);
 
-    // Fill in credentials
-    await page.fill('input[name="email"]', email);
-    await page.fill('input[name="password"]', password);
+    // Fill form
+    await page.locator('input[name="email"]').fill(email);
+    await page.locator('input[name="password"]').fill(password);
 
     // Submit form
     await page.click('button[type="submit"]');
 
-    // Wait for navigation to complete (should redirect to dashboard or home)
-    await page.waitForURL(/\/(dashboard|trucks)?$/, { timeout: 10000 });
+    // Wait for navigation to complete (should redirect to dashboard)
+    await page.waitForURL(/\/dashboard/, { timeout: 10000 });
 
     // Save storage state
-    await page.context().storageState({ path: outputPath });
+    await context.storageState({ path: outputPath });
 
-    await page.close();
+    // Close context to ensure fresh session next time
+    await context.close();
   }
 
   try {
