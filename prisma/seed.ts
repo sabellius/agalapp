@@ -1,7 +1,42 @@
 import { fakerHE as faker } from "@faker-js/faker";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Role } from "../generated/prisma/client";
+import { Role, UserTier } from "../generated/prisma/client";
+
+const TEST_PASSWORD = "password123";
+
+const TEST_USERS = [
+  {
+    email: "test-user-free@example.com",
+    role: Role.USER,
+    tier: UserTier.FREE,
+    name: "Test User Free",
+  },
+  {
+    email: "test-user-premium@example.com",
+    role: Role.USER,
+    tier: UserTier.PREMIUM,
+    name: "Test User Premium",
+  },
+  {
+    email: "test-owner-free@example.com",
+    role: Role.TRUCK_OWNER,
+    tier: UserTier.FREE,
+    name: "Test Owner Free",
+  },
+  {
+    email: "test-owner-premium@example.com",
+    role: Role.TRUCK_OWNER,
+    tier: UserTier.PREMIUM,
+    name: "Test Owner Premium",
+  },
+  {
+    email: "test-admin@example.com",
+    role: Role.ADMIN,
+    tier: UserTier.FREE,
+    name: "Test Admin",
+  },
+];
 
 async function main() {
   console.log("🌱 Starting database seed...");
@@ -18,12 +53,26 @@ async function main() {
   await prisma.account.deleteMany();
   await prisma.user.deleteMany();
 
-  console.log("👥 Creating users via better-auth sign-up...");
-  const TEST_PASSWORD = "password123";
+  console.log("👥 Creating test users (for dev + E2E)...");
+  const testUserPromises = TEST_USERS.map((u) =>
+    auth.api
+      .signUpEmail({
+        body: {
+          email: u.email,
+          password: TEST_PASSWORD,
+          name: u.name,
+        },
+      })
+      .then(() => prisma.user.findUnique({ where: { email: u.email } })),
+  );
 
-  const userPromises = [
-    // Regular users
-    ...Array.from({ length: 8 }).map((_, i) =>
+  const testUsers = (await Promise.all(testUserPromises)).filter(
+    (user): user is NonNullable<typeof user> => user !== null,
+  );
+
+  console.log("👥 Creating random users for volume...");
+  const randomUserPromises = [
+    ...Array.from({ length: 6 }).map((_, i) =>
       auth.api
         .signUpEmail({
           body: {
@@ -32,14 +81,13 @@ async function main() {
             name: faker.person.fullName(),
           },
         })
-        .then((_) =>
+        .then(() =>
           prisma.user.findUnique({
             where: { email: `user${i + 1}@example.com` },
           }),
         ),
     ),
-    // Truck owners
-    ...Array.from({ length: 4 }).map((_, i) =>
+    ...Array.from({ length: 3 }).map((_, i) =>
       auth.api
         .signUpEmail({
           body: {
@@ -48,66 +96,83 @@ async function main() {
             name: faker.person.fullName(),
           },
         })
-        .then((_) =>
+        .then(() =>
           prisma.user.findUnique({
             where: { email: `owner${i + 1}@example.com` },
           }),
         ),
     ),
-    // Admin
-    auth.api
-      .signUpEmail({
-        body: {
-          email: "admin@example.com",
-          password: TEST_PASSWORD,
-          name: faker.person.fullName(),
-        },
-      })
-      .then((_) =>
-        prisma.user.findUnique({
-          where: { email: "admin@example.com" },
-        }),
-      ),
   ];
 
-  const users = (await Promise.all(userPromises)).filter(
+  const randomUsers = (await Promise.all(randomUserPromises)).filter(
     (user): user is NonNullable<typeof user> => user !== null,
   );
 
-  const truckOwners = users.slice(8, 12);
-  const regularUsers = users.slice(0, 8);
+  const allUsers = [...testUsers, ...randomUsers];
 
-  console.log("🔐 Updating user roles...");
+  console.log("🔐 Updating user roles and tiers...");
+  const testOwnerPremium = testUsers.find(
+    (u) => u.email === "test-owner-premium@example.com",
+  );
+  const testOwnerFree = testUsers.find(
+    (u) => u.email === "test-owner-free@example.com",
+  );
+  const randomOwners = randomUsers.filter((u) => u?.email.startsWith("owner"));
+  const truckOwners = [testOwnerFree, testOwnerPremium, ...randomOwners].filter(
+    (u): u is NonNullable<typeof u> => u !== undefined,
+  );
+
+  const testUserPremium = testUsers.find(
+    (u) => u.email === "test-user-premium@example.com",
+  );
+  const testUserFree = testUsers.find(
+    (u) => u.email === "test-user-free@example.com",
+  );
+  const randomRegularUsers = randomUsers.filter((u) =>
+    u?.email.startsWith("user"),
+  );
+  const regularUsers = [
+    testUserFree,
+    testUserPremium,
+    ...randomRegularUsers,
+  ].filter((u): u is NonNullable<typeof u> => u !== undefined);
+
   await Promise.all([
-    ...regularUsers.map((user) =>
-      prisma.user.update({
+    ...testUsers.map((user) => {
+      const config = TEST_USERS.find((u) => u.email === user.email);
+      if (!config) return Promise.resolve();
+      const tierExpiryAt =
+        config.tier === UserTier.PREMIUM
+          ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          : null;
+      return prisma.user.update({
         where: { id: user.id },
-        data: { role: Role.USER },
-      }),
-    ),
-    ...truckOwners.map((user) =>
-      prisma.user.update({
-        where: { id: user.id },
-        data: { role: Role.TRUCK_OWNER },
-      }),
-    ),
-    prisma.user.update({
-      where: { id: users[12].id },
-      data: { role: Role.ADMIN },
+        data: { role: config.role, tier: config.tier, tierExpiryAt },
+      });
     }),
+    ...randomRegularUsers.map((user) =>
+      prisma.user.update({
+        where: { id: user.id },
+        data: { role: Role.USER, tier: UserTier.FREE },
+      }),
+    ),
+    ...randomOwners.map((user) =>
+      prisma.user.update({
+        where: { id: user.id },
+        data: { role: Role.TRUCK_OWNER, tier: UserTier.FREE },
+      }),
+    ),
   ]);
 
   console.log("🏷️  Creating predefined truck attributes...");
   await prisma.truckAttribute.createMany({
     data: [
-      // Accessibility
       {
         name: "נגיש",
         nameEn: "Accessible",
         icon: "accessibility",
         sortOrder: 1,
       },
-      // Seating
       {
         name: "ישיבה בחוץ",
         nameEn: "Outdoor Seating",
@@ -116,10 +181,8 @@ async function main() {
       },
       { name: "מזגן", nameEn: "AC", icon: "wind", sortOrder: 11 },
       { name: "חימום", nameEn: "Heated", icon: "flame", sortOrder: 12 },
-      // Amenities
       { name: "WiFi", nameEn: "WiFi", icon: "wifi", sortOrder: 20 },
       { name: "שירותים", nameEn: "Restrooms", icon: "doorOpen", sortOrder: 21 },
-      // Payment
       {
         name: "אשראי",
         nameEn: "Credit Card",
@@ -127,7 +190,6 @@ async function main() {
         sortOrder: 30,
       },
       { name: "ביט", nameEn: "Bit", icon: "smartphone", sortOrder: 31 },
-      // Dietary
       { name: "טבעוני", nameEn: "Vegan", icon: "leaf", sortOrder: 40 },
       {
         name: "ללא גלוטן",
@@ -136,14 +198,11 @@ async function main() {
         sortOrder: 41,
       },
       { name: "חלבי", nameEn: "Dairy", icon: "milk", sortOrder: 42 },
-      // Products
       { name: "מתוקים", nameEn: "Desserts", icon: "cakeSlice", sortOrder: 50 },
       { name: "מאפים", nameEn: "Pastries", icon: "croissant", sortOrder: 51 },
       { name: "כריכים", nameEn: "Sandwiches", icon: "sandwich", sortOrder: 52 },
-      // Service
       { name: "משלוחים", nameEn: "Delivery", icon: "truck", sortOrder: 60 },
       { name: "איסוף", nameEn: "Takeaway", icon: "shoppingBag", sortOrder: 61 },
-      // Vibe
       {
         name: "ידידותי לכלבים",
         nameEn: "Dog Friendly",
@@ -161,7 +220,7 @@ async function main() {
 
   console.log("☕ Creating coffee trucks...");
   const trucks = await Promise.all(
-    truckOwners.map((owner, _i) =>
+    truckOwners.map((owner) =>
       prisma.coffeeTruck.create({
         data: {
           name: `Coffee Truck ${faker.company.name()}`,
@@ -183,10 +242,7 @@ async function main() {
         prisma.coffeeTruckImage.create({
           data: {
             truckId: truck.id,
-            url: faker.image.url({
-              width: 800,
-              height: 600,
-            }),
+            url: faker.image.url({ width: 800, height: 600 }),
             publicId: `coffee_truck_${truck.id}_${i}`,
             alt: `${truck.name} - Photo ${i + 1}`,
             isPrimary: i === 0,
@@ -203,15 +259,9 @@ async function main() {
   for (const user of regularUsers) {
     for (const truck of trucks) {
       const pairKey = `${user.id}-${truck.id}`;
-
-      // Skip if this user already reviewed this truck
-      if (usedUserTruckPairs.has(pairKey)) {
-        continue;
-      }
-
+      if (usedUserTruckPairs.has(pairKey)) continue;
       usedUserTruckPairs.add(pairKey);
 
-      // Only create one review per (user, truck) pair
       reviewPromises.push(
         prisma.review.create({
           data: {
@@ -228,24 +278,17 @@ async function main() {
   await Promise.all(reviewPromises);
 
   console.log("✅ Seed completed successfully!");
-  console.log(`📊 Created ${users.length} users`);
+  console.log(`📊 Created ${allUsers.length} users`);
   console.log(`🚚 Created ${trucks.length} coffee trucks`);
-  console.log(`📸 Created ${trucks.length * 4.5} truck images (average)`);
-  console.log(`⭐ Created ${regularUsers.length * 2 * 4.5} reviews (average)`);
-  console.log("\n🔐 Test Credentials:");
+  console.log("\n🔐 Test Credentials (password for all: password123):");
   console.log("────────────────────────────────────────────────────────────");
-  console.log("All accounts use the same password:");
-  console.log(`   Password: ${TEST_PASSWORD}`);
-  console.log("\nRegular Users:");
-  regularUsers.forEach((user, i) => {
-    console.log(`   ${i + 1}. ${user.email}`);
-  });
-  console.log("\nTruck Owners:");
-  truckOwners.forEach((owner, i) => {
-    console.log(`   ${i + 1}. ${owner.email}`);
-  });
-  console.log("\nAdmin:");
-  console.log(`   1. ${users[12].email}`);
+  console.log("Test Users (for E2E + dev):");
+  for (const u of TEST_USERS)
+    console.log(`   ${u.email} (${u.role}, ${u.tier})`);
+  console.log("\nRandom Users (for dev volume):");
+  for (const u of randomRegularUsers) console.log(`   ${u.email} (USER, FREE)`);
+  for (const u of randomOwners)
+    console.log(`   ${u.email} (TRUCK_OWNER, FREE)`);
   console.log("────────────────────────────────────────────────────────────");
 }
 

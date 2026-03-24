@@ -49,24 +49,25 @@ async function globalSetup(config: FullConfig) {
     const fs = await import("node:fs/promises");
     await fs.mkdir("./tests/.auth", { recursive: true });
 
-    // Login as free user (truck owner without premium)
+    // Login as free user (regular user without premium)
     await loginAndSaveState(
-      process.env.E2E_TEST_FREE_USER_EMAIL || "e2e-free@example.com",
-      process.env.E2E_TEST_PASSWORD || "Test1234!",
+      process.env.E2E_TEST_FREE_USER_EMAIL || "test-user-free@example.com",
+      process.env.E2E_TEST_PASSWORD || "password123",
       "./tests/.auth/free-user.json",
     );
 
     // Login as premium user
     await loginAndSaveState(
-      process.env.E2E_TEST_PREMIUM_USER_EMAIL || "e2e-premium@example.com",
-      process.env.E2E_TEST_PASSWORD || "Test1234!",
+      process.env.E2E_TEST_PREMIUM_USER_EMAIL ||
+        "test-user-premium@example.com",
+      process.env.E2E_TEST_PASSWORD || "password123",
       "./tests/.auth/premium-user.json",
     );
 
     // Login as truck owner
     await loginAndSaveState(
-      process.env.E2E_TEST_TRUCK_OWNER_EMAIL || "e2e-owner@example.com",
-      process.env.E2E_TEST_PASSWORD || "Test1234!",
+      process.env.E2E_TEST_TRUCK_OWNER_EMAIL || "test-owner-free@example.com",
+      process.env.E2E_TEST_PASSWORD || "password123",
       "./tests/.auth/truck-owner.json",
     );
 

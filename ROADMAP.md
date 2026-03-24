@@ -23,6 +23,7 @@
 | Magic Numbers → Named Constants | 2026-03-14 | All domain values extracted |
 | Navigation Header | 2026-02 | Mobile drawer, responsive |
 | Homepage Hero | 2026-03-24 | Hero section + search component |
+| Homepage Content | 2026-03-24 | Popular, regions, recent sections |
 
 ---
 
@@ -30,7 +31,7 @@
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Homepage | Partial | Hero done, content sections next |
+| Truck Card Enhancement | Not started | Open now badge, hover effects |
 
 ---
 
