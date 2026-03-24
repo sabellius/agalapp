@@ -25,8 +25,11 @@ export function OpenStatusBadge({ hours }: OpenStatusBadgeProps) {
     !todayHours.closeTime
   ) {
     return (
-      <Badge variant="outline" className="gap-1">
-        <Circle className="h-2 w-2 fill-muted-foreground text-muted-foreground" />
+      <Badge
+        variant="outline"
+        className="gap-1 bg-gray-700 text-white border-gray-500"
+      >
+        <Circle className="h-2 w-2 fill-gray-400 text-gray-400" />
         סגור
       </Badge>
     );
@@ -39,12 +42,22 @@ export function OpenStatusBadge({ hours }: OpenStatusBadgeProps) {
 
   const isOpen = currentMinutes >= openMinutes && currentMinutes < closeMinutes;
 
+  if (isOpen) {
+    return (
+      <Badge variant="default" className="gap-1">
+        <Circle className="h-2 w-2 fill-green-500 text-green-500" />
+        פתוח עכשיו
+      </Badge>
+    );
+  }
+
   return (
-    <Badge variant={isOpen ? "default" : "outline"} className="gap-1">
-      <Circle
-        className={`h-2 w-2 ${isOpen ? "fill-green-500 text-green-500" : "fill-muted-foreground text-muted-foreground"}`}
-      />
-      {isOpen ? "פתוח עכשיו" : "סגור"}
+    <Badge
+      variant="outline"
+      className="gap-1 bg-gray-700 text-white border-gray-500"
+    >
+      <Circle className="h-2 w-2 fill-gray-400 text-gray-400" />
+      סגור
     </Badge>
   );
 }
