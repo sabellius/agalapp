@@ -252,6 +252,110 @@ async function main() {
     );
   }
 
+  console.log("🕐 Creating truck hours (Israeli patterns)...");
+  const israeliHourPatterns = [
+    {
+      name: "morning",
+      days: [0, 1, 2, 3, 4],
+      open: "06:30",
+      close: "14:00",
+      friOpen: "06:30",
+      friClose: "12:00",
+      satClosed: true,
+    },
+    {
+      name: "morning-long",
+      days: [0, 1, 2, 3, 4],
+      open: "07:00",
+      close: "16:00",
+      friOpen: "07:00",
+      friClose: "13:00",
+      satClosed: true,
+    },
+    {
+      name: "evening",
+      days: [0, 1, 2, 3, 4],
+      open: "16:00",
+      close: "23:00",
+      friOpen: "16:00",
+      friClose: "15:00",
+      satOpen: "18:00",
+      satClose: "23:00",
+    },
+    {
+      name: "all-day",
+      days: [0, 1, 2, 3, 4],
+      open: "07:00",
+      close: "19:00",
+      friOpen: "07:00",
+      friClose: "14:00",
+      satClosed: true,
+    },
+    {
+      name: "late-morning",
+      days: [0, 1, 2, 3, 4, 5],
+      open: "09:00",
+      close: "17:00",
+      friOpen: "09:00",
+      friClose: "14:00",
+      satOpen: "10:00",
+      satClose: "15:00",
+    },
+    {
+      name: "weekend-focused",
+      days: [0, 1, 2, 3],
+      open: "08:00",
+      close: "15:00",
+      friOpen: "08:00",
+      friClose: "15:00",
+      satOpen: "09:00",
+      satClose: "16:00",
+    },
+  ];
+
+  for (const truck of trucks) {
+    const pattern = faker.helpers.arrayElement(israeliHourPatterns);
+
+    for (let dayOfWeek = 0; dayOfWeek <= 6; dayOfWeek++) {
+      let openTime: string | null = null;
+      let closeTime: string | null = null;
+      let isClosed = false;
+
+      if (dayOfWeek === 5) {
+        openTime = pattern.friOpen;
+        closeTime = pattern.friClose;
+      } else if (dayOfWeek === 6) {
+        if ("satClosed" in pattern && pattern.satClosed) {
+          isClosed = true;
+        } else if (
+          "satOpen" in pattern &&
+          pattern.satOpen &&
+          pattern.satClose
+        ) {
+          openTime = pattern.satOpen;
+          closeTime = pattern.satClose;
+        } else {
+          isClosed = true;
+        }
+      } else if (pattern.days.includes(dayOfWeek)) {
+        openTime = pattern.open;
+        closeTime = pattern.close;
+      } else {
+        isClosed = true;
+      }
+
+      await prisma.truckHours.create({
+        data: {
+          truckId: truck.id,
+          dayOfWeek,
+          openTime,
+          closeTime,
+          isClosed,
+        },
+      });
+    }
+  }
+
   console.log("⭐ Creating reviews...");
   const reviewPromises: Promise<unknown>[] = [];
   const usedUserTruckPairs = new Set<string>();
