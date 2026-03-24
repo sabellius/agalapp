@@ -38,7 +38,7 @@
 
 ## 📋 Planned
 
-### Phase 1: Foundation
+### Phase 1: Foundation & Polish
 
 | Feature | Description |
 |---------|-------------|
@@ -46,24 +46,28 @@
 | Social Sharing | Share button, WhatsApp, Waze deep links |
 | Schema Extensions | Add phone, description, social links to CoffeeTruck |
 | Truck Form Updates | New fields for schema extensions |
+| Extended Attributes | 11 new attributes: wifi, toilets, parking, playground, shelter, AC, kosher, open-saturday, open-friday, protected-room |
 
 ### Phase 2: Core Features
 
 | Feature | Description |
 |---------|-------------|
 | Favorites | Heart toggle, favorites page, optimistic UI |
-| Menu Upload | PDF upload to Cloudinary, viewer |
+| Structured Menu Items | MenuItem model, CRUD, menu editor, dietary tags (gluten-free, vegan) |
 | Enhanced Search | Combined filters sidebar, attribute checkboxes, "Open Now" toggle |
 | Image Gallery Lightbox | Click to expand, keyboard navigation |
+| Near Me | Geolocation-based truck search |
+| "For Kids" Section | Rich content section on truck page |
 
-### Phase 3: Advanced
+### Phase 3: User Experience
 
 | Feature | Description |
 |---------|-------------|
-| Owner Story Section | Rich text story on truck page |
-| Structured Menu Items | MenuItem model, CRUD, menu editor |
-| Newsletter Signup | Subscriber model, signup component |
-| Enhanced Map Page | Filter sidebar, marker clustering, "Near Me" |
+| Review Photos | Users upload photos with reviews |
+| Owner Review Responses | Owners can reply to reviews |
+| User Profile Page | Show user's reviews + favorites |
+| Review Sorting | Sort by helpful, date, rating |
+| Enhanced Map Page | Filter sidebar, marker clustering |
 
 ### Phase 4: Polish & Deploy
 
@@ -73,10 +77,22 @@
 | Loading States | Skeletons, Suspense boundaries |
 | Error Handling | Error boundaries, 404 page, toast notifications |
 | Accessibility | A11y audit, ARIA labels, contrast, keyboard nav |
-| PWA | Manifest, app icons, service worker |
 | Test DB Isolation | Separate test database for E2E, CI setup |
 | Testing & Docs | Full flow testing, README update, demo video |
 | Deployment | Production DB, Vercel deploy |
+
+---
+
+## Nice-to-Have (Post-MVP)
+
+| Feature | Description | Effort |
+|---------|-------------|--------|
+| Dark Mode | Theme toggle, CSS variables | Low |
+| Social Login | Google OAuth via better-auth | Medium |
+| Email Notifications | Review reminders, updates | Medium |
+| Owner Analytics Dashboard | Views, clicks, review stats | Medium |
+| Trending Trucks | Algorithm based on recent activity | Low |
+| Map Clustering | Marker grouping at zoom levels | Medium |
 
 ---
 
@@ -98,3 +114,7 @@
 | Report/flag system | Admin moderation, boring |
 | View tracking/analytics | Hidden feature |
 | Cities reference table | Over-engineering |
+| Menu PDF Upload | Structured menu items are better |
+| Newsletter Signup | Boring, not portfolio-worthy |
+| PWA | Overkill for portfolio |
+| Owner Story Section | Not essential |
