@@ -47,6 +47,7 @@ memory-bank/
 /generated/prisma
 
 plans/
+tasks/
 
 # Playwright
 node_modules/
