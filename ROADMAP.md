@@ -22,200 +22,60 @@
 | Premium Features (hours, menu) | 2026-03-07 | Gated by tier |
 | Magic Numbers → Named Constants | 2026-03-14 | All domain values extracted |
 | Navigation Header | 2026-02 | Mobile drawer, responsive |
+| Homepage Hero | 2026-03-24 | Hero section + search component |
 
 ---
 
 ## 🔄 In Progress
 
-### Sprint 1: Homepage Redesign - Part 1
-**Focus:** Hero section & search component
-
-- [x] Create hero section with background gradient/pattern
-- [x] Add hero text: headline + subheadline in Hebrew
-- [x] Create centered search component (name input + city dropdown)
-- [x] Style with Tailwind - clean, modern look
-
-**Files:** `components/home/hero-section.tsx`, `components/home/search-hero.tsx`, `app/page.tsx`
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Homepage | Partial | Hero done, content sections next |
 
 ---
 
 ## 📋 Planned
 
-### Phase 1: Foundation & Visual Polish
+### Phase 1: Foundation
 
-#### Sprint 2: Homepage Redesign - Part 2
-- [ ] "Popular Trucks" section (top 4-6 by review count)
-- [ ] "Browse by Region" cards
-- [ ] "Recently Added" section
-- [ ] Section headings with consistent styling
+| Feature | Description |
+|---------|-------------|
+| Homepage Content | Popular trucks, browse by region, recently added sections |
+| Truck Card Enhancement | Open now badge, rating display, hover effects |
+| Truck Detail Redesign | Layout rework, action buttons, about section |
+| Social Sharing | Share button, WhatsApp, Waze deep links |
+| Schema Extensions | Add phone, description, social links to CoffeeTruck |
+| Truck Form Updates | New fields for schema extensions |
 
-#### Sprint 3: Truck Card Enhancement
-- [ ] Add "Open Now" badge (real-time)
-- [ ] Add average rating display with star icon
-- [ ] Add review count
-- [ ] Improve image handling (placeholder)
-- [ ] Hover effects and transitions
+### Phase 2: Core Features
 
-#### Sprint 4: Truck Detail Page - Layout Rework
-- [ ] Redesign header section
-- [ ] Create action buttons row (call, navigate, share)
-- [ ] Move reviews to dedicated section
-- [ ] Add "About" section
+| Feature | Description |
+|---------|-------------|
+| Favorites | Heart toggle, favorites page, optimistic UI |
+| Menu Upload | PDF upload to Cloudinary, viewer |
+| Enhanced Search | Combined filters sidebar, attribute checkboxes, "Open Now" toggle |
+| Image Gallery Lightbox | Click to expand, keyboard navigation |
 
-#### Sprint 5: Truck Detail Page - New Sections
-- [ ] Social links section (Instagram, Facebook, TikTok)
-- [ ] Gallery section (expandable lightbox)
-- [ ] Map section improvements
-- [ ] Owner info section
+### Phase 3: Advanced
 
-#### Sprint 6: Social Sharing & Contact
-- [ ] Share button (copy link + Web Share API)
-- [ ] WhatsApp contact link
-- [ ] Waze navigation deep link
-- [ ] "Copy link" toast notification
+| Feature | Description |
+|---------|-------------|
+| Owner Story Section | Rich text story on truck page |
+| Structured Menu Items | MenuItem model, CRUD, menu editor |
+| Newsletter Signup | Subscriber model, signup component |
+| Enhanced Map Page | Filter sidebar, marker clustering, "Near Me" |
 
-#### Sprint 7: Database Schema Additions
-- [ ] Add `description` (Text) to CoffeeTruck
-- [ ] Add `phone` (String?) to CoffeeTruck
-- [ ] Add `instagram`, `facebook`, `tiktok` fields
-- [ ] Create and run migration
-- [ ] Update seed data
+### Phase 4: Polish & Deploy
 
-#### Sprint 8: Truck Form Updates
-- [ ] Add description textarea
-- [ ] Add phone input field
-- [ ] Add social links inputs
-- [ ] Update validation schema
-- [ ] Update Server Actions
-
-### Phase 2: Core Feature Expansion
-
-#### Sprint 9: Favorites - Database & Backend
-- [ ] Create `UserFavorite` model in Prisma
-- [ ] Run migration
-- [ ] Create `toggleFavorite` Server Action
-- [ ] Create `getUserFavorites` Server Action
-
-#### Sprint 10: Favorites - UI Components
-- [ ] Heart button component (animated)
-- [ ] Add to truck cards
-- [ ] Add to truck detail page
-- [ ] Optimistic UI updates
-
-#### Sprint 11: Favorites - Favorites Page
-- [ ] Create `/favorites` page
-- [ ] List user's favorite trucks
-- [ ] Empty state
-- [ ] Remove from favorites
-
-#### Sprint 12: Truck Menu Upload - Backend
-- [ ] Add `menuUrl` field to CoffeeTruck
-- [ ] Create menu upload handler (Cloudinary PDF)
-- [ ] Update validation schema
-- [ ] Run migration
-
-#### Sprint 13: Truck Menu - UI
-- [ ] Menu upload in truck form
-- [ ] "View Menu" button on truck detail
-- [ ] PDF viewer modal or new tab
-- [ ] Menu badge on truck cards
-
-#### Sprint 14: Enhanced Attributes System
-- [ ] Review and expand seed attributes
-- [ ] Add icons to existing attributes
-- [ ] Create attribute filter component
-- [ ] Filter trucks by multiple attributes
-
-#### Sprint 15: Improved Search Experience
-- [ ] Combine all filters into sidebar/panel
-- [ ] Add "Open Now" filter toggle
-- [ ] Add attribute checkboxes
-- [ ] URL-based filter state
-- [ ] Clear all filters button
-
-### Phase 3: Advanced Features
-
-#### Sprint 16: Truck Owner Story Section
-- [ ] Add `ownerStory` (Text) to CoffeeTruck
-- [ ] Rich text display on truck page
-- [ ] Story section with typography
-- [ ] Edit in truck form
-
-#### Sprint 17: Image Gallery with Lightbox
-- [ ] Install or create lightbox component
-- [ ] Click to expand images
-- [ ] Navigate between images
-- [ ] Keyboard navigation
-
-#### Sprint 18: Structured Menu Items (Optional)
-- [ ] Create `MenuItem` model
-- [ ] Menu items CRUD Server Actions
-- [ ] Menu section on truck detail
-- [ ] Menu item editor in truck form
-
-#### Sprint 19: Newsletter Signup
-- [ ] Newsletter signup component
-- [ ] Create `NewsletterSubscriber` model
-- [ ] Subscribe Server Action
-- [ ] Success/error feedback
-
-#### Sprint 20: Enhanced Map Page
-- [ ] Filter sidebar on map page
-- [ ] Marker clustering
-- [ ] Click marker for quick preview
-- [ ] "Near Me" button (geolocation)
-
-### Phase 4: Polish & Deployment
-
-#### Sprint 21: SEO & Meta Tags
-- [ ] Dynamic meta tags per page
-- [ ] Open Graph images
-- [ ] Structured data (JSON-LD)
-- [ ] Sitemap generation
-
-#### Sprint 22: Loading States & Skeletons
-- [ ] Skeleton component for truck cards
-- [ ] Skeleton for truck detail page
-- [ ] Loading.tsx files
-- [ ] Suspense boundaries
-
-#### Sprint 23: Error Handling
-- [ ] Error boundary component
-- [ ] error.tsx files for routes
-- [ ] 404 page redesign
-- [ ] Toast notifications for errors
-
-#### Sprint 24: Accessibility Audit
-- [ ] Run Lighthouse accessibility audit
-- [ ] Fix color contrast issues
-- [ ] Add ARIA labels
-- [ ] Keyboard navigation check
-- [ ] Focus indicators
-
-#### Sprint 25: PWA Setup
-- [ ] Create manifest.json
-- [ ] Add app icons
-- [ ] Service worker for offline
-- [ ] "Add to Home Screen" prompt
-
-#### Sprint 26: Final Polish & Testing
-- [ ] Full user flow testing
-- [ ] Mobile responsiveness check
-- [ ] Fix TypeScript errors
-- [ ] Update tests for new features
-- [ ] Code cleanup
-
-#### Sprint 27: Documentation
-- [ ] Update README with features
-- [ ] Add screenshots
-- [ ] Document environment variables
-- [ ] Create demo video walkthrough
-
-#### Sprint 28: Deployment
-- [ ] Set up production database
-- [ ] Configure environment variables
-- [ ] Deploy to Vercel
-- [ ] Test deployed version
+| Feature | Description |
+|---------|-------------|
+| SEO & Meta | Dynamic meta tags, Open Graph, JSON-LD, sitemap |
+| Loading States | Skeletons, Suspense boundaries |
+| Error Handling | Error boundaries, 404 page, toast notifications |
+| Accessibility | A11y audit, ARIA labels, contrast, keyboard nav |
+| PWA | Manifest, app icons, service worker |
+| Testing & Docs | Full flow testing, README update, demo video |
+| Deployment | Production DB, Vercel deploy |
 
 ---
 
@@ -237,7 +97,3 @@
 | Report/flag system | Admin moderation, boring |
 | View tracking/analytics | Hidden feature |
 | Cities reference table | Over-engineering |
-
----
-
-_Schedule: Weekday sprints ~2-3hrs, Weekend sprints ~4-6hrs_
