@@ -20,24 +20,11 @@ async function getTrucks(params: SearchParams) {
 
   const normalizedCity = city === "all" ? undefined : city;
 
-  const where: {
-    AND?: Array<
-      | { name: { contains: string; mode: "insensitive" } }
-      | { address: { contains: string; mode: "insensitive" } }
-      | { city: string }
-      | { reviews: { some: Record<string, never> } }
-    >;
-  } = {};
-
   const conditions = [];
 
   if (search?.trim()) {
-    const mode = "insensitive" as const;
     conditions.push({
-      OR: [
-        { name: { contains: search, mode } },
-        { address: { contains: search, mode } },
-      ],
+      OR: [{ name: { contains: search } }, { address: { contains: search } }],
     });
   }
 
@@ -45,9 +32,7 @@ async function getTrucks(params: SearchParams) {
     conditions.push({ city: normalizedCity });
   }
 
-  if (conditions.length > 0) {
-    where.AND = conditions as typeof where.AND;
-  }
+  const where = conditions.length > 0 ? { AND: conditions } : {};
 
   const trucks = await prisma.coffeeTruck.findMany({
     where,
