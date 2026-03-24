@@ -23,7 +23,7 @@
 | Magic Numbers → Named Constants | 2026-03-14 | All domain values extracted |
 | Navigation Header | 2026-02 | Mobile drawer, responsive |
 | Homepage Hero | 2026-03-24 | Hero section + search component |
-| Homepage Content | 2026-03-24 | Popular, regions, recent sections |
+| Homepage Content | 2026-03-24 | Popular, regions, recent sections + E2E tests |
 
 ---
 
@@ -41,7 +41,6 @@
 
 | Feature | Description |
 |---------|-------------|
-| Homepage Content | Popular trucks, browse by region, recently added sections |
 | Truck Card Enhancement | Open now badge, rating display, hover effects |
 | Truck Detail Redesign | Layout rework, action buttons, about section |
 | Social Sharing | Share button, WhatsApp, Waze deep links |
@@ -75,6 +74,7 @@
 | Error Handling | Error boundaries, 404 page, toast notifications |
 | Accessibility | A11y audit, ARIA labels, contrast, keyboard nav |
 | PWA | Manifest, app icons, service worker |
+| Test DB Isolation | Separate test database for E2E, CI setup |
 | Testing & Docs | Full flow testing, README update, demo video |
 | Deployment | Production DB, Vercel deploy |
 
