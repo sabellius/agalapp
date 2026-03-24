@@ -24,6 +24,7 @@
 | Navigation Header | 2026-02 | Mobile drawer, responsive |
 | Homepage Hero | 2026-03-24 | Hero section + search component |
 | Homepage Content | 2026-03-24 | Popular, regions, recent sections + E2E tests |
+| Truck Card Enhancement | 2026-03-24 | Open now badge, 5-star rating, hover effects |
 
 ---
 
@@ -31,7 +32,7 @@
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Truck Card Enhancement | Not started | Open now badge, hover effects |
+| (none) | | |
 
 ---
 
@@ -41,7 +42,6 @@
 
 | Feature | Description |
 |---------|-------------|
-| Truck Card Enhancement | Open now badge, rating display, hover effects |
 | Truck Detail Redesign | Layout rework, action buttons, about section |
 | Social Sharing | Share button, WhatsApp, Waze deep links |
 | Schema Extensions | Add phone, description, social links to CoffeeTruck |
