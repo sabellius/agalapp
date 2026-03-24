@@ -9,6 +9,7 @@ async function getRecentTrucks() {
       images: {
         orderBy: { isPrimary: "desc" },
       },
+      hours: true,
       reviews: {
         select: { rating: true },
       },

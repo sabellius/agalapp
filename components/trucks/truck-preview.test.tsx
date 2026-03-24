@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import type { TruckHours } from "@/generated/prisma/client";
 import { TruckPreview } from "./truck-preview";
 
 vi.mock("next/navigation", () => ({
@@ -8,6 +9,28 @@ vi.mock("next/navigation", () => ({
 vi.mock("next/image", () => ({
   default: ({ alt, ...props }: any) => <img alt={alt} {...props} />,
 }));
+
+vi.mock("./open-status-badge", () => ({
+  OpenStatusBadge: ({ hours }: { hours: TruckHours[] }) => (
+    <div data-testid="open-status-badge" data-hours-count={hours.length}>
+      Badge
+    </div>
+  ),
+}));
+
+function createMockHour(overrides?: Partial<TruckHours>): TruckHours {
+  return {
+    id: "hour-1",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    truckId: "truck-1",
+    dayOfWeek: 0,
+    openTime: "08:00",
+    closeTime: "16:00",
+    isClosed: false,
+    ...overrides,
+  };
+}
 
 describe("TruckPreview", () => {
   const mockTruck = {
@@ -24,6 +47,7 @@ describe("TruckPreview", () => {
     images: [
       { id: "img-1", url: "https://example.com/image.jpg", isPrimary: true },
     ],
+    hours: [createMockHour()],
     _count: { reviews: 5 },
     avgRating: 4.5,
   };
@@ -111,5 +135,29 @@ describe("TruckPreview", () => {
     expect(
       screen.queryByRole("img", { name: "עגלת הקפה" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows open status badge when hours exist", () => {
+    render(<TruckPreview truck={mockTruck} />);
+
+    const badge = screen.getByTestId("open-status-badge");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveAttribute("data-hours-count", "1");
+  });
+
+  it("does not show open status badge when hours array is empty", () => {
+    const truckNoHours = { ...mockTruck, hours: [] };
+
+    render(<TruckPreview truck={truckNoHours} />);
+
+    expect(screen.queryByTestId("open-status-badge")).not.toBeInTheDocument();
+  });
+
+  it("does not show open status badge when hours is undefined", () => {
+    const truckUndefinedHours = { ...mockTruck, hours: undefined };
+
+    render(<TruckPreview truck={truckUndefinedHours} />);
+
+    expect(screen.queryByTestId("open-status-badge")).not.toBeInTheDocument();
   });
 });

@@ -40,6 +40,7 @@ async function getTrucks(params: SearchParams) {
       images: {
         orderBy: { isPrimary: "desc" },
       },
+      hours: true,
       _count: {
         select: {
           reviews: true,

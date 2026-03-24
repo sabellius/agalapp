@@ -1,6 +1,7 @@
-import { MapPin, Star } from "lucide-react";
+import { MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { OpenStatusBadge } from "@/components/trucks/open-status-badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,11 +9,13 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import type { CoffeeTruck } from "@/generated/prisma/client";
+import { StarRating } from "@/components/ui/star-rating";
+import type { CoffeeTruck, TruckHours } from "@/generated/prisma/client";
 
 interface TruckPreviewProps {
   truck: CoffeeTruck & {
     images: { id: string; url: string; isPrimary: boolean }[];
+    hours?: TruckHours[];
     _count: {
       reviews: number;
     };
@@ -26,18 +29,23 @@ export function TruckPreview({ truck }: TruckPreviewProps) {
   const rating = truck.avgRating || 0;
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="group overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
       <Link href={`/trucks/${truck.id}`}>
         <CardHeader className="p-0">
           {primaryImage && (
-            <div className="relative h-48 w-full bg-muted">
+            <div className="relative h-48 w-full bg-muted overflow-hidden">
               <Image
                 src={primaryImage.url}
                 alt={truck.name}
                 fill
-                className="object-cover"
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
+              {truck.hours && truck.hours.length > 0 && (
+                <div className="absolute top-3 right-3">
+                  <OpenStatusBadge hours={truck.hours} />
+                </div>
+              )}
             </div>
           )}
         </CardHeader>
@@ -56,13 +64,7 @@ export function TruckPreview({ truck }: TruckPreviewProps) {
           </p>
         </CardContent>
         <CardFooter className="p-4 pt-0 flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm font-medium">{rating.toFixed(1)}</span>
-            <span className="text-sm text-muted-foreground">
-              ({truck._count.reviews})
-            </span>
-          </div>
+          <StarRating rating={rating} reviewCount={truck._count.reviews} />
           <Button variant="ghost" size="sm">
             צפה בפרטים
           </Button>
