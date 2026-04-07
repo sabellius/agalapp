@@ -337,7 +337,7 @@ describe("truck-hours server actions", () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.message).toBe("אינך מורשה");
+        expect(result.message).toBe("אינך מורשה לערוך עגלה זו");
       }
     });
 
