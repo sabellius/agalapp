@@ -1,22 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
-import { ZodError } from "zod";
 import type { TruckHours } from "@/generated/prisma/client";
 import type { ActionResult } from "@/lib/actions";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { safeAction, withAuth } from "@/lib/safe-action";
 import type { DayOfWeek } from "@/lib/truck-hours";
 import { getBlankWeeklyHours } from "@/lib/truck-hours";
 import { canEditWorkingHours, canModifyTruck } from "@/lib/truck-permissions";
 import type { WeeklyHoursInput } from "@/lib/validations/truck-hours-schema";
 import { weeklyHoursSchema } from "@/lib/validations/truck-hours-schema";
 
-export async function getTruckHours(
-  truckId: string,
-): Promise<ActionResult<TruckHours[]>> {
-  try {
+export function getTruckHours(truckId: string) {
+  return safeAction(async () => {
     const hours = await prisma.truckHours.findMany({
       where: { truckId },
       orderBy: { dayOfWeek: "asc" },
@@ -24,143 +20,117 @@ export async function getTruckHours(
 
     if (hours.length === 0) {
       const blank = getBlankWeeklyHours();
-      return { success: true, data: blank as unknown as TruckHours[] };
+      return { success: true as const, data: blank as unknown as TruckHours[] };
     }
 
-    return { success: true, data: hours };
-  } catch (error) {
-    console.error("Get hours error:", error);
-    return { success: false, message: "שגיאה בטעינת שעות הפעילות" };
-  }
+    return { success: true as const, data: hours };
+  }, "שגיאה בטעינת שעות הפעילות");
 }
 
-export async function setTruckHours(
-  input: WeeklyHoursInput,
-): Promise<ActionResult> {
-  try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session?.user?.id) {
-      return { success: false, message: "אינך מחובר" };
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { id: true, tier: true, tierExpiryAt: true },
-    });
-
-    if (!user) {
-      return { success: false, message: "משתמש לא נמצא" };
-    }
-
-    if (!canEditWorkingHours(user)) {
-      return { success: false, message: "שעות פעילות זמינות למנוי פרימיום" };
-    }
-
-    const validated = weeklyHoursSchema.parse(input);
-
-    const truck = await prisma.coffeeTruck.findUnique({
-      where: { id: validated.truckId },
-      select: { ownerId: true },
-    });
-
-    if (!truck) {
-      return { success: false, message: "העגלה לא נמצאה" };
-    }
-
-    if (!(await canModifyTruck(session.user.id, truck.ownerId))) {
-      return { success: false, message: "אינך מורשה לערוך עגלה זו" };
-    }
-
-    await prisma.truckHours.deleteMany({
-      where: { truckId: validated.truckId },
-    });
-
-    for (let i = 0; i < validated.hours.length; i++) {
-      const dayHours = validated.hours[i];
-      if (!dayHours.isClosed && dayHours.openTime && dayHours.closeTime) {
-        await prisma.truckHours.create({
-          data: {
-            truckId: validated.truckId,
-            dayOfWeek: dayHours.dayOfWeek,
-            openTime: dayHours.openTime,
-            closeTime: dayHours.closeTime,
-            isClosed: false,
-          },
-        });
-      } else if (dayHours.isClosed) {
-        await prisma.truckHours.create({
-          data: {
-            truckId: validated.truckId,
-            dayOfWeek: dayHours.dayOfWeek,
-            openTime: null,
-            closeTime: null,
-            isClosed: true,
-          },
-        });
+export function setTruckHours(input: WeeklyHoursInput) {
+  return withAuth(async (userId) => {
+    return safeAction(async () => {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, tier: true, tierExpiryAt: true },
+      });
+      if (!user) {
+        return { success: false, message: "משתמש לא נמצא" } as ActionResult;
       }
-    }
 
-    revalidatePath(`/trucks/${validated.truckId}`);
-    revalidatePath("/dashboard");
+      if (!canEditWorkingHours(user)) {
+        return {
+          success: false,
+          message: "שעות פעילות זמינות למנוי פרימיום",
+        } as ActionResult;
+      }
 
-    return { success: true };
-  } catch (error) {
-    if (error instanceof ZodError) {
-      return {
-        success: false,
-        message: error.issues[0]?.message ?? "נתונים לא תקינים",
-      };
-    }
-    console.error("Set hours error:", error);
-    return { success: false, message: "שגיאה בשמירת שעות הפעילות" };
-  }
+      const validated = weeklyHoursSchema.parse(input);
+
+      const truck = await prisma.coffeeTruck.findUnique({
+        where: { id: validated.truckId },
+        select: { ownerId: true },
+      });
+      if (!truck) {
+        return { success: false, message: "העגלה לא נמצאה" } as ActionResult;
+      }
+      if (!(await canModifyTruck(userId, truck.ownerId))) {
+        return {
+          success: false,
+          message: "אינך מורשה לערוך עגלה זו",
+        } as ActionResult;
+      }
+
+      await prisma.truckHours.deleteMany({
+        where: { truckId: validated.truckId },
+      });
+
+      for (let i = 0; i < validated.hours.length; i++) {
+        const dayHours = validated.hours[i];
+        if (!dayHours.isClosed && dayHours.openTime && dayHours.closeTime) {
+          await prisma.truckHours.create({
+            data: {
+              truckId: validated.truckId,
+              dayOfWeek: dayHours.dayOfWeek,
+              openTime: dayHours.openTime,
+              closeTime: dayHours.closeTime,
+              isClosed: false,
+            },
+          });
+        } else if (dayHours.isClosed) {
+          await prisma.truckHours.create({
+            data: {
+              truckId: validated.truckId,
+              dayOfWeek: dayHours.dayOfWeek,
+              openTime: null,
+              closeTime: null,
+              isClosed: true,
+            },
+          });
+        }
+      }
+
+      revalidatePath(`/trucks/${validated.truckId}`);
+      revalidatePath("/dashboard");
+      return { success: true as const };
+    }, "שגיאה בשמירת שעות הפעילות");
+  });
 }
 
-export async function clearTruckHours(truckId: string): Promise<ActionResult> {
-  try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session?.user?.id) {
-      return { success: false, message: "אינך מחובר" };
-    }
+export function clearTruckHours(truckId: string) {
+  return withAuth(async (userId) => {
+    return safeAction(async () => {
+      const truck = await prisma.coffeeTruck.findUnique({
+        where: { id: truckId },
+        select: { ownerId: true },
+      });
+      if (!truck) {
+        return { success: false, message: "העגלה לא נמצאה" } as ActionResult;
+      }
+      if (!(await canModifyTruck(userId, truck.ownerId))) {
+        return {
+          success: false,
+          message: "אינך מורשה לערוך עגלה זו",
+        } as ActionResult;
+      }
 
-    const truck = await prisma.coffeeTruck.findUnique({
-      where: { id: truckId },
-      select: { ownerId: true },
-    });
-
-    if (!truck) {
-      return { success: false, message: "העגלה לא נמצאה" };
-    }
-
-    if (!(await canModifyTruck(session.user.id, truck.ownerId))) {
-      return { success: false, message: "אינך מורשה לערוך עגלה זו" };
-    }
-
-    await prisma.truckHours.deleteMany({
-      where: { truckId },
-    });
-
-    revalidatePath(`/trucks/${truckId}`);
-    revalidatePath("/dashboard");
-
-    return { success: true };
-  } catch (error) {
-    console.error("Clear hours error:", error);
-    return { success: false, message: "שגיאה במחיקת שעות הפעילות" };
-  }
+      await prisma.truckHours.deleteMany({ where: { truckId } });
+      revalidatePath(`/trucks/${truckId}`);
+      revalidatePath("/dashboard");
+      return { success: true as const };
+    }, "שגיאה במחיקת שעות הפעילות");
+  });
 }
 
-export async function checkIsOpenNow(
-  truckId: string,
-): Promise<ActionResult<{ isOpen: boolean }>> {
-  try {
+export function checkIsOpenNow(truckId: string) {
+  return safeAction(async () => {
     const hours = await prisma.truckHours.findMany({
       where: { truckId },
       orderBy: { dayOfWeek: "asc" },
     });
 
     if (hours.length === 0) {
-      return { success: true, data: { isOpen: false } };
+      return { success: true as const, data: { isOpen: false } };
     }
 
     const now = new Date();
@@ -181,7 +151,7 @@ export async function checkIsOpenNow(
       !todayHours.openTime ||
       !todayHours.closeTime
     ) {
-      return { success: true, data: { isOpen: false } };
+      return { success: true as const, data: { isOpen: false } };
     }
 
     const [openHour, openMin] = todayHours.openTime.split(":").map(Number);
@@ -192,9 +162,6 @@ export async function checkIsOpenNow(
     const isOpen =
       currentMinutes >= openMinutes && currentMinutes < closeMinutes;
 
-    return { success: true, data: { isOpen } };
-  } catch (error) {
-    console.error("Check open error:", error);
-    return { success: false, message: "שגיאה בבדיקת סטטוס" };
-  }
+    return { success: true as const, data: { isOpen } };
+  }, "שגיאה בבדיקת סטטוס");
 }

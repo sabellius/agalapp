@@ -1,11 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
-import { ZodError } from "zod";
 import type { ActionResult } from "@/lib/actions";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { safeAction, withAuth } from "@/lib/safe-action";
 import {
   type CreateReviewInput,
   createReviewSchema,
@@ -15,163 +13,102 @@ import {
   updateReviewSchema,
 } from "@/lib/validations";
 
-export async function createReview(
-  input: CreateReviewInput,
-): Promise<ActionResult<{ id: string }>> {
-  try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+export function createReview(input: CreateReviewInput) {
+  return withAuth(async (userId) => {
+    return safeAction(async () => {
+      const validated = createReviewSchema.parse(input);
 
-    if (!session?.user?.id) {
-      return { success: false, message: "אינך מחובר" };
-    }
+      const truck = await prisma.coffeeTruck.findUnique({
+        where: { id: validated.truckId },
+      });
+      if (!truck) {
+        return { success: false, message: "העגלה לא נמצאה" } as ActionResult<{
+          id: string;
+        }>;
+      }
 
-    const validated = createReviewSchema.parse(input);
+      const existingReview = await prisma.review.findUnique({
+        where: { truckId_userId: { truckId: validated.truckId, userId } },
+      });
+      if (existingReview) {
+        return {
+          success: false,
+          message: "כבר כתבת ביקורת על עגלה זו",
+        } as ActionResult<{ id: string }>;
+      }
 
-    const truck = await prisma.coffeeTruck.findUnique({
-      where: { id: validated.truckId },
-    });
-
-    if (!truck) {
-      return { success: false, message: "העגלה לא נמצאה" };
-    }
-
-    const existingReview = await prisma.review.findUnique({
-      where: {
-        truckId_userId: {
+      const review = await prisma.review.create({
+        data: {
+          rating: validated.rating,
+          content: validated.content,
           truckId: validated.truckId,
-          userId: session.user.id,
+          userId,
         },
-      },
-    });
+      });
 
-    if (existingReview) {
-      return { success: false, message: "כבר כתבת ביקורת על עגלה זו" };
-    }
-
-    const review = await prisma.review.create({
-      data: {
-        rating: validated.rating,
-        content: validated.content,
-        truckId: validated.truckId,
-        userId: session.user.id,
-      },
-    });
-
-    revalidatePath("/trucks");
-    revalidatePath(`/trucks/${validated.truckId}`);
-
-    return { success: true, data: review };
-  } catch (error) {
-    if (error instanceof ZodError) {
-      const firstError = error.issues[0];
-      return {
-        success: false,
-        message: firstError?.message ?? "נתונים לא תקינים",
-      };
-    }
-    console.error("Error creating review:", error);
-    return { success: false, message: "שגיאה ביצירת הביקורת" };
-  }
+      revalidatePath("/trucks");
+      revalidatePath(`/trucks/${validated.truckId}`);
+      return { success: true as const, data: review };
+    }, "שגיאה ביצירת הביקורת");
+  });
 }
 
-export async function updateReview(
-  input: UpdateReviewInput,
-): Promise<ActionResult<{ id: string }>> {
-  try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+export function updateReview(input: UpdateReviewInput) {
+  return withAuth(async (userId) => {
+    return safeAction(async () => {
+      const validated = updateReviewSchema.parse(input);
 
-    if (!session?.user?.id) {
-      return { success: false, message: "אינך מחובר" };
-    }
+      const review = await prisma.review.findUnique({
+        where: { id: validated.reviewId },
+      });
+      if (!review) {
+        return { success: false, message: "הביקורת לא נמצאה" } as ActionResult<{
+          id: string;
+        }>;
+      }
+      if (review.userId !== userId) {
+        return {
+          success: false,
+          message: "אינך מורשה לבצע פעולה זו",
+        } as ActionResult<{ id: string }>;
+      }
 
-    const validated = updateReviewSchema.parse(input);
+      const updatedReview = await prisma.review.update({
+        where: { id: validated.reviewId },
+        data: { rating: validated.rating, content: validated.content },
+      });
 
-    const review = await prisma.review.findUnique({
-      where: { id: validated.reviewId },
-    });
-
-    if (!review) {
-      return { success: false, message: "הביקורת לא נמצאה" };
-    }
-
-    if (review.userId !== session.user.id) {
-      return { success: false, message: "אינך מורשה לבצע פעולה זו" };
-    }
-
-    const updatedReview = await prisma.review.update({
-      where: { id: validated.reviewId },
-      data: {
-        rating: validated.rating,
-        content: validated.content,
-      },
-    });
-
-    revalidatePath("/trucks");
-    revalidatePath(`/trucks/${review.truckId}`);
-
-    return { success: true, data: updatedReview };
-  } catch (error) {
-    if (error instanceof ZodError) {
-      const firstError = error.issues[0];
-      return {
-        success: false,
-        message: firstError?.message ?? "נתונים לא תקינים",
-      };
-    }
-    console.error("Error updating review:", error);
-    return { success: false, message: "שגיאה בעדכון הביקורת" };
-  }
+      revalidatePath("/trucks");
+      revalidatePath(`/trucks/${review.truckId}`);
+      return { success: true as const, data: updatedReview };
+    }, "שגיאה בעדכון הביקורת");
+  });
 }
 
-export async function deleteReview(
-  input: DeleteReviewInput,
-): Promise<ActionResult> {
-  try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+export function deleteReview(input: DeleteReviewInput) {
+  return withAuth(async (userId) => {
+    return safeAction(async () => {
+      const validated = deleteReviewSchema.parse(input);
 
-    if (!session?.user?.id) {
-      return { success: false, message: "אינך מחובר" };
-    }
+      const review = await prisma.review.findUnique({
+        where: { id: validated.reviewId },
+      });
+      if (!review) {
+        return { success: false, message: "הביקורת לא נמצאה" } as ActionResult;
+      }
+      if (review.userId !== userId) {
+        return {
+          success: false,
+          message: "אינך מורשה לבצע פעולה זו",
+        } as ActionResult;
+      }
 
-    const validated = deleteReviewSchema.parse(input);
+      const truckId = review.truckId;
+      await prisma.review.delete({ where: { id: validated.reviewId } });
 
-    const review = await prisma.review.findUnique({
-      where: { id: validated.reviewId },
-    });
-
-    if (!review) {
-      return { success: false, message: "הביקורת לא נמצאה" };
-    }
-
-    if (review.userId !== session.user.id) {
-      return { success: false, message: "אינך מורשה לבצע פעולה זו" };
-    }
-
-    const truckId = review.truckId;
-
-    await prisma.review.delete({
-      where: { id: validated.reviewId },
-    });
-
-    revalidatePath("/trucks");
-    revalidatePath(`/trucks/${truckId}`);
-
-    return { success: true };
-  } catch (error) {
-    if (error instanceof ZodError) {
-      const firstError = error.issues[0];
-      return {
-        success: false,
-        message: firstError?.message ?? "נתונים לא תקינים",
-      };
-    }
-    console.error("Error deleting review:", error);
-    return { success: false, message: "שגיאה במחיקת הביקורת" };
-  }
+      revalidatePath("/trucks");
+      revalidatePath(`/trucks/${truckId}`);
+      return { success: true as const };
+    }, "שגיאה במחיקת הביקורת");
+  });
 }
