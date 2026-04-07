@@ -9,7 +9,7 @@ import {
   toggleVoteSchema,
 } from "@/lib/validations/vote-schema";
 
-export function toggleVote(input: ToggleVoteInput) {
+export async function toggleVote(input: ToggleVoteInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const validated = toggleVoteSchema.parse(input);

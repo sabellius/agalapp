@@ -11,7 +11,7 @@ import { canEditWorkingHours, canModifyTruck } from "@/lib/truck-permissions";
 import type { WeeklyHoursInput } from "@/lib/validations/truck-hours-schema";
 import { weeklyHoursSchema } from "@/lib/validations/truck-hours-schema";
 
-export function getTruckHours(truckId: string) {
+export async function getTruckHours(truckId: string) {
   return safeAction(async () => {
     const hours = await prisma.truckHours.findMany({
       where: { truckId },
@@ -27,7 +27,7 @@ export function getTruckHours(truckId: string) {
   }, "שגיאה בטעינת שעות הפעילות");
 }
 
-export function setTruckHours(input: WeeklyHoursInput) {
+export async function setTruckHours(input: WeeklyHoursInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const user = await prisma.user.findUnique({
@@ -97,7 +97,7 @@ export function setTruckHours(input: WeeklyHoursInput) {
   });
 }
 
-export function clearTruckHours(truckId: string) {
+export async function clearTruckHours(truckId: string) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const truck = await prisma.coffeeTruck.findUnique({
@@ -122,7 +122,7 @@ export function clearTruckHours(truckId: string) {
   });
 }
 
-export function checkIsOpenNow(truckId: string) {
+export async function checkIsOpenNow(truckId: string) {
   return safeAction(async () => {
     const hours = await prisma.truckHours.findMany({
       where: { truckId },

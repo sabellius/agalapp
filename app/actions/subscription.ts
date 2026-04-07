@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { safeAction, withAuth } from "@/lib/safe-action";
 import { PREMIUM_DURATION_DAYS } from "@/lib/tiers";
 
-export function upgradeAccount() {
+export async function upgradeAccount() {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const user = await prisma.user.findUnique({
@@ -34,7 +34,7 @@ export function upgradeAccount() {
   });
 }
 
-export function downgradeAccount() {
+export async function downgradeAccount() {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       await prisma.user.update({

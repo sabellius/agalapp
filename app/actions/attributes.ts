@@ -12,7 +12,7 @@ import {
   setTruckAttributesSchema,
 } from "@/lib/validations/attribute-schema";
 
-export function getTruckAttributes() {
+export async function getTruckAttributes() {
   return safeAction(async () => {
     const attributes = await prisma.truckAttribute.findMany({
       where: { isActive: true },
@@ -23,7 +23,7 @@ export function getTruckAttributes() {
   }, "שגיאה בטעינת המאפיינים");
 }
 
-export function getTruckAssignedAttributes(truckId: string) {
+export async function getTruckAssignedAttributes(truckId: string) {
   return safeAction(async () => {
     const assignments = await prisma.truckAttributeAssignment.findMany({
       where: { truckId },
@@ -44,7 +44,7 @@ export function getTruckAssignedAttributes(truckId: string) {
   }, "שגיאה בטעינת המאפיינים");
 }
 
-export function setTruckAttributes(
+export async function setTruckAttributes(
   input: z.infer<typeof setTruckAttributesSchema>,
 ) {
   return withAuth(async (userId) => {
@@ -110,7 +110,7 @@ export function setTruckAttributes(
   });
 }
 
-export function addTruckAttribute(
+export async function addTruckAttribute(
   input: z.infer<typeof addTruckAttributeSchema>,
 ) {
   return withAuth(async (userId) => {
@@ -185,7 +185,7 @@ export function addTruckAttribute(
   });
 }
 
-export function removeTruckAttribute(
+export async function removeTruckAttribute(
   input: z.infer<typeof removeTruckAttributeSchema>,
 ) {
   return withAuth(async (userId) => {

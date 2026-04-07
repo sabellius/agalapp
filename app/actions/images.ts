@@ -15,7 +15,7 @@ import {
   updateImageAltSchema,
 } from "@/lib/validations";
 
-export function deleteImage(input: DeleteImageInput) {
+export async function deleteImage(input: DeleteImageInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const validated = deleteImageSchema.parse(input);
@@ -71,7 +71,7 @@ export function deleteImage(input: DeleteImageInput) {
   });
 }
 
-export function setPrimaryImage(input: SetPrimaryImageInput) {
+export async function setPrimaryImage(input: SetPrimaryImageInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const validated = setPrimaryImageSchema.parse(input);
@@ -121,7 +121,7 @@ export function setPrimaryImage(input: SetPrimaryImageInput) {
   });
 }
 
-export function updateImageAlt(input: UpdateImageAltInput) {
+export async function updateImageAlt(input: UpdateImageAltInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const validated = updateImageAltSchema.parse(input);

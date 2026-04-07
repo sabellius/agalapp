@@ -15,7 +15,7 @@ import {
   updateTruckSchema,
 } from "@/lib/validations";
 
-export function createTruck(input: CreateTruckInput) {
+export async function createTruck(input: CreateTruckInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const role = await getUserRole(userId);
@@ -54,7 +54,9 @@ export function createTruck(input: CreateTruckInput) {
   });
 }
 
-export function updateTruck(input: UpdateTruckInput & { truckId: string }) {
+export async function updateTruck(
+  input: UpdateTruckInput & { truckId: string },
+) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const { truckId, ...dataToValidate } = input;
@@ -139,7 +141,7 @@ export function updateTruck(input: UpdateTruckInput & { truckId: string }) {
   });
 }
 
-export function deleteTruck(input: DeleteTruckInput) {
+export async function deleteTruck(input: DeleteTruckInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const validated = deleteTruckSchema.parse(input);

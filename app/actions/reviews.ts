@@ -13,7 +13,7 @@ import {
   updateReviewSchema,
 } from "@/lib/validations";
 
-export function createReview(input: CreateReviewInput) {
+export async function createReview(input: CreateReviewInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const validated = createReviewSchema.parse(input);
@@ -53,7 +53,7 @@ export function createReview(input: CreateReviewInput) {
   });
 }
 
-export function updateReview(input: UpdateReviewInput) {
+export async function updateReview(input: UpdateReviewInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const validated = updateReviewSchema.parse(input);
@@ -85,7 +85,7 @@ export function updateReview(input: UpdateReviewInput) {
   });
 }
 
-export function deleteReview(input: DeleteReviewInput) {
+export async function deleteReview(input: DeleteReviewInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const validated = deleteReviewSchema.parse(input);
