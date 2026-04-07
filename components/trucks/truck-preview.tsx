@@ -2,7 +2,6 @@ import { MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { OpenStatusBadge } from "@/components/trucks/open-status-badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -65,9 +64,9 @@ export function TruckPreview({ truck }: TruckPreviewProps) {
         </CardContent>
         <CardFooter className="p-4 pt-0 flex items-center justify-between">
           <StarRating rating={rating} reviewCount={truck._count.reviews} />
-          <Button variant="ghost" size="sm">
-            צפה בפרטים
-          </Button>
+          <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
+            צפה בפרטים →
+          </span>
         </CardFooter>
       </Link>
     </Card>
