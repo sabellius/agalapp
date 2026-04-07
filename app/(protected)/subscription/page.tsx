@@ -25,7 +25,7 @@ export default async function SubscriptionPage() {
   });
 
   const user = await prisma.user.findUnique({
-    where: { id: session!.user.id },
+    where: { id: session?.user?.id },
     select: {
       id: true,
       name: true,
