@@ -1,59 +1,20 @@
-"use client";
-
 import { Plus } from "lucide-react";
+import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { authClient, useSession } from "@/lib/auth-client";
+import { SignOutButton } from "@/components/sign-out-button";
+import { auth } from "@/lib/auth";
 
-export default function DashboardPage() {
-  const { data: session, isPending } = useSession();
-  const router = useRouter();
-
-  async function handleSignOut() {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/auth/sign-in");
-        },
-      },
-    });
-  }
-
-  if (isPending) {
-    return (
-      <div className="container mx-auto max-w-md py-12">
-        <p className="text-center">טוען.</p>
-      </div>
-    );
-  }
-
-  if (!session) {
-    return (
-      <div className="container mx-auto max-w-md py-12">
-        <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold">לא מחובר</h1>
-          <p>עליך להתחבר כדי לגשת לדף זה</p>
-          <Link
-            href="/auth/sign-in"
-            className="inline-block rounded-md bg-primary px-4 py-2 text-primary-foreground"
-          >
-            התחברות
-          </Link>
-        </div>
-      </div>
-    );
-  }
+export default async function DashboardPage() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const user = session?.user;
 
   return (
     <div className="container mx-auto max-w-md py-12">
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold">ברוכים הבאים!</h1>
-          <p className="text-muted-foreground">
-            {session.user.name || session.user.email}
-          </p>
+          <p className="text-muted-foreground">{user?.name || user?.email}</p>
         </div>
 
         <div className="rounded-lg border p-4">
@@ -79,20 +40,20 @@ export default function DashboardPage() {
           <dl className="space-y-2 text-sm">
             <div>
               <dt className="font-medium">אימייל:</dt>
-              <dd className="text-muted-foreground">{session.user.email}</dd>
+              <dd className="text-muted-foreground">{user?.email}</dd>
             </div>
-            {session.user.name && (
+            {user?.name && (
               <div>
                 <dt className="font-medium">שם:</dt>
-                <dd className="text-muted-foreground">{session.user.name}</dd>
+                <dd className="text-muted-foreground">{user.name}</dd>
               </div>
             )}
-            {session.user.image && (
+            {user?.image && (
               <div>
                 <dt className="font-medium">תמונה:</dt>
                 <dd>
                   <Image
-                    src={session.user.image}
+                    src={user.image}
                     alt="תמונה"
                     width={48}
                     height={48}
@@ -104,12 +65,7 @@ export default function DashboardPage() {
           </dl>
         </div>
 
-        {/* <div className="flex flex-col gap-4">
-          <SignOut redirectTo="/" />
-        </div> */}
-        <Button onClick={handleSignOut} variant="secondary">
-          התנתקות
-        </Button>
+        <SignOutButton />
 
         <Link
           href="/"
