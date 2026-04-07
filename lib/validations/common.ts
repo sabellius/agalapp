@@ -7,7 +7,13 @@ export const MAX_IMAGE_ALT_LENGTH = 200;
 export const MAX_PAGE_SIZE = 100;
 export const DEFAULT_PAGE_SIZE = 12;
 
-export const israeliCities = [
+export const MIN_RATING_OPTIONS = [
+  { value: "0", label: "הכל" },
+  { value: "3", label: "3+ כוכבים" },
+  { value: "4", label: "4+ כוכבים" },
+] as const;
+
+export const CITIES = [
   "תל אביב",
   "ירושלים",
   "חיפה",
@@ -53,7 +59,7 @@ export const truckNameSchema = z
   .min(2, "שם העגלה חייב להכיל לפחות 2 תווים")
   .max(MAX_TRUCK_NAME_LENGTH, "שם העגלה לא יכול לעלות על 100 תווים");
 
-export const citySchema = z.enum(israeliCities, {
+export const citySchema = z.enum(CITIES, {
   message: "יש לבחור עיר מהרשימה",
 });
 

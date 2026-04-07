@@ -23,7 +23,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { TruckHours } from "@/generated/prisma/client";
-import { CITIES } from "@/lib/constants";
 import {
   FREE_TIER_MAX_ATTRIBUTES,
   isCurrentlyPremium,
@@ -32,6 +31,7 @@ import {
 import { canEditWorkingHours } from "@/lib/truck-permissions";
 import type { CreateTruckInput, UpdateTruckInput } from "@/lib/validations";
 import {
+  CITIES,
   MAX_ADDRESS_LENGTH,
   MAX_TRUCK_IMAGES,
   MAX_TRUCK_NAME_LENGTH,

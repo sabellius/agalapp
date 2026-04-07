@@ -1,9 +1,9 @@
 import {
   addressSchema,
+  CITIES,
   citySchema,
   hebrewTextSchema,
   imageSchema,
-  israeliCities,
   truckNameSchema,
 } from "./common";
 
@@ -68,10 +68,10 @@ describe("citySchema", () => {
   });
 
   it("contains all major Israeli cities", () => {
-    expect(israeliCities).toContain("תל אביב");
-    expect(israeliCities).toContain("ירושלים");
-    expect(israeliCities).toContain("חיפה");
-    expect(israeliCities).toContain("באר שבע");
+    expect(CITIES).toContain("תל אביב");
+    expect(CITIES).toContain("ירושלים");
+    expect(CITIES).toContain("חיפה");
+    expect(CITIES).toContain("באר שבע");
   });
 });
 

@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CITIES } from "@/lib/constants";
+import { CITIES } from "@/lib/validations/common";
 
 export function SearchHero() {
   const router = useRouter();

@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CITIES, MIN_RATING_OPTIONS } from "@/lib/constants";
+import { CITIES, MIN_RATING_OPTIONS } from "@/lib/validations/common";
 
 export function TrucksSearch() {
   const router = useRouter();
