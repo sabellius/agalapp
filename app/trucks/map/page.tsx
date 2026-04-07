@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TruckMapClient } from "@/components/map/truck-map-client";
 import { prisma } from "@/lib/prisma";
+import { calculateAverageRating } from "@/lib/truck-utils";
 
 async function getTrucksWithCoords() {
   const trucks = await prisma.coffeeTruck.findMany({
@@ -24,11 +25,7 @@ async function getTrucksWithCoords() {
 
   return trucks
     .map((truck) => {
-      const avgRating =
-        truck.reviews.length > 0
-          ? truck.reviews.reduce((sum, r) => sum + r.rating, 0) /
-            truck.reviews.length
-          : 0;
+      const averageRating = calculateAverageRating(truck.reviews);
 
       return {
         id: truck.id,
@@ -36,7 +33,7 @@ async function getTrucksWithCoords() {
         address: truck.address,
         latitude: truck.latitude as number,
         longitude: truck.longitude as number,
-        avgRating,
+        averageRating,
         reviewCount: truck._count.reviews,
       };
     })

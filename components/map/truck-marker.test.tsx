@@ -22,7 +22,7 @@ describe("TruckMarker", () => {
     address: "Test Street, Tel Aviv",
     latitude: 32.0853,
     longitude: 34.7818,
-    avgRating: 4.5,
+    averageRating: 4.5,
     reviewCount: 10,
   };
 
@@ -74,7 +74,7 @@ describe("TruckMarker", () => {
   it("renders without rating when not available", () => {
     const truckWithoutRating: TruckMarkerData = {
       ...mockTruck,
-      avgRating: undefined,
+      averageRating: undefined,
       reviewCount: undefined,
     };
 

@@ -36,7 +36,7 @@ describe("TruckMap", () => {
       address: "Tel Aviv",
       latitude: 32.0853,
       longitude: 34.7818,
-      avgRating: 4.5,
+      averageRating: 4.5,
       reviewCount: 10,
     },
     {
@@ -45,7 +45,7 @@ describe("TruckMap", () => {
       address: "Jerusalem",
       latitude: 31.7683,
       longitude: 35.2137,
-      avgRating: 3.5,
+      averageRating: 3.5,
       reviewCount: 5,
     },
   ];

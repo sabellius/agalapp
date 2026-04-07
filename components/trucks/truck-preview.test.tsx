@@ -49,7 +49,7 @@ describe("TruckPreview", () => {
     ],
     hours: [createMockHour()],
     _count: { reviews: 5 },
-    avgRating: 4.5,
+    averageRating: 4.5,
   };
 
   it("renders truck information", () => {
@@ -71,7 +71,7 @@ describe("TruckPreview", () => {
     const truckNoReviews = {
       ...mockTruck,
       _count: { reviews: 0 },
-      avgRating: 0,
+      averageRating: 0,
     };
 
     render(<TruckPreview truck={truckNoReviews} />);

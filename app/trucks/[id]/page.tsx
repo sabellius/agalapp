@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canShowWorkingHours } from "@/lib/truck-permissions";
+import { calculateAverageRating } from "@/lib/truck-utils";
 
 async function getTruck(id: string, userId?: string) {
   const truck = await prisma.coffeeTruck.findUnique({
@@ -73,15 +74,11 @@ async function getTruck(id: string, userId?: string) {
     return null;
   }
 
-  const avgRating =
-    truck.reviews.length > 0
-      ? truck.reviews.reduce((sum, r) => sum + r.rating, 0) /
-        truck.reviews.length
-      : 0;
+  const averageRating = calculateAverageRating(truck.reviews);
 
   return {
     ...truck,
-    avgRating,
+    averageRating,
   };
 }
 
@@ -170,7 +167,7 @@ export default async function TruckPage({
                       address: truck.address,
                       latitude: truck.latitude,
                       longitude: truck.longitude,
-                      avgRating: truck.avgRating,
+                      averageRating: truck.averageRating,
                       reviewCount: truck.reviews.length,
                     },
                   ]}
@@ -274,7 +271,7 @@ export default async function TruckPage({
               <div className="flex items-center gap-2">
                 <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                 <span className="text-xl font-bold">
-                  {truck.avgRating.toFixed(1)}
+                  {truck.averageRating.toFixed(1)}
                 </span>
                 <span className="text-muted-foreground">
                   ({truck.reviews.length} ביקורות)

@@ -4,6 +4,7 @@ import { TruckPreview } from "@/components/trucks/truck-preview";
 import { TrucksSearch } from "@/components/trucks/trucks-search";
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
+import { calculateAverageRating } from "@/lib/truck-utils";
 
 interface SearchParams {
   search?: string;
@@ -58,15 +59,11 @@ async function getTrucks(params: SearchParams) {
   });
 
   const trucksWithRating = trucks.map((truck) => {
-    const avgRating =
-      truck.reviews.length > 0
-        ? truck.reviews.reduce((sum, r) => sum + r.rating, 0) /
-          truck.reviews.length
-        : 0;
+    const averageRating = calculateAverageRating(truck.reviews);
 
     return {
       ...truck,
-      avgRating,
+      averageRating,
       reviews: undefined,
     };
   });
@@ -74,7 +71,7 @@ async function getTrucks(params: SearchParams) {
   const minRatingNum = minRating ? Number.parseFloat(minRating) : 0;
   const filtered =
     minRatingNum > 0
-      ? trucksWithRating.filter((t) => t.avgRating >= minRatingNum)
+      ? trucksWithRating.filter((t) => t.averageRating >= minRatingNum)
       : trucksWithRating;
 
   return filtered;

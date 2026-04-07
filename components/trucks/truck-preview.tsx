@@ -18,14 +18,14 @@ interface TruckPreviewProps {
     _count: {
       reviews: number;
     };
-    avgRating: number;
+    averageRating: number;
   };
 }
 
 export function TruckPreview({ truck }: TruckPreviewProps) {
   const primaryImage =
     truck.images.find((img) => img.isPrimary) || truck.images[0];
-  const rating = truck.avgRating || 0;
+  const rating = truck.averageRating || 0;
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200">

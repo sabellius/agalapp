@@ -11,7 +11,7 @@ export interface TruckMarkerData {
   address: string;
   latitude: number;
   longitude: number;
-  avgRating?: number;
+  averageRating?: number;
   reviewCount?: number;
 }
 
@@ -46,7 +46,7 @@ function createCustomIcon(color: string): DivIcon {
 }
 
 export function TruckMarker({ truck }: TruckMarkerProps) {
-  const color = getMarkerColor(truck.avgRating);
+  const color = getMarkerColor(truck.averageRating);
   const icon = createCustomIcon(color);
 
   return (
@@ -54,11 +54,11 @@ export function TruckMarker({ truck }: TruckMarkerProps) {
       <Popup className="truck-popup">
         <div dir="rtl" className="text-right" style={{ minWidth: "200px" }}>
           <h3 className="font-bold text-lg mb-1">{truck.name}</h3>
-          {truck.avgRating !== undefined && (
+          {truck.averageRating !== undefined && (
             <div className="flex items-center gap-1 mb-1">
               <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
               <span className="text-sm font-medium">
-                {truck.avgRating.toFixed(1)}
+                {truck.averageRating.toFixed(1)}
               </span>
               {truck.reviewCount !== undefined && (
                 <span className="text-xs text-muted-foreground">

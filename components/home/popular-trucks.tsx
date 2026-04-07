@@ -1,5 +1,6 @@
 import { TruckPreview } from "@/components/trucks/truck-preview";
 import { prisma } from "@/lib/prisma";
+import { calculateAverageRating } from "@/lib/truck-utils";
 
 const POPULAR_TRUCKS_LIMIT = 4;
 
@@ -21,14 +22,10 @@ async function getPopularTrucks() {
 
   const trucksWithRating = trucks
     .map((truck) => {
-      const avgRating =
-        truck.reviews.length > 0
-          ? truck.reviews.reduce((sum, r) => sum + r.rating, 0) /
-            truck.reviews.length
-          : 0;
+      const averageRating = calculateAverageRating(truck.reviews);
       return {
         ...truck,
-        avgRating,
+        averageRating,
         reviews: undefined,
       };
     })
