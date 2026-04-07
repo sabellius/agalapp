@@ -1,6 +1,5 @@
 import { Calendar, Crown, Info } from "lucide-react";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { downgradeAccount } from "@/app/actions/subscription";
 import { UpgradePrompt } from "@/components/trucks/upgrade-prompt";
 import { UserTierBadge } from "@/components/trucks/user-tier-badge";
@@ -25,12 +24,8 @@ export default async function SubscriptionPage() {
     headers: await headers(),
   });
 
-  if (!session?.user) {
-    redirect("/auth/sign-in");
-  }
-
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: session!.user.id },
     select: {
       id: true,
       name: true,
@@ -40,9 +35,7 @@ export default async function SubscriptionPage() {
     },
   });
 
-  if (!user) {
-    redirect("/auth/sign-in");
-  }
+  if (!user) return null;
 
   const tierName = getTierName(user.tier, user.tierExpiryAt);
   const expiryDate = getExpiryDateString(user.tierExpiryAt);

@@ -3,20 +3,14 @@ import { notFound, redirect } from "next/navigation";
 import { TruckForm } from "@/components/trucks/truck-form";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { canModifyTruck } from "@/lib/truck-permissions";
 
 export default async function EditTruckPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!session?.user) {
-    redirect("/auth/sign-in");
-  }
-
+  const session = await auth.api.getSession({ headers: await headers() });
   const { id } = await params;
 
   const truck = await prisma.coffeeTruck.findUnique({
@@ -62,15 +56,8 @@ export default async function EditTruckPage({
     notFound();
   }
 
-  if (truck.ownerId !== session.user.id) {
-    const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      select: { role: true },
-    });
-
-    if (!user || user.role !== "ADMIN") {
-      redirect("/trucks");
-    }
+  if (!(await canModifyTruck(session?.user?.id ?? "", truck.ownerId))) {
+    redirect("/trucks");
   }
 
   return (
