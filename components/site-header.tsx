@@ -30,27 +30,15 @@ const authenticatedNav = [{ title: "לוח בקרה", href: "/dashboard" }];
 
 const ownerNav = [{ title: "הוסף עגלה", href: "/trucks/new" }];
 
-export function SiteHeader() {
-  const { data: session, isPending } = useSession();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const user = session?.user as
-    | { name?: string | null; email?: string | null; role?: string }
-    | null
-    | undefined;
-  const isAuthenticated = !!user;
-  const isOwner = user?.role === "TRUCK_OWNER" || user?.role === "ADMIN";
+interface NavLinkProps {
+  href: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+  isMobile?: boolean;
+}
 
-  const NavLink = ({
-    href,
-    children,
-    onClick,
-    isMobile = false,
-  }: {
-    href: string;
-    children: React.ReactNode;
-    onClick?: () => void;
-    isMobile?: boolean;
-  }) => (
+function NavLink({ href, children, onClick, isMobile = false }: NavLinkProps) {
+  return (
     <Link
       href={href}
       onClick={onClick}
@@ -64,6 +52,17 @@ export function SiteHeader() {
       {children}
     </Link>
   );
+}
+
+export function SiteHeader() {
+  const { data: session, isPending } = useSession();
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const user = session?.user as
+    | { name?: string | null; email?: string | null; role?: string }
+    | null
+    | undefined;
+  const isAuthenticated = !!user;
+  const isOwner = user?.role === "TRUCK_OWNER" || user?.role === "ADMIN";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
