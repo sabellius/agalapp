@@ -69,7 +69,7 @@ export function ImagePreview({
           }`}
         >
           {image.isPrimary && (
-            <div className="absolute top-2 right-2 z-10 bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
+            <div className="absolute top-2 end-2 z-10 bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
               <Star className="h-3 w-3 fill-current" />
               ראשית
             </div>
@@ -138,7 +138,7 @@ export function ImagePreview({
                   size="sm"
                   onClick={handleCancelAlt}
                 >
-                  <X className="h-4 w-4 ml-1" />
+                  <X className="h-4 w-4 ms-1" />
                   ביטול
                 </Button>
                 <Button

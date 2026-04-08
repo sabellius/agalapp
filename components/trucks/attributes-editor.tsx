@@ -107,13 +107,13 @@ export function AttributesEditor({
                             : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                         }
                         ${isToggling ? "opacity-50" : ""}
-                        ${showLock ? "pr-8" : ""}
+                        ${showLock ? "pe-8" : ""}
                       `}
                     >
                       <span className="font-medium">{attr.name}</span>
                     </button>
                     {showLock && (
-                      <div className="absolute right-1.5 top-1/2 -translate-y-1/2">
+                      <div className="absolute end-1.5 top-1/2 -translate-y-1/2">
                         <Lock className="h-3 w-3 text-muted-foreground" />
                       </div>
                     )}

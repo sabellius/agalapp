@@ -48,10 +48,10 @@ export function StarRating({
               />
               {(isFilled || isPartial) && (
                 <Star
-                  className={`${starClass} absolute top-0 left-0 fill-yellow-400 text-yellow-400`}
+                  className={`${starClass} absolute top-0 start-0 fill-yellow-400 text-yellow-400`}
                   style={
                     isPartial
-                      ? { clipPath: `inset(0 ${100 - fillPercentage}% 0 0)` }
+                      ? { clipPath: `inset(0 0 0 ${fillPercentage}%)` }
                       : undefined
                   }
                 />

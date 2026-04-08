@@ -67,19 +67,19 @@ export function TrucksSearch() {
       <form onSubmit={handleSearchSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="חיפוש לפי שם או כתובת..."
               value={localSearch}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pr-10"
+              className="pe-10"
             />
             {localSearch && (
               <button
                 type="button"
                 onClick={handleClearSearch}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4" />
               </button>

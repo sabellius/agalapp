@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Hebrew } from "next/font/google";
+import { Geist, Noto_Sans_Hebrew } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { Providers } from "@/app/providers";
 import { SiteHeader } from "@/components/site-header";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const notoSansHebrew = Noto_Sans_Hebrew({
   variable: "--font-noto-sans-hebrew",
@@ -22,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="he" dir="rtl">
+    <html lang="he" dir="rtl" className={cn("font-sans", geist.variable)}>
       <body className={`${notoSansHebrew.className} antialiased`}>
         <Providers>
           <SiteHeader />

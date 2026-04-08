@@ -35,13 +35,13 @@ export function SearchHero() {
     >
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
             placeholder="שם עגלה או כתובת..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pr-10 h-12"
+            className="pe-10 h-12"
           />
         </div>
 
