@@ -42,9 +42,11 @@ pnpm run test:e2e
 pnpm run test:e2e:ui
 
 # Database
-npx prisma generate
+pnpm exec prisma generate
 pnpm run seed
 ```
+
+> Do not manually run lint, format, or typecheck — handled automatically (formatter on write, lefthook on commit).
 
 ## Project Structure
 
@@ -160,3 +162,8 @@ All domain values are named constants. Import from:
 - Don't add unnecessary comments
 - Don't use Pages Router (we use App Router)
 - Don't use `npx` for local binaries - use `pnpm exec`
+
+## Commits
+
+- After completing a task, commit changes using the `git-commit` skill
+- Segment changes into logical commits — one commit per concern
