@@ -52,20 +52,20 @@
 - [x] Convert `/dashboard` from client component to server component
 - [x] Add missing `ZodError` catch in `setTruckHours`
 
-#### Phase 1.5: shadcn RTL Migration 🚧 In Progress
+#### Phase 1.5: shadcn RTL Migration ✅
 
-- [ ] Migrate `new-york` → `radix-nova` with RTL support
-- [ ] Restore globals.css (auth-ui import, cursor rule, font vars)
-- [ ] Restore button custom variants (`icon-sm`, `icon-lg`)
-- [ ] Restore sheet `showCloseButton` prop
-- [ ] Fix physical → logical CSS properties in custom components
-- [ ] Add `DirectionProvider` if needed
+- [x] Migrate `new-york` → `radix-nova` with RTL support
+- [x] Restore globals.css (auth-ui import, cursor rule, font vars)
+- [x] Restore button custom variants (`icon-sm`, `icon-lg`)
+- [x] Restore sheet `showCloseButton` prop
+- [x] Fix physical → logical CSS properties in custom components
+- [x] Add `DirectionProvider` if needed
 
 #### Phase 2: Next.js Best Practices & UI/UX Polish
 
 - [x] Add `app/loading.tsx` (global skeleton)
 - [x] Add `app/trucks/loading.tsx` and `app/trucks/[id]/loading.tsx`
-- [ ] Add `app/error.tsx` (global error boundary)
+- [x] Add `app/error.tsx` (global error boundary)
 - [ ] Add `app/not-found.tsx` (branded 404)
 - [ ] Add `generateMetadata` to `/trucks/[id]`, static metadata to `/trucks` and `/trucks/map`
 - [ ] Replace hardcoded colors with semantic tokens (`text-red-500` → `text-destructive`, etc.)
