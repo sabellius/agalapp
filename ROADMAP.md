@@ -1,6 +1,6 @@
 # AgalApp Roadmap
 
-**Last Updated:** 2026-04-06
+**Last Updated:** 2026-04-08
 **Project:** Hebrew (RTL) coffee cart review platform
 **Goal:** Portfolio project with balanced UX/UI and backend features
 
@@ -36,26 +36,35 @@
 
 ### Portfolio Polish Sprint Breakdown
 
-#### Phase 0: Critical Fixes (Security & Architecture)
+#### Phase 0: Critical Fixes (Security & Architecture) ✅
 
-- [ ] Create `app/(protected)/layout.tsx` with server-side auth guard (fixes unprotected `/trucks/new`)
-- [ ] Add Zod schemas for `setTruckAttributes`, `addTruckAttribute`, `removeTruckAttribute`
-- [ ] Fix admin access in `attributes.ts` and `truck-hours.ts` (use `canModifyTruck()` instead of inline checks)
-- [ ] Fix nested `<Link>/<Button>` in `truck-preview.tsx` (invalid HTML, a11y)
+- [x] Create `app/(protected)/layout.tsx` with server-side auth guard (fixes unprotected `/trucks/new`)
+- [x] Add Zod schemas for `setTruckAttributes`, `addTruckAttribute`, `removeTruckAttribute`
+- [x] Fix admin access in `attributes.ts` and `truck-hours.ts` (use `canModifyTruck()` instead of inline checks)
+- [x] Fix nested `<Link>/<Button>` in `truck-preview.tsx` (invalid HTML, a11y)
 
-#### Phase 1: Architecture Refactoring (Design Patterns)
+#### Phase 1: Architecture Refactoring (Design Patterns) ✅
 
-- [ ] Extract `withAuth()` HOF + `safeAction()` wrapper, update all server actions
-- [ ] Deduplicate city list — single source of truth in `validations/common.ts`, remove `lib/constants.ts` CITIES
-- [ ] Extract `calculateAverageRating()` utility (replace duplication in 3 files)
-- [ ] Extract `NavLink` from `SiteHeader` render body
-- [ ] Convert `/dashboard` from client component to server component
-- [ ] Add missing `ZodError` catch in `setTruckHours`
+- [x] Extract `withAuth()` HOF + `safeAction()` wrapper, update all server actions
+- [x] Deduplicate city list — single source of truth in `validations/common.ts`, remove `lib/constants.ts` CITIES
+- [x] Extract `calculateAverageRating()` utility (replace duplication in 3 files)
+- [x] Extract `NavLink` from `SiteHeader` render body
+- [x] Convert `/dashboard` from client component to server component
+- [x] Add missing `ZodError` catch in `setTruckHours`
+
+#### Phase 1.5: shadcn RTL Migration 🚧 In Progress
+
+- [ ] Migrate `new-york` → `radix-nova` with RTL support
+- [ ] Restore globals.css (auth-ui import, cursor rule, font vars)
+- [ ] Restore button custom variants (`icon-sm`, `icon-lg`)
+- [ ] Restore sheet `showCloseButton` prop
+- [ ] Fix physical → logical CSS properties in custom components
+- [ ] Add `DirectionProvider` if needed
 
 #### Phase 2: Next.js Best Practices & UI/UX Polish
 
-- [ ] Add `app/loading.tsx` (global skeleton)
-- [ ] Add `app/trucks/loading.tsx` and `app/trucks/[id]/loading.tsx`
+- [x] Add `app/loading.tsx` (global skeleton)
+- [x] Add `app/trucks/loading.tsx` and `app/trucks/[id]/loading.tsx`
 - [ ] Add `app/error.tsx` (global error boundary)
 - [ ] Add `app/not-found.tsx` (branded 404)
 - [ ] Add `generateMetadata` to `/trucks/[id]`, static metadata to `/trucks` and `/trucks/map`
