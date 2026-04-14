@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { TruckForm } from "@/components/trucks/truck-form";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { canModifyTruck } from "@/lib/truck-permissions";
+import { canEditWorkingHours, canModifyTruck } from "@/lib/truck-permissions";
 
 export default async function EditTruckPage({
   params,
@@ -60,6 +60,8 @@ export default async function EditTruckPage({
     redirect("/trucks");
   }
 
+  const canEditHours = canEditWorkingHours(truck.owner);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">עריכת עגלת קפה</h1>
@@ -72,6 +74,7 @@ export default async function EditTruckPage({
           alt: img.alt || "",
         }))}
         attributes={truck.attributes.map((a) => a.attribute)}
+        canEditHours={canEditHours}
       />
     </div>
   );

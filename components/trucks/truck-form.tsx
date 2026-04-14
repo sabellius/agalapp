@@ -22,13 +22,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import type { TruckHours } from "@/generated/prisma/client";
 import {
   FREE_TIER_MAX_ATTRIBUTES,
   isCurrentlyPremium,
   type UserTier,
 } from "@/lib/tiers";
-import { canEditWorkingHours } from "@/lib/truck-permissions";
+import { cn } from "@/lib/utils";
 import type { CreateTruckInput, UpdateTruckInput } from "@/lib/validations";
 import {
   CITIES,
@@ -62,6 +70,7 @@ interface TruckFormProps {
     name: string;
     icon: string;
   }>;
+  canEditHours?: boolean;
 }
 
 interface FormData {
@@ -85,6 +94,7 @@ export function TruckForm({
   hours = [],
   images: initialImages = [],
   attributes: initialAttributes = [],
+  canEditHours,
 }: TruckFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>(
@@ -223,6 +233,13 @@ export function TruckForm({
     }
   };
 
+  const handleCityChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, city: value }));
+    if (errors.city) {
+      setErrors((prev) => ({ ...prev, city: undefined }));
+    }
+  };
+
   const handleImageUpload = (image: Omit<TruckImageData, "id">) => {
     setImages((prev) => [
       ...prev,
@@ -353,38 +370,39 @@ export function TruckForm({
               placeholder="לדוגמה: קפה המומחים"
               required
               maxLength={MAX_TRUCK_NAME_LENGTH}
-              className={errors.name ? "border-red-500" : ""}
+              className={cn(errors.name && "border-destructive")}
             />
             {errors.name && (
-              <p className="text-sm text-red-500">{errors.name}</p>
+              <p className="text-sm text-destructive">{errors.name}</p>
             )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="city">עיר *</Label>
-            <select
-              id="city"
-              name="city"
+            <Select
               value={formData.city}
-              onChange={handleChange}
+              onValueChange={handleCityChange}
               required
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <option value="">בחר עיר</option>
-              {CITIES.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="בחר עיר" />
+              </SelectTrigger>
+              <SelectContent>
+                {CITIES.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {errors.city && (
-              <p className="text-sm text-red-500">{errors.city}</p>
+              <p className="text-sm text-destructive">{errors.city}</p>
             )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="address">כתובת *</Label>
-            <textarea
+            <Textarea
               id="address"
               name="address"
               value={formData.address}
@@ -393,10 +411,9 @@ export function TruckForm({
               required
               maxLength={MAX_ADDRESS_LENGTH}
               rows={3}
-              className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
             {errors.address && (
-              <p className="text-sm text-red-500">{errors.address}</p>
+              <p className="text-sm text-destructive">{errors.address}</p>
             )}
           </div>
 
@@ -432,7 +449,7 @@ export function TruckForm({
 
           {truck && (
             <div className="pt-4 border-t">
-              {owner && canEditWorkingHours(owner) ? (
+              {canEditHours ? (
                 <HoursEditor
                   truckId={truck.id}
                   existingHours={hours}

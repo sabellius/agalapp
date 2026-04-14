@@ -69,9 +69,9 @@
 - [x] Add `app/error.tsx` (global error boundary)
 - [x] Add `app/not-found.tsx` (branded 404)
 - [x] Add `generateMetadata` to `/trucks/[id]`, static metadata to `/trucks` and `/trucks/map`
-- [ ] Replace hardcoded colors with semantic tokens (`text-red-500` → `text-destructive`, etc.)
+- [x] Replace hardcoded colors with semantic tokens (`text-red-500` → `text-destructive`, etc.)
 - [ ] Use `cn()` instead of template literal concatenation in all components
-- [ ] Replace native `<select>`/`<textarea>` with shadcn components in truck form
+- [x] Replace native `<select>`/`<textarea>` with shadcn components in truck form
 - [ ] Add `aria-label` to all icon-only buttons (avatar dropdown, vote, image actions)
 - [ ] Add keyboard support to interactive star rating
 - [ ] Link error messages to form fields via `aria-describedby` + `aria-invalid`
