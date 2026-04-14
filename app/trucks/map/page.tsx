@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { TruckMapClient } from "@/components/map/truck-map-client";
 import { prisma } from "@/lib/prisma";
 import { calculateAverageRating } from "@/lib/truck-utils";
+
+export const metadata: Metadata = {
+  title: "מפת עגלות קפה | AgalApp",
+  description: "צפה בכל עגלות הקפה בישראל על המפה. מצא עגלות קפה לפי מיקום.",
+};
 
 async function getTrucksWithCoords() {
   const trucks = await prisma.coffeeTruck.findMany({

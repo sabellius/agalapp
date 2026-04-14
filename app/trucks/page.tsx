@@ -1,4 +1,5 @@
 import { Map as MapIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { TruckPreview } from "@/components/trucks/truck-preview";
 import { TrucksSearch } from "@/components/trucks/trucks-search";
@@ -76,6 +77,11 @@ async function getTrucks(params: SearchParams) {
 
   return filtered;
 }
+
+export const metadata: Metadata = {
+  title: "עגלות קפה | AgalApp",
+  description: "גלה את עגלות הקפה הטובות ביותר בישראל. חפש לפי שם, עיר ודירוג.",
+};
 
 export default async function TrucksPage({ searchParams }: TrucksPageProps) {
   const params = await searchParams;

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Noto_Sans_Hebrew } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
@@ -13,10 +13,28 @@ const notoSansHebrew = Noto_Sans_Hebrew({
   subsets: ["hebrew"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#4a3728",
+};
+
 export const metadata: Metadata = {
-  title: "AgalApp - עגלות קפה בישראל",
+  title: {
+    default: "AgalApp - עגלות קפה בישראל",
+    template: "%s",
+  },
   description:
     "גלה עגלות קפה מובילות, קרא ביקורות ומצא את הקפה המושלם על גלגלים",
+  keywords: ["עגלות קפה", "קפה על גלגלים", "ביקורות קפה", "מפת קפה", "ישראל"],
+  authors: [{ name: "AgalApp" }],
+  openGraph: {
+    siteName: "AgalApp",
+    locale: "he_IL",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    site: "@agalapp",
+  },
 };
 
 export default function RootLayout({

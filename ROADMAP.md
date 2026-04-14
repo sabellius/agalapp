@@ -60,14 +60,15 @@
 - [x] Restore sheet `showCloseButton` prop
 - [x] Fix physical → logical CSS properties in custom components
 - [x] Add `DirectionProvider` if needed
+- [x] Fix dialog.tsx RTL transform (remove redundant `rtl:translate-x-1/2`)
 
 #### Phase 2: Next.js Best Practices & UI/UX Polish
 
 - [x] Add `app/loading.tsx` (global skeleton)
 - [x] Add `app/trucks/loading.tsx` and `app/trucks/[id]/loading.tsx`
 - [x] Add `app/error.tsx` (global error boundary)
-- [ ] Add `app/not-found.tsx` (branded 404)
-- [ ] Add `generateMetadata` to `/trucks/[id]`, static metadata to `/trucks` and `/trucks/map`
+- [x] Add `app/not-found.tsx` (branded 404)
+- [x] Add `generateMetadata` to `/trucks/[id]`, static metadata to `/trucks` and `/trucks/map`
 - [ ] Replace hardcoded colors with semantic tokens (`text-red-500` → `text-destructive`, etc.)
 - [ ] Use `cn()` instead of template literal concatenation in all components
 - [ ] Replace native `<select>`/`<textarea>` with shadcn components in truck form

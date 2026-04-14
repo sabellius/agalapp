@@ -1,4 +1,5 @@
 import { Calendar, MapPin, Star } from "lucide-react";
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,6 +17,52 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canShowWorkingHours } from "@/lib/truck-permissions";
 import { calculateAverageRating } from "@/lib/truck-utils";
+
+type Props = { params: Promise<{ id: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+
+  const truck = await prisma.coffeeTruck.findUnique({
+    where: { id },
+    select: {
+      name: true,
+      city: true,
+      address: true,
+      images: {
+        where: { isPrimary: true },
+        take: 1,
+      },
+      reviews: {
+        select: { rating: true },
+      },
+    },
+  });
+
+  if (!truck) {
+    return { title: "עגלת קפה לא נמצאה | AgalApp" };
+  }
+
+  const averageRating = calculateAverageRating(truck.reviews);
+  const ratingText = averageRating > 0 ? `${averageRating.toFixed(1)} ⭐` : "";
+  const primaryImage = truck.images[0];
+
+  return {
+    title: `${truck.name} | AgalApp`,
+    description: `${truck.name} - עגלת קפה ב${truck.city}, ${truck.address}${ratingText ? ` · ${ratingText}` : ""}`,
+    openGraph: {
+      title: truck.name,
+      description: `עגלת קפה ב${truck.city}`,
+      images: primaryImage ? [{ url: primaryImage.url, alt: truck.name }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: truck.name,
+      description: `עגלת קפה ב${truck.city}`,
+      images: primaryImage ? [primaryImage.url] : [],
+    },
+  };
+}
 
 async function getTruck(id: string, userId?: string) {
   const truck = await prisma.coffeeTruck.findUnique({
