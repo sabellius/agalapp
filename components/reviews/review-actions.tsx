@@ -1,6 +1,7 @@
 "use client";
 
 import { Pencil, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { deleteReview } from "@/app/actions/reviews";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ export function ReviewActions({
 }: ReviewActionsProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -41,7 +43,7 @@ export function ReviewActions({
 
     if (result.success) {
       setDeleteDialogOpen(false);
-      window.location.reload();
+      router.refresh();
     }
   };
 
