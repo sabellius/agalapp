@@ -1,9 +1,10 @@
-import { Map as MapIcon } from "lucide-react";
+import { Map as MapIcon, SearchX } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TruckPreview } from "@/components/trucks/truck-preview";
 import { TrucksSearch } from "@/components/trucks/trucks-search";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { prisma } from "@/lib/prisma";
 import { calculateAverageRating } from "@/lib/truck-utils";
 
@@ -107,9 +108,11 @@ export default async function TrucksPage({ searchParams }: TrucksPageProps) {
       <TrucksSearch />
 
       {trucks.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">לא נמצאו עגלות קפה</p>
-        </div>
+        <EmptyState
+          icon={SearchX}
+          title="לא נמצאו עגלות קפה"
+          description="נסה לחפש עם מילות חיפוש אחרות או לשנות את המסננים"
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {trucks.map((truck) => (

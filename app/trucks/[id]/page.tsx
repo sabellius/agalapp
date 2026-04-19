@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Star } from "lucide-react";
+import { Calendar, MapPin, MessageSquareOff, Star } from "lucide-react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Image from "next/image";
@@ -13,6 +13,7 @@ import { HoursDisplay } from "@/components/trucks/hours-display";
 import { OpenStatusBadge } from "@/components/trucks/open-status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { canShowWorkingHours } from "@/lib/truck-permissions";
@@ -238,7 +239,11 @@ export default async function TruckPage({
             </CardHeader>
             <CardContent>
               {truck.reviews.length === 0 ? (
-                <p className="text-muted-foreground">אין עדיין ביקורות</p>
+                <EmptyState
+                  icon={MessageSquareOff}
+                  title="אין עדיין ביקורות"
+                  description="היה הראשון לכתוב ביקורת על עגלת הקפה הזו"
+                />
               ) : (
                 <div className="space-y-4">
                   {truck.reviews.map((review) => (
