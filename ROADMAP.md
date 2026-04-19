@@ -1,6 +1,6 @@
 # AgalApp Roadmap
 
-**Last Updated:** 2026-04-08
+**Last Updated:** 2026-04-19
 **Project:** Hebrew (RTL) coffee cart review platform
 **Goal:** Portfolio project with balanced UX/UI and backend features
 
@@ -70,14 +70,12 @@
 - [x] Add `app/not-found.tsx` (branded 404)
 - [x] Add `generateMetadata` to `/trucks/[id]`, static metadata to `/trucks` and `/trucks/map`
 - [x] Replace hardcoded colors with semantic tokens (`text-red-500` → `text-destructive`, etc.)
-- [ ] Use `cn()` instead of template literal concatenation in all components
 - [x] Replace native `<select>`/`<textarea>` with shadcn components in truck form
-- [ ] Add `aria-label` to all icon-only buttons (avatar dropdown, vote, image actions)
-- [ ] Add keyboard support to interactive star rating
-- [ ] Link error messages to form fields via `aria-describedby` + `aria-invalid`
-- [ ] Add confirmation dialogs for delete truck and delete review
-- [ ] Add empty states for "no trucks found", "no reviews yet"
-- [ ] Fix `window.location.reload()` → `router.refresh()` in review-actions
+- [ ] Use `cn()` instead of template literal concatenation in all components
+- [ ] Add `aria-label` to all icon-only buttons (avatar dropdown, vote, image actions) ✅
+- [x] Add confirmation dialogs for delete truck and delete review ✅
+- [x] Add empty states for "no trucks found", "no reviews yet" ✅
+- [ ] Fix `window.location.reload()` → `router.refresh()` in review-actions ✅
 - [ ] Add `<link rel="preconnect">` for Cloudinary CDN in layout.tsx
 
 ---
