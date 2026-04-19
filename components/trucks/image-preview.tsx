@@ -94,6 +94,7 @@ export function ImagePreview({
                 onClick={() => onSetPrimary(image.id)}
                 disabled={disabled}
                 title="קבע כראשית"
+                aria-label="קבע כראשית"
               >
                 <Star className="h-4 w-4" />
               </Button>
@@ -105,6 +106,7 @@ export function ImagePreview({
               onClick={() => handleEditAlt(image)}
               disabled={disabled}
               title="ערוך טקסט"
+              aria-label="ערוך טקסט חלופי"
             >
               <Pencil className="h-4 w-4" />
             </Button>
@@ -115,6 +117,7 @@ export function ImagePreview({
               onClick={() => onDelete(image.id)}
               disabled={disabled}
               title="מחק"
+              aria-label="מחק תמונה"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
