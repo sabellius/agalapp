@@ -42,7 +42,8 @@ yarn-error.log*
 next-env.d.ts
 
 memory-bank/
-
+.superpowers/
+tmp/
 
 /generated/prisma
 
@@ -57,3 +58,4 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 .playwright-cli/
+tmp/
