@@ -32,7 +32,7 @@
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| **Portfolio Polish Sprint** | 🚧 Active | Full codebase audit → `tasks/portfolio-polish.md` |
+| **Favorites** | 🚧 Next | Heart toggle, favorites page, optimistic UI |
 
 ### Portfolio Polish Sprint Breakdown
 
@@ -62,7 +62,7 @@
 - [x] Add `DirectionProvider` if needed
 - [x] Fix dialog.tsx RTL transform (remove redundant `rtl:translate-x-1/2`)
 
-#### Phase 2: Next.js Best Practices & UI/UX Polish
+#### Phase 2: Next.js Best Practices & UI/UX Polish ✅
 
 - [x] Add `app/loading.tsx` (global skeleton)
 - [x] Add `app/trucks/loading.tsx` and `app/trucks/[id]/loading.tsx`
@@ -71,18 +71,18 @@
 - [x] Add `generateMetadata` to `/trucks/[id]`, static metadata to `/trucks` and `/trucks/map`
 - [x] Replace hardcoded colors with semantic tokens (`text-red-500` → `text-destructive`, etc.)
 - [x] Replace native `<select>`/`<textarea>` with shadcn components in truck form
-- [ ] Use `cn()` instead of template literal concatenation in all components
-- [ ] Add `aria-label` to all icon-only buttons (avatar dropdown, vote, image actions) ✅
-- [x] Add confirmation dialogs for delete truck and delete review ✅
-- [x] Add empty states for "no trucks found", "no reviews yet" ✅
-- [ ] Fix `window.location.reload()` → `router.refresh()` in review-actions ✅
-- [ ] Add `<link rel="preconnect">` for Cloudinary CDN in layout.tsx
+- [x] Use `cn()` instead of template literal concatenation in all components
+- [x] Add `aria-label` to all icon-only buttons (avatar dropdown, vote, image actions)
+- [x] Add confirmation dialogs for delete truck and delete review
+- [x] Add empty states for "no trucks found", "no reviews yet"
+- [x] Fix `window.location.reload()` → `router.refresh()` in review-actions
+- [~] Add `<link rel="preconnect">` for Cloudinary CDN — skipped (minimal impact)
 
 ---
 
 ## 📋 Planned
 
-### Phase 1: Foundation & Polish
+### Phase 1: Foundation & Polish (complete)
 
 | Feature | Description |
 |---------|-------------|
