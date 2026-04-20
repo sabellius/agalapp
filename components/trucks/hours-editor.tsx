@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import type { TruckHours } from "@/generated/prisma/client";
 import { DAYS_OF_WEEK } from "@/lib/truck-hours";
+import { cn } from "@/lib/utils";
 import type { DayHoursInput } from "@/lib/validations/truck-hours-schema";
 
 interface HoursEditorProps {
@@ -175,7 +176,10 @@ export function HoursEditor({
 
         {state.message && (
           <span
-            className={`text-sm ${state.success ? "text-green-600" : "text-destructive"}`}
+            className={cn(
+              "text-sm",
+              state.success ? "text-green-600" : "text-destructive",
+            )}
           >
             {state.message}
           </span>

@@ -4,6 +4,7 @@ import { ThumbsUp } from "lucide-react";
 import { useState, useTransition } from "react";
 import { toggleVote } from "@/app/actions/votes";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface VoteButtonProps {
   reviewId: string;
@@ -46,11 +47,14 @@ export function VoteButton({
     <Button
       variant="ghost"
       size="sm"
-      className={`h-8 gap-1 px-2 ${hasVoted ? "text-primary" : "text-muted-foreground"}`}
+      className={cn(
+        "h-8 gap-1 px-2",
+        hasVoted ? "text-primary" : "text-muted-foreground",
+      )}
       onClick={handleVote}
       disabled={isPending}
     >
-      <ThumbsUp className={`h-4 w-4 ${hasVoted ? "fill-current" : ""}`} />
+      <ThumbsUp className={cn("h-4 w-4", hasVoted && "fill-current")} />
       <span className="text-xs">{voteCount}</span>
     </Button>
   );

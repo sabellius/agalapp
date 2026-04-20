@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { MAX_REVIEW_RATING } from "@/lib/validations/review-schema";
 
 interface StarRatingProps {
@@ -28,7 +29,7 @@ export function StarRating({
   const starClass = sizeClasses[size];
 
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
+    <div className={cn("flex items-center gap-1", className)}>
       <div
         className="flex"
         role="img"
@@ -44,11 +45,17 @@ export function StarRating({
           return (
             <div key={starIndex} className="relative">
               <Star
-                className={`${starClass} fill-transparent text-muted-foreground/30`}
+                className={cn(
+                  starClass,
+                  "fill-transparent text-muted-foreground/30",
+                )}
               />
               {(isFilled || isPartial) && (
                 <Star
-                  className={`${starClass} absolute top-0 start-0 fill-yellow-400 text-yellow-400`}
+                  className={cn(
+                    starClass,
+                    "absolute top-0 start-0 fill-yellow-400 text-yellow-400",
+                  )}
                   style={
                     isPartial
                       ? { clipPath: `inset(0 0 0 ${fillPercentage}%)` }
