@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { canShowWorkingHours } from "@/lib/truck-permissions";
+import { canModifyTruck, canShowWorkingHours } from "@/lib/truck-permissions";
 import { calculateAverageRating } from "@/lib/truck-utils";
 
 type Props = { params: Promise<{ id: string }> };
@@ -130,11 +130,7 @@ async function getTruck(id: string, userId?: string) {
   };
 }
 
-export default async function TruckPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function TruckPage({ params }: Props) {
   const { id } = await params;
 
   const session = await auth.api.getSession({
@@ -150,8 +146,10 @@ export default async function TruckPage({
   const hasReviewed = session?.user?.id
     ? truck.reviews.some((review) => review.userId === session.user.id)
     : false;
-
   const canShowHours = canShowWorkingHours(truck.owner);
+  const canEdit = session?.user?.id
+    ? await canModifyTruck(session.user.id, truck.ownerId)
+    : false;
 
   const primaryImage =
     truck.images.find((img) => img.isPrimary) || truck.images[0];
@@ -164,7 +162,99 @@ export default async function TruckPage({
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
+        {/* Sidebar: truck identity, hours, attributes */}
+        <div className="lg:col-span-1 space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-start justify-between gap-2">
+                <CardTitle className="text-2xl">{truck.name}</CardTitle>
+                <OpenStatusBadge hours={truck.hours} />
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                <span className="text-xl font-bold">
+                  {truck.averageRating.toFixed(1)}
+                </span>
+                <span className="text-muted-foreground">
+                  ({truck.reviews.length} ביקורות)
+                </span>
+              </div>
+              <div className="flex items-start gap-2">
+                <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">{truck.city}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {truck.address}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t">
+                <p className="text-sm text-muted-foreground mb-2">בבעלות</p>
+                <p className="font-medium">{truck.owner.name}</p>
+              </div>
+
+              <div className="pt-4 border-t">
+                {!session?.user ? (
+                  <Link href="/auth/sign-in" className="w-full">
+                    <Button className="w-full" size="lg" variant="outline">
+                      התחבר כדי לכתוב ביקורת
+                    </Button>
+                  </Link>
+                ) : hasReviewed ? (
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    variant="outline"
+                    disabled
+                  >
+                    כבר כתבת ביקורת על עגלה זו
+                  </Button>
+                ) : (
+                  <ReviewForm truckId={id}>
+                    <Button className="w-full" size="lg">
+                      כתוב ביקורת
+                    </Button>
+                  </ReviewForm>
+                )}
+              </div>
+
+              {canEdit && (
+                <div className="pt-4 border-t">
+                  <Link href={`/trucks/${id}/edit`} className="w-full">
+                    <Button size="lg" variant="outline" className="w-full">
+                      עריכת עגלה
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {canShowHours && truck.hours.length > 0 && (
+            <Card>
+              <CardContent className="p-6">
+                <HoursDisplay hours={truck.hours} />
+              </CardContent>
+            </Card>
+          )}
+
+          {truck.attributes.length > 0 && (
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="font-medium mb-3">מאפיינים</h3>
+                <AttributesGrid
+                  attributes={truck.attributes.map((a) => a.attribute)}
+                />
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Main content: images, map, reviews */}
+        <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardContent className="p-0">
               {primaryImage && (
@@ -199,7 +289,7 @@ export default async function TruckPage({
           </Card>
 
           {truck.latitude && truck.longitude && (
-            <Card className="mt-6">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
@@ -230,9 +320,7 @@ export default async function TruckPage({
               </CardContent>
             </Card>
           )}
-        </div>
 
-        <div className="lg:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle>ביקורות ({truck.reviews.length})</CardTitle>
@@ -310,98 +398,6 @@ export default async function TruckPage({
             </CardContent>
           </Card>
         </div>
-
-        <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-2">
-                <CardTitle className="text-2xl">{truck.name}</CardTitle>
-                <OpenStatusBadge hours={truck.hours} />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                <span className="text-xl font-bold">
-                  {truck.averageRating.toFixed(1)}
-                </span>
-                <span className="text-muted-foreground">
-                  ({truck.reviews.length} ביקורות)
-                </span>
-              </div>
-              <div className="flex items-start gap-2">
-                <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">{truck.city}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {truck.address}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t">
-                <p className="text-sm text-muted-foreground mb-2">בבעלות</p>
-                <p className="font-medium">{truck.owner.name}</p>
-              </div>
-
-              <div className="pt-4 border-t">
-                {!session?.user ? (
-                  <Link href="/auth/sign-in" className="w-full">
-                    <Button className="w-full" size="lg" variant="outline">
-                      התחבר כדי לכתוב ביקורת
-                    </Button>
-                  </Link>
-                ) : hasReviewed ? (
-                  <Button
-                    className="w-full"
-                    size="lg"
-                    variant="outline"
-                    disabled
-                  >
-                    כבר כתבת ביקורת על עגלה זו
-                  </Button>
-                ) : (
-                  <ReviewForm truckId={id}>
-                    <Button className="w-full" size="lg">
-                      כתוב ביקורת
-                    </Button>
-                  </ReviewForm>
-                )}
-              </div>
-
-              <div className="pt-4 border-t">
-                {session?.user && (
-                  <Link href={`/trucks/${id}/edit`} className="w-full">
-                    <Button size="lg">עריכת עגלה</Button>
-                  </Link>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {canShowHours && truck.hours.length > 0 && (
-          <div className="lg:col-span-1">
-            <Card>
-              <CardContent className="p-6">
-                <HoursDisplay hours={truck.hours} />
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {truck.attributes.length > 0 && (
-          <div className="lg:col-span-1">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-medium mb-3">מאפיינים</h3>
-                <AttributesGrid
-                  attributes={truck.attributes.map((a) => a.attribute)}
-                />
-              </CardContent>
-            </Card>
-          </div>
-        )}
       </div>
     </div>
   );
