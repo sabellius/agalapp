@@ -80,7 +80,7 @@ async function getTrucks(params: SearchParams) {
 }
 
 export const metadata: Metadata = {
-  title: "עגלות קפה | AgalApp",
+  title: "עגלות קפה | עגלאפ",
   description: "גלה את עגלות הקפה הטובות ביותר בישראל. חפש לפי שם, עיר ודירוג.",
 };
 

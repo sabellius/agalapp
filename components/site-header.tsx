@@ -118,7 +118,7 @@ export function SiteHeader() {
 
         <nav className="hidden md:flex items-center gap-6 text-sm">
           <Link href="/" className="text-lg font-bold">
-            אגלאפ
+            עגלאפ
           </Link>
           {mainNav.map((item) => (
             <NavLink key={item.href} href={item.href}>

@@ -19,7 +19,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "AgalApp - עגלות קפה בישראל",
+    default: "עגלאפ - עגלות קפה בישראל",
     template: "%s",
   },
   description:
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   keywords: ["עגלות קפה", "קפה על גלגלים", "ביקורות קפה", "מפת קפה", "ישראל"],
   authors: [{ name: "AgalApp" }],
   openGraph: {
-    siteName: "AgalApp",
+    siteName: "עגלאפ",
     locale: "he_IL",
     type: "website",
   },

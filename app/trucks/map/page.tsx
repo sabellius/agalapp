@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { calculateAverageRating } from "@/lib/truck-utils";
 
 export const metadata: Metadata = {
-  title: "מפת עגלות קפה | AgalApp",
+  title: "מפת עגלות קפה | עגלאפ",
   description: "צפה בכל עגלות הקפה בישראל על המפה. מצא עגלות קפה לפי מיקום.",
 };
 

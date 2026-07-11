@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 
   if (!truck) {
-    return { title: "עגלת קפה לא נמצאה | AgalApp" };
+    return { title: "עגלת קפה לא נמצאה | עגלאפ" };
   }
 
   const averageRating = calculateAverageRating(truck.reviews);
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const primaryImage = truck.images[0];
 
   return {
-    title: `${truck.name} | AgalApp`,
+    title: `${truck.name} | עגלאפ`,
     description: `${truck.name} - עגלת קפה ב${truck.city}, ${truck.address}${ratingText ? ` · ${ratingText}` : ""}`,
     openGraph: {
       title: truck.name,
