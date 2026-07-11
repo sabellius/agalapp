@@ -5,6 +5,19 @@ import { Role, UserTier } from "../generated/prisma/client";
 
 const TEST_PASSWORD = "password123";
 
+async function processBatch<T, R>(
+  items: T[],
+  batchFn: (item: T) => Promise<R>,
+  size = 3,
+): Promise<R[]> {
+  const results: R[] = [];
+  for (let i = 0; i < items.length; i += size) {
+    const batch = items.slice(i, i + size);
+    results.push(...(await Promise.all(batch.map(batchFn))));
+  }
+  return results;
+}
+
 const TEST_USERS = [
   {
     email: "test-user-free@example.com",
@@ -54,59 +67,43 @@ async function main() {
   await prisma.user.deleteMany();
 
   console.log("👥 Creating test users (for dev + E2E)...");
-  const testUserPromises = TEST_USERS.map((u) =>
-    auth.api
-      .signUpEmail({
+  const testUsers = (
+    await processBatch(TEST_USERS, async (u) => {
+      await auth.api.signUpEmail({
         body: {
           email: u.email,
           password: TEST_PASSWORD,
           name: u.name,
         },
-      })
-      .then(() => prisma.user.findUnique({ where: { email: u.email } })),
-  );
-
-  const testUsers = (await Promise.all(testUserPromises)).filter(
-    (user): user is NonNullable<typeof user> => user !== null,
-  );
+      });
+      return prisma.user.findUnique({ where: { email: u.email } });
+    })
+  ).filter((user): user is NonNullable<typeof user> => user !== null);
 
   console.log("👥 Creating random users for volume...");
-  const randomUserPromises = [
-    ...Array.from({ length: 6 }).map((_, i) =>
-      auth.api
-        .signUpEmail({
-          body: {
-            email: `user${i + 1}@example.com`,
-            password: TEST_PASSWORD,
-            name: faker.person.fullName(),
-          },
-        })
-        .then(() =>
-          prisma.user.findUnique({
-            where: { email: `user${i + 1}@example.com` },
-          }),
-        ),
-    ),
-    ...Array.from({ length: 3 }).map((_, i) =>
-      auth.api
-        .signUpEmail({
-          body: {
-            email: `owner${i + 1}@example.com`,
-            password: TEST_PASSWORD,
-            name: faker.person.fullName(),
-          },
-        })
-        .then(() =>
-          prisma.user.findUnique({
-            where: { email: `owner${i + 1}@example.com` },
-          }),
-        ),
-    ),
+  const randomUserConfigs = [
+    ...Array.from({ length: 6 }).map((_, i) => ({
+      email: `user${i + 1}@example.com`,
+      name: faker.person.fullName(),
+    })),
+    ...Array.from({ length: 7 }).map((_, i) => ({
+      email: `owner${i + 1}@example.com`,
+      name: faker.person.fullName(),
+    })),
   ];
 
-  const randomUsers = (await Promise.all(randomUserPromises)).filter(
-    (user): user is NonNullable<typeof user> => user !== null,
-  );
+  const randomUsers = (
+    await processBatch(randomUserConfigs, async (c) => {
+      await auth.api.signUpEmail({
+        body: {
+          email: c.email,
+          password: TEST_PASSWORD,
+          name: c.name,
+        },
+      });
+      return prisma.user.findUnique({ where: { email: c.email } });
+    })
+  ).filter((user): user is NonNullable<typeof user> => user !== null);
 
   const allUsers = [...testUsers, ...randomUsers];
 
@@ -219,19 +216,86 @@ async function main() {
   });
 
   console.log("☕ Creating coffee trucks...");
+  const TRUCK_SEED = [
+    {
+      name: "קפה בוקר",
+      city: "תל אביב",
+      street: "רוטשילד",
+      lat: 32.0853,
+      lng: 34.7818,
+    },
+    {
+      name: "הקצוות",
+      city: "תל אביב",
+      street: "דיזנגוף",
+      lat: 32.0789,
+      lng: 34.7742,
+    },
+    {
+      name: "קפה על הדרך",
+      city: "ירושלים",
+      street: "יפו",
+      lat: 31.7683,
+      lng: 35.2137,
+    },
+    {
+      name: "בריסטה בר 24",
+      city: "תל אביב",
+      street: "אבן גבירול",
+      lat: 32.0921,
+      lng: 34.7741,
+    },
+    {
+      name: "פינת הקפה",
+      city: "חיפה",
+      street: "מוריה",
+      lat: 32.794,
+      lng: 34.9896,
+    },
+    {
+      name: "קפה חם",
+      city: "באר שבע",
+      street: "הרצל",
+      lat: 31.2518,
+      lng: 34.7913,
+    },
+    {
+      name: "העגלה של רונית",
+      city: "רעננה",
+      street: "אחוזה",
+      lat: 32.1847,
+      lng: 34.8713,
+    },
+    {
+      name: "קפה וביס",
+      city: "הרצליה",
+      street: "סוקולוב",
+      lat: 32.1663,
+      lng: 34.839,
+    },
+    {
+      name: "קפה שחור",
+      city: "נתניה",
+      street: "הרצל",
+      lat: 32.3215,
+      lng: 34.8532,
+    },
+  ];
+
   const trucks = await Promise.all(
-    truckOwners.map((owner) =>
-      prisma.coffeeTruck.create({
+    truckOwners.map((owner, i) => {
+      const seed = TRUCK_SEED[i % TRUCK_SEED.length];
+      return prisma.coffeeTruck.create({
         data: {
-          name: `Coffee Truck ${faker.company.name()}`,
-          city: faker.location.city(),
-          address: faker.location.streetAddress(true),
-          latitude: faker.location.latitude({ min: 31.0, max: 33.0 }),
-          longitude: faker.location.longitude({ min: 34.0, max: 36.0 }),
+          name: seed.name,
+          city: seed.city,
+          address: `${seed.street} ${faker.number.int({ min: 1, max: 150 })}`,
+          latitude: seed.lat + faker.number.float({ min: -0.008, max: 0.008 }),
+          longitude: seed.lng + faker.number.float({ min: -0.008, max: 0.008 }),
           ownerId: owner.id,
         },
-      }),
-    ),
+      });
+    }),
   );
 
   console.log("📸 Creating truck images...");
@@ -357,6 +421,21 @@ async function main() {
   }
 
   console.log("⭐ Creating reviews...");
+  const REVIEW_TEXTS = [
+    "קפה מצוין ושירות מהיר. הבריסטה באמת מבין עניין. ממליץ בחום!",
+    "מקום נחמד וקפה טעים. המחיר סביר והצוות נעים.",
+    "אחלה קפה, נכנסתי במקרה ויצאתי מרוצה. בטוח אחזור.",
+    "האספרסו פה משהו אחר. אם אתם באזור, שווה ביקור.",
+    "קפה טוב אבל ההמתנה הייתה ארוכה. בכל זאת, הטעם מצדיק.",
+    "אהבתי את האווירה. קפה איכותי וכיבוד טעים ליד.",
+    "לא התפעלתי. הקפה היה פושר והמחיר גבוה.",
+    "פשוט מושלם. קפה ברמה גבוהה ושירות אדיב.",
+    "כל בוקר עוצר פה לקפה בדרך לעבודה. תמיד עקבי וטעים.",
+    "הקפה הקר פה מעולה בימים חמים. ממליץ על האייס קופי.",
+    "ביקרנו עם חברים וכולם נהנו. אווירה נעימה ומחירים הוגנים.",
+    "מקום קטן עם נשמה. הקפה נעשה באהבה ואת זה מרגישים.",
+  ];
+
   const reviewPromises: Promise<unknown>[] = [];
   const usedUserTruckPairs = new Set<string>();
 
@@ -370,7 +449,7 @@ async function main() {
         prisma.review.create({
           data: {
             rating: faker.number.int({ min: 3, max: 5 }),
-            content: faker.lorem.paragraphs(2),
+            content: faker.helpers.arrayElement(REVIEW_TEXTS),
             truckId: truck.id,
             userId: user.id,
           },
