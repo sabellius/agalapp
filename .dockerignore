@@ -1,0 +1,87 @@
+# Dependencies — fresh install in Docker
+node_modules
+
+# Build artifacts — regenerated during Docker build
+.next
+out
+build
+generated
+next-env.d.ts
+tsconfig.tsbuildinfo
+
+# Secrets — never bake into image layers
+.env
+.env.local
+.env.production
+.env*.local
+*.pem
+
+# Test source files — not needed for production build
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Test infrastructure
+test
+tests
+__snapshots__
+
+# Test/lint config — not referenced by next build
+vitest.config.ts
+vitest.setup.ts
+playwright.config.ts
+biome.json
+lefthook.yml
+components.json
+
+# Test reports & Playwright data
+coverage
+test-results
+playwright-report
+blob-report
+playwright
+.playwright
+.playwright-cli
+
+# Documentation & planning
+docs
+README.md
+ROADMAP.md
+AGENTS.md
+CLAUDE.md
+LICENSE
+tasks
+plans
+
+# Env templates — not used by build
+.env.example
+.env.production.example
+
+# AI/Agent tool configs
+.claude
+.superpowers
+opencode.json
+memory-bank
+
+# Docker files — used by host, not inside image
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.prod.yml
+
+# Git
+.git
+.gitignore
+
+# IDE & OS
+.vscode
+.idea
+.DS_Store
+*.swp
+*.swo
+
+# Misc
+tmp
+.vercel
+.editorconfig
