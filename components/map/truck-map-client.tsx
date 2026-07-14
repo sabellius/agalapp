@@ -1,7 +1,14 @@
 "use client";
 
-import { TruckMap } from "./truck-map";
+import dynamic from "next/dynamic";
 import type { TruckMarkerData } from "./truck-marker";
+
+const TruckMap = dynamic(
+  () => import("./truck-map").then((mod) => mod.TruckMap),
+  {
+    ssr: false,
+  },
+);
 
 interface TruckMapClientProps {
   trucks: TruckMarkerData[];
