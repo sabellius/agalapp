@@ -119,7 +119,7 @@
 |---------|-------------|
 | Test DB Isolation | Separate test database for E2E, CI setup |
 | Testing & Docs | Full flow testing, README update, demo video |
-| Deployment | Production DB, Vercel deploy |
+| Deployment | Docker (Oracle Cloud ARM), Nginx, Certbot SSL |
 
 > **Note:** SEO, Loading States, Error Handling, and Accessibility were originally in Phase 4 but are now part of the Portfolio Polish Sprint above.
 
