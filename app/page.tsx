@@ -4,6 +4,8 @@ import { PopularTrucks } from "@/components/home/popular-trucks";
 import { RecentTrucks } from "@/components/home/recent-trucks";
 import { SectionHeading } from "@/components/home/section-heading";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <div>

@@ -4,6 +4,8 @@ import { TruckMapClient } from "@/components/map/truck-map-client";
 import { prisma } from "@/lib/prisma";
 import { calculateAverageRating } from "@/lib/truck-utils";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "מפת עגלות קפה | עגלאפ",
   description: "צפה בכל עגלות הקפה בישראל על המפה. מצא עגלות קפה לפי מיקום.",
