@@ -15,7 +15,7 @@ export default function ErrorPage({ error, reset }: Props) {
   }, [error]);
 
   return (
-    <div className="container mx-auto flex min-[50vh] flex-col items-center justify-center px-4 py-16 text-center">
+    <div className="container mx-auto flex min-h-[50vh] flex-col items-center justify-center px-4 py-16 text-center">
       <h1 className="text-2xl font-bold">משהו השתבש</h1>
       <p className="mt-2 text-muted-foreground">
         אירעה שגיאה בלתי צפויה. נסה שנית.
