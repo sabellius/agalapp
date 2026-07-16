@@ -32,6 +32,13 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+vi.mock("@/lib/geocoding", () => ({
+  geocodeAddress: vi.fn().mockResolvedValue({
+    latitude: 32.0853,
+    longitude: 34.7818,
+  }),
+}));
+
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
