@@ -1,6 +1,6 @@
 # AgalApp Roadmap
 
-**Last Updated:** 2026-04-19
+**Last Updated:** 2026-07-16
 **Project:** Hebrew (RTL) coffee cart review platform
 **Goal:** Portfolio project with balanced UX/UI and backend features
 
@@ -25,6 +25,9 @@
 | Homepage Hero | 2026-03-24 | Hero section + search component |
 | Homepage Content | 2026-03-24 | Popular, regions, recent sections + E2E tests |
 | Truck Card Enhancement | 2026-03-24 | Open now badge, 5-star rating, hover effects |
+| Phase A: Portfolio Bug Fixes | 2026-07-16 | Layout reorder, type fix, edit link gating, CSS fixes, test timeout, dead code cleanup |
+| Realistic Seed Data | 2026-07-16 | 9 trucks, Israeli names/cities, Hebrew reviews, accurate coordinates |
+| Branding Fix | 2026-07-16 | אגלאפ → עגלאפ in all user-facing text |
 
 ---
 
@@ -170,8 +173,8 @@ Identified during codebase audit but deprioritized. Kept for reference if we rev
 
 | ID | Issue | File | Status |
 |----|-------|------|--------|
-| BUG-001 | `setPrimaryImage` tests fail — missing `$transaction` mock | `app/actions/images.test.ts` | Open |
-| LINT-001 | Unused `auth` import | `app/actions/truck-hours.test.ts` | Open |
+| ~~BUG-001~~ | ~~`setPrimaryImage` tests fail — missing `$transaction` mock~~ | `app/actions/images.test.ts` | ✅ Resolved |
+| ~~LINT-001~~ | ~~Unused `auth` import~~ | `app/actions/truck-hours.test.ts` | ✅ Resolved |
 
 ---
 
