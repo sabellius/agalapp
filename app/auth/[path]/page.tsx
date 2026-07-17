@@ -1,5 +1,6 @@
 import { AuthView } from "@daveyplate/better-auth-ui";
 import { authViewPaths } from "@daveyplate/better-auth-ui/server";
+import { DemoLogin } from "@/components/demo-login";
 
 export const dynamicParams = false;
 
@@ -16,7 +17,11 @@ export default async function AuthPage({
 
   return (
     <main className="container mx-auto flex grow flex-col items-center justify-center p-4 md:p-6">
-      <AuthView path={path} redirectTo="/dashboard" />
+      <AuthView
+        path={path}
+        redirectTo="/dashboard"
+        cardFooter={path === "sign-in" ? <DemoLogin /> : undefined}
+      />
     </main>
   );
 }

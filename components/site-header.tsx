@@ -30,6 +30,8 @@ const authenticatedNav = [{ title: "לוח בקרה", href: "/dashboard" }];
 
 const ownerNav = [{ title: "הוסף עגלה", href: "/trucks/new" }];
 
+const demoNav = [{ title: "נסה דמו", href: "/auth/sign-in" }];
+
 interface NavLinkProps {
   href: string;
   children: React.ReactNode;
@@ -112,6 +114,17 @@ export function SiteHeader() {
                     {item.title}
                   </NavLink>
                 ))}
+              {!isAuthenticated &&
+                demoNav.map((item) => (
+                  <NavLink
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    isMobile
+                  >
+                    {item.title}
+                  </NavLink>
+                ))}
             </nav>
           </SheetContent>
         </Sheet>
@@ -133,6 +146,12 @@ export function SiteHeader() {
             ))}
           {isOwner &&
             ownerNav.map((item) => (
+              <NavLink key={item.href} href={item.href}>
+                {item.title}
+              </NavLink>
+            ))}
+          {!isAuthenticated &&
+            demoNav.map((item) => (
               <NavLink key={item.href} href={item.href}>
                 {item.title}
               </NavLink>
