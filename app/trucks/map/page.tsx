@@ -53,7 +53,7 @@ export default async function TruckMapPage() {
   const trucks = await getTrucksWithCoords();
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-[calc(100dvh-4rem)] flex flex-col">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">מפת עגלות הקפה</h1>
