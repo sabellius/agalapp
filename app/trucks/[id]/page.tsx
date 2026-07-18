@@ -255,7 +255,7 @@ export default async function TruckPage({ params }: Props) {
 
         {/* Main content: images, map, reviews */}
         <div className="lg:col-span-2 space-y-6">
-          <Card>
+          <Card className="pt-0">
             <CardContent className="p-0">
               {primaryImage && (
                 <div className="relative h-96 w-full bg-muted">
