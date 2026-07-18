@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { CITIES, MIN_RATING_OPTIONS } from "@/lib/validations/common";
 
 export function TrucksSearch() {
@@ -73,12 +74,14 @@ export function TrucksSearch() {
               placeholder="חיפוש לפי שם או כתובת..."
               value={localSearch}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pe-10"
+              aria-label="חיפוש עגלות קפה"
+              className={cn("pe-10", localSearch && "ps-10")}
             />
             {localSearch && (
               <button
                 type="button"
                 onClick={handleClearSearch}
+                aria-label="נקה חיפוש"
                 className="absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4" />
@@ -92,7 +95,7 @@ export function TrucksSearch() {
               updateParams({ city: value === "all" ? null : value })
             }
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="סינון לפי עיר">
               <SelectValue placeholder="כל הערים" />
             </SelectTrigger>
             <SelectContent>
@@ -109,7 +112,7 @@ export function TrucksSearch() {
             value={minRating}
             onValueChange={(value) => updateParams({ minRating: value })}
           >
-            <SelectTrigger>
+            <SelectTrigger aria-label="סינון לפי דירוג">
               <SelectValue placeholder="כל הדירוגים" />
             </SelectTrigger>
             <SelectContent>
