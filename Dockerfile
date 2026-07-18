@@ -7,6 +7,7 @@ RUN pnpm install --frozen-lockfile
 
 # Stage 2: Build the application
 FROM node:22-alpine AS builder
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 WORKDIR /app
 
@@ -27,6 +28,7 @@ RUN pnpm run build
 
 # Stage 3: Production runtime
 FROM node:22-alpine AS runtime
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 WORKDIR /app
 
