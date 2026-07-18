@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
@@ -23,7 +22,6 @@ const DEMO_ACCOUNTS = [
 ];
 
 export function DemoLogin() {
-  const router = useRouter();
   const [loadingEmail, setLoadingEmail] = useState<string | null>(null);
 
   async function handleDemoLogin(email: string) {
@@ -36,7 +34,7 @@ export function DemoLogin() {
       setLoadingEmail(null);
       return;
     }
-    router.push("/dashboard");
+    window.location.href = "/dashboard";
   }
 
   return (
