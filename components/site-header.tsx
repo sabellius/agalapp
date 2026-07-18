@@ -66,6 +66,18 @@ export function SiteHeader() {
   const isAuthenticated = !!user;
   const isOwner = user?.role === "TRUCK_OWNER" || user?.role === "ADMIN";
 
+  const initials = (() => {
+    const name = user?.name?.trim();
+    if (name) {
+      const parts = name.split(/\s+/);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      return parts[0][0].toUpperCase();
+    }
+    return (user?.email?.[0] || "U").toUpperCase();
+  })();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center px-4">
@@ -129,6 +141,10 @@ export function SiteHeader() {
           </SheetContent>
         </Sheet>
 
+        <Link href="/" className="text-lg font-bold md:hidden">
+          עגלאפ
+        </Link>
+
         <nav className="hidden md:flex items-center gap-6 text-sm">
           <Link href="/" className="text-lg font-bold">
             עגלאפ
@@ -165,11 +181,12 @@ export function SiteHeader() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-9 w-9 rounded-full"
+                    aria-label={user?.name || user?.email || "תפריט משתמש"}
+                    className="h-9 w-9 rounded-full p-0"
                   >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                      {user?.name?.[0] || user?.email?.[0] || "U"}
-                    </div>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
+                      {initials}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
