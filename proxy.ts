@@ -1,3 +1,4 @@
+import { getSessionCookie } from "better-auth/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -7,19 +8,19 @@ const authRoutes = ["/auth/sign-in", "/auth/sign-up"];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const sessionToken = request.cookies.get("better-auth.session_token")?.value;
+  const sessionCookie = getSessionCookie(request);
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route),
   );
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
-  if (isProtectedRoute && !sessionToken) {
+  if (isProtectedRoute && !sessionCookie) {
     const signInUrl = new URL("/auth/sign-in", request.url);
     signInUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(signInUrl);
   }
 
-  if (isAuthRoute && sessionToken) {
+  if (isAuthRoute && sessionCookie) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

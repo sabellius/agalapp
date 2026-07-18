@@ -7,10 +7,7 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const headersList = await headers();
-  console.log("[DEBUG] cookie header:", headersList.get("cookie"));
-  const session = await auth.api.getSession({ headers: headersList });
-  console.log("[DEBUG] session:", session?.user?.email ?? "NULL");
+  const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user) {
     redirect("/auth/sign-in");
