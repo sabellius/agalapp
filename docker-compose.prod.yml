@@ -39,6 +39,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_URL: mysql://root:${DB_PASSWORD}@db:3306/${DB_NAME}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
     networks:
       - default
