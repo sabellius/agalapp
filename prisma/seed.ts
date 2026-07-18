@@ -232,18 +232,18 @@ async function main() {
       lng: 34.7742,
     },
     {
-      name: "קפה על הדרך",
-      city: "ירושלים",
-      street: "יפו",
-      lat: 31.7683,
-      lng: 35.2137,
-    },
-    {
       name: "בריסטה בר 24",
       city: "תל אביב",
       street: "אבן גבירול",
       lat: 32.0921,
       lng: 34.7741,
+    },
+    {
+      name: "קפה על הדרך",
+      city: "ירושלים",
+      street: "יפו",
+      lat: 31.7683,
+      lng: 35.2137,
     },
     {
       name: "פינת הקפה",
@@ -260,7 +260,7 @@ async function main() {
       lng: 34.7913,
     },
     {
-      name: "העגלה של רונית",
+      name: "העגלה של רוניט",
       city: "רעננה",
       street: "אחוזה",
       lat: 32.1847,
@@ -280,11 +280,46 @@ async function main() {
       lat: 32.3215,
       lng: 34.8532,
     },
+    {
+      name: "אספרסו פקטורי",
+      city: "רמת גן",
+      street: "ביאליק",
+      lat: 32.0684,
+      lng: 34.8248,
+    },
+    {
+      name: "קפה פראש",
+      city: "תל אביב",
+      street: "פרישמן",
+      lat: 32.0779,
+      lng: 34.773,
+    },
+    {
+      name: "קפה אתרוג",
+      city: "ירושלים",
+      street: "קינג ג'ורג'",
+      lat: 31.7717,
+      lng: 35.2169,
+    },
   ];
 
+  const OWNER_TRUCKS: Record<string, number[]> = {
+    "test-owner-premium@example.com": [0, 1, 2, 3],
+  };
+
+  type TruckAssignment = { ownerId: string; seedIndex: number };
+  const assignments: TruckAssignment[] = [];
+  let nonPremiumSeedIdx = 4;
+  for (const owner of truckOwners) {
+    const indices = OWNER_TRUCKS[owner.email] ?? [nonPremiumSeedIdx++];
+    for (const i of indices) {
+      assignments.push({ ownerId: owner.id, seedIndex: i });
+    }
+  }
+
   const trucks = await Promise.all(
-    truckOwners.map((owner, i) => {
-      const seed = TRUCK_SEED[i % TRUCK_SEED.length];
+    assignments.map(({ ownerId, seedIndex }) => {
+      const seed = TRUCK_SEED[seedIndex];
       return prisma.coffeeTruck.create({
         data: {
           name: seed.name,
@@ -292,7 +327,7 @@ async function main() {
           address: `${seed.street} ${faker.number.int({ min: 1, max: 150 })}`,
           latitude: seed.lat + faker.number.float({ min: -0.008, max: 0.008 }),
           longitude: seed.lng + faker.number.float({ min: -0.008, max: 0.008 }),
-          ownerId: owner.id,
+          ownerId,
         },
       });
     }),
