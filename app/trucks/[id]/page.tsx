@@ -173,7 +173,7 @@ export default async function TruckPage({ params }: Props) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                <Star className="h-5 w-5 fill-star text-star" />
                 <span className="text-xl font-bold">
                   {truck.averageRating.toFixed(1)}
                 </span>
@@ -357,7 +357,7 @@ export default async function TruckPage({ params }: Props) {
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            <Star className="h-4 w-4 fill-star text-star" />
                             <span className="text-sm">{review.rating}</span>
                           </div>
                           <ReviewActions

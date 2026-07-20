@@ -66,7 +66,7 @@ export default async function SubscriptionPage() {
           </CardHeader>
           <CardContent>
             {isExpiring && (
-              <div className="flex items-center gap-2 text-sm text-orange-600 mb-4">
+              <div className="flex items-center gap-2 text-sm text-warning mb-4">
                 <Calendar className="h-4 w-4" />
                 המנוי פג ב-30 יום או פחות
               </div>

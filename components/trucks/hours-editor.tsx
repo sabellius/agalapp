@@ -178,7 +178,7 @@ export function HoursEditor({
           <span
             className={cn(
               "text-sm",
-              state.success ? "text-green-600" : "text-destructive",
+              state.success ? "text-success" : "text-destructive",
             )}
           >
             {state.message}

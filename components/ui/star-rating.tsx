@@ -54,7 +54,7 @@ export function StarRating({
                 <Star
                   className={cn(
                     starClass,
-                    "absolute top-0 start-0 fill-yellow-400 text-yellow-400",
+                    "absolute top-0 start-0 fill-star text-star",
                   )}
                   style={
                     isPartial
