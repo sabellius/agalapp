@@ -56,7 +56,7 @@ export function TruckMarker({ truck }: TruckMarkerProps) {
           <h3 className="font-bold text-lg mb-1">{truck.name}</h3>
           {truck.averageRating !== undefined && (
             <div className="flex items-center gap-1 mb-1">
-              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <Star className="h-4 w-4 fill-star text-star" />
               <span className="text-sm font-medium">
                 {truck.averageRating.toFixed(1)}
               </span>

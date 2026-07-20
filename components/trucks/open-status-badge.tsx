@@ -27,9 +27,9 @@ export function OpenStatusBadge({ hours }: OpenStatusBadgeProps) {
     return (
       <Badge
         variant="outline"
-        className="gap-1 bg-gray-700 text-white border-gray-500"
+        className="gap-1 bg-foreground/85 text-background border-foreground/30"
       >
-        <Circle className="h-2 w-2 fill-gray-400 text-gray-400" />
+        <Circle className="h-2 w-2 fill-muted-foreground text-muted-foreground" />
         סגור
       </Badge>
     );
@@ -45,7 +45,7 @@ export function OpenStatusBadge({ hours }: OpenStatusBadgeProps) {
   if (isOpen) {
     return (
       <Badge variant="default" className="gap-1">
-        <Circle className="h-2 w-2 fill-green-500 text-green-500" />
+        <Circle className="h-2 w-2 fill-success text-success" />
         פתוח עכשיו
       </Badge>
     );
@@ -54,9 +54,9 @@ export function OpenStatusBadge({ hours }: OpenStatusBadgeProps) {
   return (
     <Badge
       variant="outline"
-      className="gap-1 bg-gray-700 text-white border-gray-500"
+      className="gap-1 bg-foreground/85 text-background border-foreground/30"
     >
-      <Circle className="h-2 w-2 fill-gray-400 text-gray-400" />
+      <Circle className="h-2 w-2 fill-muted-foreground text-muted-foreground" />
       סגור
     </Badge>
   );

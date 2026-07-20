@@ -123,7 +123,7 @@ export default async function DashboardPage() {
                               {truck.city}
                             </span>
                             <span className="flex items-center gap-1">
-                              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                              <Star className="h-3 w-3 fill-star text-star" />
                               {avgRating > 0 ? avgRating.toFixed(1) : "—"}
                             </span>
                             <span>{truck._count.reviews} ביקורות</span>
@@ -159,7 +159,7 @@ export default async function DashboardPage() {
                         {review.truck.name}
                       </Link>
                       <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <Star className="h-4 w-4 fill-star text-star" />
                         <span className="text-sm">{review.rating}</span>
                       </div>
                     </div>
