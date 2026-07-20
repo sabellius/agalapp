@@ -14,7 +14,7 @@ const notoSansHebrew = Noto_Sans_Hebrew({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#4a3728",
+  themeColor: "#3D2817",
 };
 
 export const metadata: Metadata = {
