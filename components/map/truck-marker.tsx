@@ -19,12 +19,20 @@ interface TruckMarkerProps {
   truck: TruckMarkerData;
 }
 
+const RATING_COLORS = {
+  UNRATED: "#6b7280",
+  EXCELLENT: "#22c55e",
+  GOOD: "#eab308",
+  FAIR: "#f97316",
+  POOR: "#ef4444",
+} as const;
+
 function getMarkerColor(rating?: number): string {
-  if (!rating) return "#6b7280";
-  if (rating >= 4) return "#22c55e";
-  if (rating >= 3) return "#eab308";
-  if (rating >= 2) return "#f97316";
-  return "#ef4444";
+  if (!rating) return RATING_COLORS.UNRATED;
+  if (rating >= 4) return RATING_COLORS.EXCELLENT;
+  if (rating >= 3) return RATING_COLORS.GOOD;
+  if (rating >= 2) return RATING_COLORS.FAIR;
+  return RATING_COLORS.POOR;
 }
 
 function createCustomIcon(color: string): DivIcon {
