@@ -333,22 +333,55 @@ async function main() {
     }),
   );
 
+  const SEED_PRIMARY_IMAGES = [
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-01.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-02.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-03.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-04.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-05.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-06.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-07.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-08.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-09.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-10.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-11.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/coffee-12.jpg",
+  ];
+
+  const SEED_GALLERY_IMAGES = [
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/gallery-01.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/gallery-02.jpg",
+    "https://res.cloudinary.com/dqulxty46/image/upload/seed/gallery-03.jpg",
+  ];
+
   console.log("📸 Creating truck images...");
-  for (const truck of trucks) {
-    const imageCount = faker.number.int({ min: 3, max: 6 });
-    await Promise.all(
-      Array.from({ length: imageCount }).map((_, i) =>
-        prisma.coffeeTruckImage.create({
-          data: {
-            truckId: truck.id,
-            url: faker.image.url({ width: 800, height: 600 }),
-            publicId: `coffee_truck_${truck.id}_${i}`,
-            alt: `${truck.name} - Photo ${i + 1}`,
-            isPrimary: i === 0,
-          },
-        }),
-      ),
-    );
+  for (let idx = 0; idx < trucks.length; idx++) {
+    const truck = trucks[idx];
+    const primaryUrl = SEED_PRIMARY_IMAGES[idx % SEED_PRIMARY_IMAGES.length];
+
+    await prisma.coffeeTruckImage.create({
+      data: {
+        truckId: truck.id,
+        url: primaryUrl,
+        publicId: `seed/coffee-${String((idx % SEED_PRIMARY_IMAGES.length) + 1).padStart(2, "0")}`,
+        alt: `${truck.name} - תמונה ראשית`,
+        isPrimary: true,
+      },
+    });
+
+    const galleryCount = faker.number.int({ min: 2, max: 3 });
+    for (let i = 0; i < galleryCount; i++) {
+      const galleryIdx = (idx + i) % SEED_GALLERY_IMAGES.length;
+      await prisma.coffeeTruckImage.create({
+        data: {
+          truckId: truck.id,
+          url: SEED_GALLERY_IMAGES[galleryIdx],
+          publicId: `seed/gallery-${String(galleryIdx + 1).padStart(2, "0")}`,
+          alt: `${truck.name} - תמונה ${i + 2}`,
+          isPrimary: false,
+        },
+      });
+    }
   }
 
   console.log("🕐 Creating truck hours (Israeli patterns)...");
