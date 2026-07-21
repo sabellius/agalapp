@@ -1,35 +1,58 @@
 # AgalApp
 
-> A modern Hebrew (RTL) coffee truck review platform built with Next.js 16
-
-![License](https://img.shields.io/badge/license-MIT-blue)
-![Next.js](https://img.shields.io/badge/Next.js-16.1-black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
-![Testing](https://img.shields.io/badge/tests-Vitest%20%2B%20Playwright-green)
-
-<p align="center">
-  <a href="#overview">Overview</a> ·
-  <a href="#tech-stack">Tech Stack</a> ·
-  <a href="#requirements">Requirements</a> ·
-  <a href="#quick-start">Quick Start</a> ·
-  <a href="#documentation">Docs</a> ·
-  <a href="#highlights">Highlights</a>
-</p>
+A modern Hebrew (RTL) coffee truck review platform for discovering, reviewing, and rating coffee carts across Israel. Built with Next.js 16, type-safe Server Actions, and full RTL support.
 
 ---
 
-## Overview
+## Live Demo
 
-AgalApp is a production-ready full-stack application for discovering and reviewing coffee trucks across Israel. Built with modern best practices including Server Components, type-safe Server Actions, and comprehensive testing.
+The app is deployed and fully interactive. Try it with any of the demo accounts below - all use password `password123`.
 
-### Key Features
+**URL:** _https://agalapp.saveliyshiryaev.dev/_
 
-- **Interactive Map** - Leaflet-based truck discovery
-- **Review System** - Star ratings with community voting
-- **Role-Based Access** - User, Truck Owner, Admin roles
-- **Premium Subscriptions** - Tiered feature access
-- **Image Management** - Cloudinary integration
-- **RTL Support** - Full Hebrew localization
+| Role | Email | What you can do |
+|------|-------|-----------------|
+| User (Free) | `test-user-free@example.com` | Browse, review, vote |
+| User (Premium) | `test-user-premium@example.com` | All user features + premium attributes |
+| Owner (Free) | `test-owner-free@example.com` | Manage own trucks, basic features |
+| Owner (Premium) | `test-owner-premium@example.com` | Full truck management + premium features |
+| Admin | `test-admin@example.com` | Full system access, manage all trucks |
+
+---
+
+## Screenshots
+
+_[Add screenshots here - homepage, truck detail, map, dashboard]_
+
+---
+
+## Features
+
+### Discovery
+- **Interactive Map** - Leaflet-based truck discovery with custom rating-colored markers
+- **Search & Filtering** - Full-text search, city filter, rating filter
+- **Open/Closed Status** - Real-time open hours badge based on Israel timezone
+
+### Reviews
+- **Star Ratings** - One review per user per truck, with partial-star display
+- **Community Voting** - Upvote helpful reviews
+- **Owner Responses** - _(planned)_
+
+### Truck Management
+- **Multi-Image Upload** - Cloudinary integration with primary image selection
+- **Business Hours** - Day-by-day schedule with open/closed detection
+- **Attributes** - Wifi, parking, accessibility, and more (premium-gated)
+- **Premium Tier** - 30-day subscription unlocks advanced features
+
+### Auth & Roles
+- **Three Roles** - User, Truck Owner, Admin with granular permissions
+- **Session Management** - better-auth with secure cookie-based sessions
+- **Route Protection** - Server-side auth guards on all protected routes
+
+### Design System
+- **Espresso Theme** - Warm coffee-inspired palette using OKLCH color space
+- **Semantic Tokens** - `--star`, `--success`, `--warning` tokens for consistent theming
+- **Full RTL** - Hebrew-first layout with logical CSS properties throughout
 
 ---
 
@@ -38,26 +61,42 @@ AgalApp is a production-ready full-stack application for discovering and reviewi
 | Category | Technology |
 |----------|------------|
 | **Framework** | Next.js 16 (App Router), React 19 |
-| **Language** | TypeScript (strict mode) |
+| **Language** | TypeScript (strict mode, zero `any`) |
 | **Styling** | Tailwind CSS v4, shadcn/ui |
-| **Database** | MySQL 9 via Prisma ORM |
+| **Database** | MySQL via Prisma ORM 7 |
 | **Auth** | better-auth |
 | **Validation** | Zod 4.x |
-| **Testing** | Vitest, Playwright |
-| **Tooling** | Biome, Lefthook |
+| **Maps** | Leaflet + react-leaflet |
+| **Images** | Cloudinary |
+| **Testing** | Vitest (unit), Playwright (E2E) |
+| **Tooling** | Biome, Lefthook, pnpm |
+| **Deployment** | Docker, Caddy (TLS), Oracle Cloud |
 
 ---
 
-## Requirements
+## Architecture Highlights
 
-- **Node.js** 18+
-- **pnpm** 8+
-- **Docker** (for local MySQL)
-- **Cloudinary account** (free tier works, for image uploads)
+**Type-safe Server Actions** - All mutations go through `withAuth()` + `safeAction()` wrappers with Zod validation. No unchecked API routes.
+
+**Semantic Design Tokens** - Colors defined as OKLCH CSS variables in `:root`, bridged to Tailwind via `@theme inline`. Changing one value updates the entire app.
+
+**Role-based Access Control** - Server-side permission checks on every action using a centralized `canModifyTruck()` helper.
+
+**RTL-first** - All components use logical CSS properties (`ps-4` not `pl-4`, `end-3` not `right-3`). Direction provider at the root.
+
+**Realistic Seed Data** - 9 trucks with Israeli names, cities, Hebrew reviews, and accurate geographic coordinates.
 
 ---
 
 ## Quick Start
+
+### Prerequisites
+
+- Node.js 18+
+- pnpm 8+
+- Docker (for local MySQL)
+
+### Setup
 
 ```bash
 # Clone and install
@@ -67,11 +106,12 @@ pnpm install
 
 # Set up environment
 cp .env.example .env
+# Edit .env with your Cloudinary credentials and auth secret
 
 # Start database
 docker compose up -d
 
-# Initialize database
+# Initialize database with seed data
 pnpm exec prisma generate && pnpm run seed
 
 # Start dev server
@@ -80,13 +120,30 @@ pnpm run dev
 
 Visit [http://localhost:3000](http://localhost:3000)
 
-### Test Accounts
+---
 
-| Role | Email | Password |
-|------|-------|----------|
-| User | `user@test.com` | `password123` |
-| Truck Owner | `owner@test.com` | `password123` |
-| Admin | `admin@test.com` | `password123` |
+## Project Structure
+
+```
+app/
+  actions/           Server Actions (type-safe mutations)
+  api/               API routes (auth, cloudinary upload)
+  (protected)/       Auth-required routes (dashboard, subscription)
+  trucks/            Public truck pages (list, detail, new, edit)
+  map/               Interactive truck map
+lib/
+  validations/       Zod schemas (shared client/server)
+  auth.ts            better-auth configuration
+  prisma.ts          Prisma client singleton
+  tiers.ts           Subscription tier logic
+components/
+  ui/                shadcn/ui primitives
+  trucks/            Truck-specific components
+  reviews/           Review components
+  map/               Map components
+test/                Test fixtures and mocks
+tests/               E2E tests (Playwright)
+```
 
 ---
 
@@ -95,32 +152,10 @@ Visit [http://localhost:3000](http://localhost:3000)
 | Document | Description |
 |----------|-------------|
 | [Getting Started](docs/GETTING_STARTED.md) | Detailed setup & troubleshooting |
-| [Architecture](docs/ARCHITECTURE.md) | Technical decisions & design |
+| [Architecture](docs/ARCHITECTURE.md) | Technical decisions & design patterns |
 | [API Reference](docs/API.md) | Server Actions documentation |
 | [Testing Guide](docs/TESTING.md) | Testing strategy & examples |
 | [Contributing](docs/CONTRIBUTING.md) | Contribution guidelines |
-
----
-
-## Highlights
-
-**Technical Depth**
-- Modern React patterns (Server Components, Server Actions)
-- End-to-end type safety (TypeScript + Prisma + Zod)
-- Comprehensive testing (80%+ coverage)
-
-**Real-World Features**
-- Multi-role authentication & authorization
-- Feature-gated premium system
-- Geocoding integration (OpenStreetMap)
-- Image management (Cloudinary)
-- Full RTL support
-
-**Code Quality**
-- No `any` types (strict TypeScript)
-- Consistent code style (Biome)
-- Pre-commit hooks (Lefthook)
-- Conventional commits
 
 ---
 

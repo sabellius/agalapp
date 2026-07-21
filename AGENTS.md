@@ -18,6 +18,20 @@ This project works with OpenCode and Claude Code. Follow this source of truth hi
 - After completing work, update `ROADMAP.md` (move to ✅ Done with date)
 - Never create planning files outside `tasks/`
 
+## YouTrack Workflow
+
+This project uses YouTrack (project key: `AGA`) for task tracking. Follow this workflow for every feature:
+
+1. **Create ticket** — Before starting any work, create a ticket in YouTrack. For multi-part features, create a parent ticket with subtasks grouped by **logical concern** (not per-commit). Avoid over-splitting.
+2. **Create branch** — Branch from `main` using the parent ticket ID: `feat/AGA-X-short-description` (e.g., `feat/AGA-1-theme-espresso`)
+3. **Implement** — Work on the branch, committing logical changes. Reference ticket IDs in commit messages: `Closes AGA-X`
+4. **Track progress** — Update ticket `Stage` field as work progresses: `Backlog` → `In Progress` → `Done`
+5. **Merge** — Merge to `main` with `--no-ff`: `git merge feat/AGA-X-name --no-ff -m "Merge feat/AGA-X-name: description"`
+6. **Cleanup** — Delete the local branch: `git branch -d feat/AGA-X-name`
+7. **Update roadmap** — Add completed work to `ROADMAP.md` under ✅ Done with date
+
+**Branch strategy:** One branch per parent ticket (not per subtask). Subtasks are individual commits within the branch. The branch maps to one PR/merge.
+
 ## Tech Stack
 
 Next.js 16 (App Router), TypeScript (strict), Tailwind CSS v4, Prisma ORM (MySQL/MariaDB), better-auth, Zod 4.x, shadcn/ui, Biome, Lefthook, Vitest, Playwright.
