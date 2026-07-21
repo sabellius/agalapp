@@ -1,6 +1,6 @@
 # AgalApp Roadmap
 
-**Last Updated:** 2026-07-16
+**Last Updated:** 2026-07-21
 **Project:** Hebrew (RTL) coffee cart review platform
 **Goal:** Portfolio project with balanced UX/UI and backend features
 
@@ -28,6 +28,10 @@
 | Phase A: Portfolio Bug Fixes | 2026-07-16 | Layout reorder, type fix, edit link gating, CSS fixes, test timeout, dead code cleanup |
 | Realistic Seed Data | 2026-07-16 | 9 trucks, Israeli names/cities, Hebrew reviews, accurate coordinates |
 | Branding Fix | 2026-07-16 | אגלאפ → עגלאפ in all user-facing text |
+| Deployment Fixes | 2026-07-20 | Dockerfile telemetry, auth cookie fix, demo login redirect |
+| UI Polish Fixes | 2026-07-20 | Search overlap, header avatar, nested main→section, map height, card images |
+| Espresso Theme | 2026-07-20 | "Espresso Original" palette, semantic tokens (--star, --success, --warning), hardcoded color migration |
+| Realistic Seed Images | 2026-07-21 | Replaced faker placeholder images with curated coffee truck photos on Cloudinary |
 
 ---
 
