@@ -62,7 +62,7 @@ export function TruckPreview({ truck }: TruckPreviewProps) {
             {truck.address}
           </p>
         </CardContent>
-        <CardFooter className="p-4 pt-0 flex items-center justify-between">
+        <CardFooter className="flex items-center justify-between">
           <StarRating rating={rating} reviewCount={truck._count.reviews} />
           <span className="text-sm text-muted-foreground group-hover:text-primary transition-colors">
             צפה בפרטים
