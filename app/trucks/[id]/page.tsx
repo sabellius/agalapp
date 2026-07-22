@@ -157,8 +157,10 @@ export default async function TruckPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Link href="/trucks" className="inline-block mb-6">
-        <Button variant="ghost">חזור</Button>
+      <Link href="/trucks" className="hidden md:inline-block mb-6">
+        <Button variant="ghost" size="sm">
+          חזור
+        </Button>
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
