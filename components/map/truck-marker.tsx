@@ -60,7 +60,7 @@ export function TruckMarker({ truck }: TruckMarkerProps) {
   return (
     <Marker position={[truck.latitude, truck.longitude]} icon={icon}>
       <Popup className="truck-popup">
-        <div dir="rtl" className="text-right" style={{ minWidth: "200px" }}>
+        <div dir="rtl" className="text-start" style={{ minWidth: "200px" }}>
           <h3 className="font-bold text-lg mb-1">{truck.name}</h3>
           {truck.averageRating !== undefined && (
             <div className="flex items-center gap-1 mb-1">
@@ -78,7 +78,7 @@ export function TruckMarker({ truck }: TruckMarkerProps) {
           <p className="text-sm text-muted-foreground mb-2">{truck.address}</p>
           <Link
             href={`/trucks/${truck.id}`}
-            className="inline-block w-full text-center bg-primary text-primary-foreground px-3 py-1 rounded text-sm hover:bg-primary/90"
+            className="inline-block w-full text-center bg-primary !text-primary-foreground px-3 py-1 rounded text-sm hover:bg-primary/90"
           >
             צפה בפרטים
           </Link>
