@@ -115,11 +115,11 @@ export function HoursEditor({
             size="sm"
             onClick={copyToWeekdays}
           >
-            <Copy className="h-4 w-4 ms-1" />
+            <Copy className="h-4 w-4" />
             העתק לימות השבוע
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={copyToAll}>
-            <Copy className="h-4 w-4 ms-1" />
+            <Copy className="h-4 w-4" />
             העתק לכל הימים
           </Button>
         </div>

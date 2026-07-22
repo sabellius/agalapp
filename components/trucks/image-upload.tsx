@@ -77,7 +77,7 @@ export function ImageUpload({
           disabled={disabled || isMaxReached}
           className="w-full"
         >
-          <Upload className="h-4 w-4 ms-2" />
+          <Upload className="h-4 w-4" />
           {isMaxReached ? `הגעת למקסימום (${maxImages} תמונות)` : "העלה תמונות"}
         </Button>
       )}

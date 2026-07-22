@@ -141,7 +141,7 @@ export function ImagePreview({
                   size="sm"
                   onClick={handleCancelAlt}
                 >
-                  <X className="h-4 w-4 ms-1" />
+                  <X className="h-4 w-4" />
                   ביטול
                 </Button>
                 <Button
