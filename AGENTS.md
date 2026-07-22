@@ -159,6 +159,16 @@ Follow Conventional Commits: `<type>[scope]: <description>`
 
 Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `build`, `ci`, `perf`, `revert`
 
+### Atomic Commits
+
+Every commit must be **atomic** — one logical, self-contained change that can be reviewed, reverted, or cherry-picked independently.
+
+- **One concern per commit** — never bundle unrelated fixes (e.g. a RTL fix and a performance fix in the same commit)
+- **Each commit should leave the codebase in a working state** — no broken builds between commits
+- **Prefer many small commits over one large commit** — if a ticket has 5 distinct fixes, create 5 commits
+- **Commit message describes the specific change**, not the ticket — `"fix(ui): correct partial star fill direction in RTL"` not `"fix: AGA-12 changes"`
+- After completing a task, commit changes using the `git-commit` skill
+
 ## Constants
 
 All domain values are named constants. Import from:
@@ -176,8 +186,3 @@ All domain values are named constants. Import from:
 - Don't add unnecessary comments
 - Don't use Pages Router (we use App Router)
 - Don't use `npx` for local binaries - use `pnpm exec`
-
-## Commits
-
-- After completing a task, commit changes using the `git-commit` skill
-- Segment changes into logical commits — one commit per concern
