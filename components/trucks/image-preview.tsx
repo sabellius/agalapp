@@ -80,7 +80,7 @@ export function ImagePreview({
               width={300}
               height={300}
               src={image.publicId}
-              alt={image.alt || "Truck image"}
+              alt={image.alt || "תמונת עגלת קפה"}
               className="w-full h-full object-cover"
             />
           </div>
