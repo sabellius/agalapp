@@ -175,13 +175,19 @@ export default async function TruckPage({ params }: Props) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 fill-star text-star" />
-                <span className="text-xl font-bold">
-                  {truck.averageRating.toFixed(1)}
-                </span>
-                <span className="text-muted-foreground">
-                  ({truck.reviews.length} ביקורות)
-                </span>
+                {truck.reviews.length > 0 ? (
+                  <>
+                    <Star className="h-5 w-5 fill-star text-star" />
+                    <span className="text-xl font-bold">
+                      {truck.averageRating.toFixed(1)}
+                    </span>
+                    <span className="text-muted-foreground">
+                      ({truck.reviews.length} ביקורות)
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-muted-foreground">אין דירוג</span>
+                )}
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
