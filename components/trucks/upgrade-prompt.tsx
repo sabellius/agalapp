@@ -1,7 +1,8 @@
 "use client";
 
 import { Check, Crown } from "lucide-react";
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { upgradeAccount } from "@/app/actions/subscription";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,24 +12,44 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PREMIUM_DURATION_DAYS, PRICING } from "@/lib/tiers";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { PREMIUM_DURATION_DAYS, PREMIUM_FEATURES, PRICING } from "@/lib/tiers";
 
 interface UpgradePromptProps {
   featureName: string;
 }
 
-const PREMIUM_FEATURES = [
-  { key: "working_hours", label: "שעות פעילות" },
-  { key: "menu", label: "תפריט מלא" },
-] as const;
-
 export function UpgradePrompt({ featureName }: UpgradePromptProps) {
-  const [state, formAction, isPending] = useActionState(upgradeAccount, {
-    success: false,
-    message: "",
-  });
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+  const [isPending, setIsPending] = useState(false);
 
-  if (state.success) {
+  async function handleUpgrade() {
+    setIsPending(true);
+    setError("");
+    const result = await upgradeAccount();
+    setIsPending(false);
+
+    if (result.success) {
+      setSuccess(true);
+      setOpen(false);
+      router.refresh();
+    } else {
+      setError(result.message);
+    }
+  }
+
+  if (success) {
     return (
       <Card className="border-primary/50 bg-primary/5">
         <CardContent className="p-6 text-center">
@@ -59,27 +80,52 @@ export function UpgradePrompt({ featureName }: UpgradePromptProps) {
         <div className="space-y-2 mb-4">
           <p className="text-sm font-medium">עם מנוי פרימיום תקבל:</p>
           <ul className="space-y-1">
-            {PREMIUM_FEATURES.map((f) => (
-              <li key={f.key} className="flex items-center gap-2 text-sm">
+            {Object.values(PREMIUM_FEATURES).map((label) => (
+              <li key={label} className="flex items-center gap-2 text-sm">
                 <Check className="h-4 w-4 text-primary" />
-                {f.label}
+                {label}
               </li>
             ))}
           </ul>
         </div>
-
-        {state.message && (
-          <p className="text-sm text-destructive">{state.message}</p>
-        )}
       </CardContent>
       <CardFooter>
-        <form action={formAction}>
-          <Button type="submit" disabled={isPending} className="w-full">
-            {isPending
-              ? "משדרג..."
-              : `שדרג עכשיו - ${PRICING.currency}${PRICING.monthly}/חודש`}
-          </Button>
-        </form>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button type="button" className="w-full">
+              שדרג עכשיו - {PRICING.currency}
+              {PRICING.monthly}/חודש
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>שדרוג למנוי פרימיום</DialogTitle>
+              <DialogDescription>
+                המנוי יהיה פעיל ל-{PREMIUM_DURATION_DAYS} ימים בעלות של{" "}
+                {PRICING.currency}
+                {PRICING.monthly} לחודש.
+              </DialogDescription>
+            </DialogHeader>
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={isPending}
+              >
+                ביטול
+              </Button>
+              <Button
+                type="button"
+                onClick={handleUpgrade}
+                disabled={isPending}
+              >
+                {isPending ? "משדרג..." : "אישור שדרוג"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardFooter>
     </Card>
   );
