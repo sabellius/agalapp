@@ -257,38 +257,40 @@ export default async function TruckPage({ params }: Props) {
 
         {/* Main content: images, map, reviews */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="pt-0">
-            <CardContent className="p-0">
-              {primaryImage && (
-                <div className="relative h-96 w-full bg-muted">
-                  <Image
-                    src={primaryImage.url}
-                    alt={truck.name}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              )}
-              {otherImages.length > 0 && (
-                <div className="grid grid-cols-3 gap-2 p-2">
-                  {otherImages.map((image) => (
-                    <div
-                      key={image.id}
-                      className="relative h-24 w-full bg-muted"
-                    >
-                      <Image
-                        src={image.url}
-                        alt={image.alt || truck.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {(primaryImage || otherImages.length > 0) && (
+            <Card className="pt-0">
+              <CardContent className="p-0">
+                {primaryImage && (
+                  <div className="relative h-96 w-full bg-muted">
+                    <Image
+                      src={primaryImage.url}
+                      alt={truck.name}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                )}
+                {otherImages.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 p-2">
+                    {otherImages.map((image) => (
+                      <div
+                        key={image.id}
+                        className="relative h-24 w-full bg-muted"
+                      >
+                        <Image
+                          src={image.url}
+                          alt={image.alt || truck.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {truck.latitude && truck.longitude && (
             <Card>
