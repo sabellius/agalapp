@@ -40,7 +40,7 @@ export async function RecentTrucks() {
   }
 
   return (
-    <section className="py-8">
+    <section>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {trucks.map((truck) => (
           <TruckPreview key={truck.id} truck={truck} />
