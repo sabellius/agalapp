@@ -2,6 +2,7 @@
 
 import { MenuIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,6 +56,7 @@ function NavLink({ href, children, onClick, isMobile = false }: NavLinkProps) {
 
 export function SiteHeader() {
   const { data: session, isPending } = useSession();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const user = session?.user as
     | { name?: string | null; email?: string | null; role?: string }
@@ -206,7 +208,12 @@ export function SiteHeader() {
                     className="cursor-pointer"
                     onClick={() =>
                       authClient.signOut({
-                        fetchOptions: { credentials: "include" },
+                        fetchOptions: {
+                          credentials: "include",
+                          onSuccess: () => {
+                            router.push("/auth/sign-in");
+                          },
+                        },
                       })
                     }
                   >
