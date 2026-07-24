@@ -20,7 +20,7 @@ export function FeatureLock({
   maxCount = FREE_TIER_MAX_ATTRIBUTES,
 }: FeatureLockProps) {
   return (
-    <Card className="border-primary/50 bg-primary/5">
+    <Card className="ring-primary/40 bg-primary/5">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
           <Crown className="h-4 w-4 text-primary" />
