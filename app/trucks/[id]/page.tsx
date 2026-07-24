@@ -191,12 +191,9 @@ export default async function TruckPage({ params }: Props) {
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">{truck.city}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {truck.address}
-                  </p>
-                </div>
+                <p className="text-sm">
+                  {truck.address}, {truck.city}
+                </p>
               </div>
 
               <div className="pt-4 border-t">

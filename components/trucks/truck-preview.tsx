@@ -57,14 +57,10 @@ export function TruckPreview({ truck }: TruckPreviewProps) {
             {truck.name}
           </h3>
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
             <span>{truck.city}</span>
           </div>
-
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {truck.address}
-          </p>
         </CardContent>
         <CardFooter className="flex items-center justify-between">
           <StarRating rating={rating} reviewCount={truck._count.reviews} />
