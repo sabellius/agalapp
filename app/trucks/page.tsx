@@ -114,11 +114,16 @@ export default async function TrucksPage({ searchParams }: TrucksPageProps) {
           description="נסה לחפש עם מילות חיפוש אחרות או לשנות את המסננים"
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {trucks.map((truck) => (
-            <TruckPreview key={truck.id} truck={truck} />
-          ))}
-        </div>
+        <>
+          <p className="text-sm text-muted-foreground mb-4">
+            נמצאו {trucks.length} עגלות קפה
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {trucks.map((truck) => (
+              <TruckPreview key={truck.id} truck={truck} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
