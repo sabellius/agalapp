@@ -28,7 +28,7 @@ export function TruckPreview({ truck }: TruckPreviewProps) {
   const rating = truck.averageRating || 0;
 
   return (
-    <Card className="group overflow-hidden pt-0 hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+    <Card className="group overflow-hidden pt-0 hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 transition-all duration-200">
       <Link href={`/trucks/${truck.id}`}>
         <CardHeader className="p-0">
           <div className="relative h-48 w-full bg-muted overflow-hidden">
