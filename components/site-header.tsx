@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 
 const mainNav = [{ title: "עגלות קפה", href: "/trucks" }];
 
-const authenticatedNav = [{ title: "לוח בקרה", href: "/dashboard" }];
+const authenticatedNav: { title: string; href: string }[] = [];
 
 const ownerNav = [{ title: "הוסף עגלה", href: "/trucks/new" }];
 
