@@ -19,7 +19,7 @@ export function SignOutButton() {
 
   return (
     <Button onClick={handleSignOut} variant="secondary">
-      התנתקות
+      יציאה
     </Button>
   );
 }

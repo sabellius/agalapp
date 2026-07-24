@@ -217,14 +217,14 @@ export function SiteHeader() {
                       })
                     }
                   >
-                    התנתק
+                    יציאה
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <div className="flex items-center gap-2">
                 <Button variant="ghost" asChild>
-                  <Link href="/auth/sign-in">התחברות</Link>
+                  <Link href="/auth/sign-in">כניסה</Link>
                 </Button>
                 <Button asChild>
                   <Link href="/auth/sign-up">הרשמה</Link>

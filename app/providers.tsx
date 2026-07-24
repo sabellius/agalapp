@@ -19,8 +19,8 @@ export function Providers({ children }: { children: ReactNode }) {
       replace={router.replace}
       Link={Link}
       localization={{
-        SIGN_IN: "התחברות",
-        SIGN_IN_DESCRIPTION: "התחבר לחשבון שלך",
+        SIGN_IN: "כניסה",
+        SIGN_IN_DESCRIPTION: "היכנס לחשבון שלך",
         EMAIL: "אימייל",
         PASSWORD: "סיסמה",
         CONTINUE: "המשך",
