@@ -21,10 +21,7 @@ import {
 import { authClient, useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
-const mainNav = [
-  { title: "בית", href: "/" },
-  { title: "עגלות קפה", href: "/trucks" },
-];
+const mainNav = [{ title: "עגלות קפה", href: "/trucks" }];
 
 const authenticatedNav = [{ title: "לוח בקרה", href: "/dashboard" }];
 
