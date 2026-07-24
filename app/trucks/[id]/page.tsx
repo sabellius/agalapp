@@ -205,7 +205,7 @@ export default async function TruckPage({ params }: Props) {
                 {!session?.user ? (
                   <Link href="/auth/sign-in" className="w-full">
                     <Button className="w-full" size="lg" variant="outline">
-                      התחבר כדי לכתוב ביקורת
+                      היכנס כדי לכתוב ביקורת
                     </Button>
                   </Link>
                 ) : hasReviewed ? (
