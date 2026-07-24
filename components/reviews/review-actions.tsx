@@ -55,19 +55,14 @@ export function ReviewActions({
     <>
       <div className="flex gap-2">
         <ReviewForm truckId={truckId} review={review}>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            aria-label="ערוך ביקורת"
-          >
+          <Button variant="ghost" size="icon" aria-label="ערוך ביקורת">
             <Pencil className="h-4 w-4" />
           </Button>
         </ReviewForm>
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-destructive hover:text-destructive"
+          className="text-destructive hover:text-destructive"
           onClick={() => setDeleteDialogOpen(true)}
           aria-label="מחק ביקורת"
         >

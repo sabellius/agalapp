@@ -62,7 +62,7 @@ describe("FeatureLock", () => {
       />,
     );
 
-    const card = container.querySelector(".border-primary\\/50");
+    const card = container.querySelector(".ring-primary\\/40");
     expect(card).toBeInTheDocument();
   });
 });

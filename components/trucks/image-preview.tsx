@@ -80,7 +80,7 @@ export function ImagePreview({
               width={300}
               height={300}
               src={image.publicId}
-              alt={image.alt || "Truck image"}
+              alt={image.alt || "תמונת עגלת קפה"}
               className="w-full h-full object-cover"
             />
           </div>
@@ -141,7 +141,7 @@ export function ImagePreview({
                   size="sm"
                   onClick={handleCancelAlt}
                 >
-                  <X className="h-4 w-4 ms-1" />
+                  <X className="h-4 w-4" />
                   ביטול
                 </Button>
                 <Button

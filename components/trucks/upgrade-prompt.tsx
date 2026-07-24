@@ -51,7 +51,7 @@ export function UpgradePrompt({ featureName }: UpgradePromptProps) {
 
   if (success) {
     return (
-      <Card className="border-primary/50 bg-primary/5">
+      <Card className="ring-primary/40 bg-primary/5">
         <CardContent className="p-6 text-center">
           <Crown className="h-12 w-12 text-primary mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">המנוי שודרג!</h3>
@@ -64,7 +64,7 @@ export function UpgradePrompt({ featureName }: UpgradePromptProps) {
   }
 
   return (
-    <Card className="border-primary/50">
+    <Card className="ring-primary/40">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Crown className="h-5 w-5 text-primary" />

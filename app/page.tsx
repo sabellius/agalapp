@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div>
       <HeroSection />
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-6 md:py-12 space-y-8 md:space-y-12">
         <SectionHeading>הכי פופולרי</SectionHeading>
         <PopularTrucks />
 

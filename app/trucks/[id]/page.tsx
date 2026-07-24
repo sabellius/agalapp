@@ -157,8 +157,10 @@ export default async function TruckPage({ params }: Props) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Link href="/trucks" className="inline-block mb-6">
-        <Button variant="ghost">חזור</Button>
+      <Link href="/trucks" className="hidden md:inline-block mb-6">
+        <Button variant="ghost" size="sm">
+          חזור
+        </Button>
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -173,22 +175,25 @@ export default async function TruckPage({ params }: Props) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 fill-star text-star" />
-                <span className="text-xl font-bold">
-                  {truck.averageRating.toFixed(1)}
-                </span>
-                <span className="text-muted-foreground">
-                  ({truck.reviews.length} ביקורות)
-                </span>
+                {truck.reviews.length > 0 ? (
+                  <>
+                    <Star className="h-5 w-5 fill-star text-star" />
+                    <span className="text-xl font-bold">
+                      {truck.averageRating.toFixed(1)}
+                    </span>
+                    <span className="text-muted-foreground">
+                      ({truck.reviews.length} ביקורות)
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-muted-foreground">אין דירוג</span>
+                )}
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">{truck.city}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {truck.address}
-                  </p>
-                </div>
+                <p className="text-sm">
+                  {truck.address}, {truck.city}
+                </p>
               </div>
 
               <div className="pt-4 border-t">
@@ -255,38 +260,40 @@ export default async function TruckPage({ params }: Props) {
 
         {/* Main content: images, map, reviews */}
         <div className="lg:col-span-2 space-y-6">
-          <Card className="pt-0">
-            <CardContent className="p-0">
-              {primaryImage && (
-                <div className="relative h-96 w-full bg-muted">
-                  <Image
-                    src={primaryImage.url}
-                    alt={truck.name}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              )}
-              {otherImages.length > 0 && (
-                <div className="grid grid-cols-3 gap-2 p-2">
-                  {otherImages.map((image) => (
-                    <div
-                      key={image.id}
-                      className="relative h-24 w-full bg-muted"
-                    >
-                      <Image
-                        src={image.url}
-                        alt={image.alt || truck.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {(primaryImage || otherImages.length > 0) && (
+            <Card className="pt-0">
+              <CardContent className="p-0">
+                {primaryImage && (
+                  <div className="relative h-96 w-full bg-muted">
+                    <Image
+                      src={primaryImage.url}
+                      alt={truck.name}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
+                )}
+                {otherImages.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2 p-2">
+                    {otherImages.map((image) => (
+                      <div
+                        key={image.id}
+                        className="relative h-24 w-full bg-muted"
+                      >
+                        <Image
+                          src={image.url}
+                          alt={image.alt || truck.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {truck.latitude && truck.longitude && (
             <Card>

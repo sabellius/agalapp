@@ -1,4 +1,4 @@
-import { MapPin, Pencil, Plus, Star } from "lucide-react";
+import { Coffee, MapPin, Pencil, Plus, Star } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -100,16 +100,20 @@ export default async function DashboardPage() {
                   return (
                     <Card key={truck.id}>
                       <CardContent className="flex items-center gap-4 py-4">
-                        {truck.images[0] && (
-                          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
+                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
+                          {truck.images[0] ? (
                             <Image
                               src={truck.images[0].url}
                               alt={truck.name}
                               fill
                               className="object-cover"
                             />
-                          </div>
-                        )}
+                          ) : (
+                            <div className="flex h-full items-center justify-center">
+                              <Coffee className="h-6 w-6 text-muted-foreground/30" />
+                            </div>
+                          )}
+                        </div>
                         <div className="min-w-0 flex-1">
                           <Link
                             href={`/trucks/${truck.id}`}
