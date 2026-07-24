@@ -57,7 +57,7 @@ describe("TruckPreview", () => {
 
     expect(screen.getByText("עגלת הקפה")).toBeInTheDocument();
     expect(screen.getByText("תל אביב")).toBeInTheDocument();
-    expect(screen.getByText("רוטשילד 1")).toBeInTheDocument();
+    expect(screen.queryByText("רוטשילד 1")).not.toBeInTheDocument();
   });
 
   it("displays average rating", () => {
