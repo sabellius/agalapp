@@ -89,10 +89,10 @@ export default async function TrucksPage({ searchParams }: TrucksPageProps) {
   const trucks = await getTrucks(params);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex items-start justify-between">
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="mb-6 md:mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-4xl font-bold mb-2">עגלות קפה</h1>
+          <h1 className="text-2xl md:text-4xl font-bold mb-2">עגלות קפה</h1>
           <p className="text-muted-foreground">
             גלה את עגלות הקפה הטובות ביותר בישראל
           </p>

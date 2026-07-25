@@ -42,7 +42,7 @@ export default async function SubscriptionPage() {
   const isExpiring = isExpiringSoon(user.tierExpiryAt);
 
   return (
-    <div className="container max-w-2xl mx-auto py-8 px-4">
+    <div className="container max-w-2xl mx-auto py-6 md:py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">הגדרות מנוי</h1>
       <p className="text-muted-foreground mb-8">
         {user.name || user.email} • {tierName}

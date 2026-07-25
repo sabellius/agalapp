@@ -1,6 +1,6 @@
 # AgalApp Roadmap
 
-**Last Updated:** 2026-07-21
+**Last Updated:** 2026-07-24
 **Project:** Hebrew (RTL) coffee cart review platform
 **Goal:** Portfolio project with balanced UX/UI and backend features
 
@@ -32,6 +32,9 @@
 | UI Polish Fixes | 2026-07-20 | Search overlap, header avatar, nested main→section, map height, card images |
 | Espresso Theme | 2026-07-20 | "Espresso Original" palette, semantic tokens (--star, --success, --warning), hardcoded color migration |
 | Realistic Seed Images | 2026-07-21 | Replaced faker placeholder images with curated coffee truck photos on Cloudinary |
+| Visual Polish & RTL (AGA-12) | 2026-07-21 | Card hover states, badge visibility, image placeholders, address cleanup, header dedup, Hebrew alt text, responsive hero spacing |
+| Nested Form Fix (AGA-20) | 2026-07-22 | UpgradePrompt uses Dialog instead of nested `<form>` to fix hydration error |
+| Sign-out Redirect & Terminology (AGA-22) | 2026-07-22 | Sign-out → `/auth/sign-in`, unified auth terms (כניסה/יציאה/הרשמה) |
 
 ---
 
@@ -40,6 +43,26 @@
 | Feature | Status | Notes |
 |---------|--------|-------|
 | **Favorites** | 🚧 Next | Heart toggle, favorites page, optimistic UI |
+
+### UI/UX Audit Sprint (AGA-11 parent)
+
+| Ticket | Description | Status |
+|--------|-------------|--------|
+| AGA-12 | Visual Polish & RTL Fixes | ✅ Done |
+| AGA-13 | Loading, Error & Empty States | Backlog |
+| AGA-14 | Star Rating Consolidation & Form Validation | Backlog |
+| AGA-15 | Subscription & Tier UX Overhaul | Backlog |
+| AGA-16 | Toast System & Action Feedback | Backlog |
+| AGA-17 | Accessibility, i18n & Performance | Backlog |
+| AGA-18 | Hours & Time Handling | Backlog |
+| AGA-19 | Auto-set first uploaded image as primary | Backlog |
+| AGA-20 | Nested form fix in UpgradePrompt | ✅ Done |
+| AGA-21 | Tests for AGA-12 visual changes | Backlog |
+| AGA-22 | Sign-out redirect + auth terminology | ✅ Done |
+| AGA-23 | Reorder truck detail page for mobile | Backlog |
+| AGA-24 | Load More pagination | Backlog |
+| AGA-25 | Mobile responsiveness pass (spacing + headings) | Backlog |
+| AGA-26 | Touch target sizes below 44px | Backlog |
 
 ### Portfolio Polish Sprint Breakdown
 
