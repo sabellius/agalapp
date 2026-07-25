@@ -35,6 +35,7 @@
 | Visual Polish & RTL (AGA-12) | 2026-07-21 | Card hover states, badge visibility, image placeholders, address cleanup, header dedup, Hebrew alt text, responsive hero spacing |
 | Nested Form Fix (AGA-20) | 2026-07-22 | UpgradePrompt uses Dialog instead of nested `<form>` to fix hydration error |
 | Sign-out Redirect & Terminology (AGA-22) | 2026-07-22 | Sign-out → `/auth/sign-in`, unified auth terms (כניסה/יציאה/הרשמה) |
+| Mobile Responsive Spacing (AGA-25) | 2026-07-25 | Responsive py/gap/heading sizes across 6 pages, dashboard missing px-4 fix |
 
 ---
 
@@ -61,7 +62,7 @@
 | AGA-22 | Sign-out redirect + auth terminology | ✅ Done |
 | AGA-23 | Reorder truck detail page for mobile | Backlog |
 | AGA-24 | Load More pagination | Backlog |
-| AGA-25 | Mobile responsiveness pass (spacing + headings) | Backlog |
+| AGA-25 | Mobile responsiveness pass (spacing + headings) | ✅ Done |
 | AGA-26 | Touch target sizes below 44px | Backlog |
 
 ### Portfolio Polish Sprint Breakdown
