@@ -65,6 +65,7 @@
 | AGA-25 | Mobile responsiveness pass (spacing + headings) | ✅ Done |
 | AGA-26 | Touch target sizes below 44px | Backlog |
 | AGA-27 | Auth UI — complete Hebrew localization for better-auth-ui | Backlog |
+| AGA-28 | Dashboard truck card metadata breaks on mobile | ✅ Done |
 
 ### Portfolio Polish Sprint Breakdown
 
