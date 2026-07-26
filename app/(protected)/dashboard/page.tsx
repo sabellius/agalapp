@@ -1,4 +1,4 @@
-import { Coffee, MapPin, Pencil, Plus, Star } from "lucide-react";
+import { Coffee, MapPin, Plus, Star } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -98,48 +98,47 @@ export default async function DashboardPage() {
                 {trucks.map((truck) => {
                   const avgRating = calculateAverageRating(truck.reviews);
                   return (
-                    <Card key={truck.id}>
-                      <CardContent className="flex items-center gap-4 py-4">
-                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
-                          {truck.images[0] ? (
-                            <Image
-                              src={truck.images[0].url}
-                              alt={truck.name}
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full items-center justify-center">
-                              <Coffee className="h-6 w-6 text-muted-foreground/30" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <Link
-                            href={`/trucks/${truck.id}`}
-                            className="font-medium hover:underline"
-                          >
-                            {truck.name}
-                          </Link>
-                          <div className="mt-1 flex items-center gap-3 text-sm text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />
-                              {truck.city}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Star className="h-3 w-3 fill-star text-star" />
-                              {avgRating > 0 ? avgRating.toFixed(1) : "—"}
-                            </span>
-                            <span>{truck._count.reviews} ביקורות</span>
+                    <Card
+                      key={truck.id}
+                      className="group transition-all duration-200 hover:shadow-lg focus-within:shadow-lg"
+                    >
+                      <Link href={`/trucks/${truck.id}`}>
+                        <CardContent className="flex items-center gap-4 py-4">
+                          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
+                            {truck.images[0] ? (
+                              <Image
+                                src={truck.images[0].url}
+                                alt={truck.name}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            ) : (
+                              <div className="flex h-full items-center justify-center">
+                                <Coffee className="h-6 w-6 text-muted-foreground/30" />
+                              </div>
+                            )}
                           </div>
-                        </div>
-                        <Button size="sm" variant="ghost" asChild>
-                          <Link href={`/trucks/${truck.id}/edit`}>
-                            <Pencil className="h-4 w-4" />
-                            עריכה
-                          </Link>
-                        </Button>
-                      </CardContent>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium line-clamp-1 group-hover:text-primary transition-colors">
+                              {truck.name}
+                            </p>
+                            <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                              <span className="flex items-center gap-1 whitespace-nowrap">
+                                <MapPin className="h-3 w-3 shrink-0" />
+                                {truck.city}
+                              </span>
+                              <span className="flex items-center gap-1.5 whitespace-nowrap">
+                                <Star className="h-3 w-3 shrink-0 fill-star text-star" />
+                                {avgRating > 0 ? avgRating.toFixed(1) : "—"}
+                                <span className="text-muted-foreground/60">
+                                  ·
+                                </span>
+                                {truck._count.reviews} ביקורות
+                              </span>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Link>
                     </Card>
                   );
                 })}
