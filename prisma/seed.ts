@@ -376,7 +376,7 @@ async function main() {
         data: {
           truckId: truck.id,
           url: SEED_GALLERY_IMAGES[galleryIdx],
-          publicId: `seed/gallery-${String(galleryIdx + 1).padStart(2, "0")}.jpg`,
+          publicId: `seed/gallery-${String(galleryIdx + 1).padStart(2, "0")}`,
           alt: `${truck.name} - תמונה ${i + 2}`,
           isPrimary: false,
         },
