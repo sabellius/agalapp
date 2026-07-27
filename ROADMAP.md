@@ -1,223 +1,52 @@
 # AgalApp Roadmap
 
-**Last Updated:** 2026-07-24
-**Project:** Hebrew (RTL) coffee cart review platform
-**Goal:** Portfolio project with balanced UX/UI and backend features
+Hebrew (RTL) coffee cart review platform. Portfolio project.
 
 ---
 
-## ✅ Done
+## ✅ Shipped
 
-| Feature | Completed | Notes |
-|---------|-----------|-------|
-| Authentication (better-auth, roles) | 2026-02 | USER, TRUCK_OWNER, ADMIN |
-| Truck CRUD (create, edit, delete) | 2026-02 | Server Actions, Prisma |
-| Image Upload (Cloudinary) | 2026-02 | Multi-image with primary |
-| Reviews (star ratings, text) | 2026-02 | One per user per truck |
-| Review Votes (Helpful) | 2026-03 | Toggle functionality |
-| Search & Filtering | 2026-02 | Text, city, rating |
-| Map Integration (Leaflet) | 2026-02 | Geocoding via Nominatim |
-| User Tiers/Subscription | 2026-03-07 | Account-level, 30-day premium |
-| Subscription Management Page | 2026-03-07 | /subscription |
-| Premium Features (hours, menu) | 2026-03-07 | Gated by tier |
-| Magic Numbers → Named Constants | 2026-03-14 | All domain values extracted |
-| Navigation Header | 2026-02 | Mobile drawer, responsive |
-| Homepage Hero | 2026-03-24 | Hero section + search component |
-| Homepage Content | 2026-03-24 | Popular, regions, recent sections + E2E tests |
-| Truck Card Enhancement | 2026-03-24 | Open now badge, 5-star rating, hover effects |
-| Phase A: Portfolio Bug Fixes | 2026-07-16 | Layout reorder, type fix, edit link gating, CSS fixes, test timeout, dead code cleanup |
-| Realistic Seed Data | 2026-07-16 | 9 trucks, Israeli names/cities, Hebrew reviews, accurate coordinates |
-| Branding Fix | 2026-07-16 | אגלאפ → עגלאפ in all user-facing text |
-| Deployment Fixes | 2026-07-20 | Dockerfile telemetry, auth cookie fix, demo login redirect |
-| UI Polish Fixes | 2026-07-20 | Search overlap, header avatar, nested main→section, map height, card images |
-| Espresso Theme | 2026-07-20 | "Espresso Original" palette, semantic tokens (--star, --success, --warning), hardcoded color migration |
-| Realistic Seed Images | 2026-07-21 | Replaced faker placeholder images with curated coffee truck photos on Cloudinary |
-| Visual Polish & RTL (AGA-12) | 2026-07-21 | Card hover states, badge visibility, image placeholders, address cleanup, header dedup, Hebrew alt text, responsive hero spacing |
-| Nested Form Fix (AGA-20) | 2026-07-22 | UpgradePrompt uses Dialog instead of nested `<form>` to fix hydration error |
-| Sign-out Redirect & Terminology (AGA-22) | 2026-07-22 | Sign-out → `/auth/sign-in`, unified auth terms (כניסה/יציאה/הרשמה) |
-| Mobile Responsive Spacing (AGA-25) | 2026-07-25 | Responsive py/gap/heading sizes across 6 pages, dashboard missing px-4 fix |
+| Feature | Date |
+|---------|------|
+| Auth (better-auth, roles, demo accounts) | 2026-02 |
+| Truck CRUD + Cloudinary images | 2026-02 |
+| Reviews + star ratings + helpful votes | 2026-02 |
+| Search & filtering (text, city, rating) | 2026-02 |
+| Leaflet map with geocoding | 2026-02 |
+| User tiers / subscription (free + premium) | 2026-03 |
+| Homepage (hero, popular, regions, recent) | 2026-03 |
+| Espresso theme + semantic tokens | 2026-07 |
+| Architecture refactor (withAuth, safeAction, RTL shadcn) | 2026-07 |
+| Deployment (Docker, Oracle Cloud, Caddy) | 2026-07 |
+| Seed data (realistic images, Israeli names/cities) | 2026-07 |
+| UI/UX polish sprint (RTL, cards, auth i18n, mobile) | 2026-07 |
 
 ---
 
-## 🔄 In Progress
+## 🔄 Current Focus
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| **Favorites** | 🚧 Next | Heart toggle, favorites page, optimistic UI |
+**UI/UX Polish** — pre-screenshot audit fixes. Tracked in YouTrack
+under AGA-11 parent ticket. Remaining: loading/empty states, toast
+system, star rating consolidation, touch targets, hours handling,
+mobile detail reorder.
 
-### UI/UX Audit Sprint (AGA-11 parent)
-
-| Ticket | Description | Status |
-|--------|-------------|--------|
-| AGA-12 | Visual Polish & RTL Fixes | ✅ Done |
-| AGA-13 | Loading, Error & Empty States | Backlog |
-| AGA-14 | Star Rating Consolidation & Form Validation | Backlog |
-| AGA-15 | Subscription & Tier UX Overhaul | Backlog |
-| AGA-16 | Toast System & Action Feedback | Backlog |
-| AGA-17 | Accessibility, i18n & Performance | Backlog |
-| AGA-18 | Hours & Time Handling | Backlog |
-| AGA-19 | Auto-set first uploaded image as primary | Backlog |
-| AGA-20 | Nested form fix in UpgradePrompt | ✅ Done |
-| AGA-21 | Tests for AGA-12 visual changes | Backlog |
-| AGA-22 | Sign-out redirect + auth terminology | ✅ Done |
-| AGA-23 | Reorder truck detail page for mobile | Backlog |
-| AGA-24 | Load More pagination | Backlog |
-| AGA-25 | Mobile responsiveness pass (spacing + headings) | ✅ Done |
-| AGA-26 | Touch target sizes below 44px | Backlog |
-| AGA-27 | Auth UI — complete Hebrew localization for better-auth-ui | ✅ Done |
-| AGA-28 | Dashboard truck card metadata breaks on mobile | ✅ Done |
-
-### Portfolio Polish Sprint Breakdown
-
-#### Phase 0: Critical Fixes (Security & Architecture) ✅
-
-- [x] Create `app/(protected)/layout.tsx` with server-side auth guard (fixes unprotected `/trucks/new`)
-- [x] Add Zod schemas for `setTruckAttributes`, `addTruckAttribute`, `removeTruckAttribute`
-- [x] Fix admin access in `attributes.ts` and `truck-hours.ts` (use `canModifyTruck()` instead of inline checks)
-- [x] Fix nested `<Link>/<Button>` in `truck-preview.tsx` (invalid HTML, a11y)
-
-#### Phase 1: Architecture Refactoring (Design Patterns) ✅
-
-- [x] Extract `withAuth()` HOF + `safeAction()` wrapper, update all server actions
-- [x] Deduplicate city list — single source of truth in `validations/common.ts`, remove `lib/constants.ts` CITIES
-- [x] Extract `calculateAverageRating()` utility (replace duplication in 3 files)
-- [x] Extract `NavLink` from `SiteHeader` render body
-- [x] Convert `/dashboard` from client component to server component
-- [x] Add missing `ZodError` catch in `setTruckHours`
-
-#### Phase 1.5: shadcn RTL Migration ✅
-
-- [x] Migrate `new-york` → `radix-nova` with RTL support
-- [x] Restore globals.css (auth-ui import, cursor rule, font vars)
-- [x] Restore button custom variants (`icon-sm`, `icon-lg`)
-- [x] Restore sheet `showCloseButton` prop
-- [x] Fix physical → logical CSS properties in custom components
-- [x] Add `DirectionProvider` if needed
-- [x] Fix dialog.tsx RTL transform (remove redundant `rtl:translate-x-1/2`)
-
-#### Phase 2: Next.js Best Practices & UI/UX Polish ✅
-
-- [x] Add `app/loading.tsx` (global skeleton)
-- [x] Add `app/trucks/loading.tsx` and `app/trucks/[id]/loading.tsx`
-- [x] Add `app/error.tsx` (global error boundary)
-- [x] Add `app/not-found.tsx` (branded 404)
-- [x] Add `generateMetadata` to `/trucks/[id]`, static metadata to `/trucks` and `/trucks/map`
-- [x] Replace hardcoded colors with semantic tokens (`text-red-500` → `text-destructive`, etc.)
-- [x] Replace native `<select>`/`<textarea>` with shadcn components in truck form
-- [x] Use `cn()` instead of template literal concatenation in all components
-- [x] Add `aria-label` to all icon-only buttons (avatar dropdown, vote, image actions)
-- [x] Add confirmation dialogs for delete truck and delete review
-- [x] Add empty states for "no trucks found", "no reviews yet"
-- [x] Fix `window.location.reload()` → `router.refresh()` in review-actions
-- [~] Add `<link rel="preconnect">` for Cloudinary CDN — skipped (minimal impact)
+**Logo** — to-go coffee cup on wheels concept in progress.
 
 ---
 
-## 📋 Planned
+## 📋 Next
 
-### Phase 1: Foundation & Polish (complete)
-
-| Feature | Description |
-|---------|-------------|
-| Truck Detail Redesign | Layout rework, action buttons, about section |
-| Social Sharing | Share button, WhatsApp, Waze deep links |
-| Schema Extensions | Add phone, description, social links to CoffeeTruck |
-| Truck Form Updates | New fields for schema extensions |
-| Extended Attributes | 11 new attributes: wifi, toilets, parking, playground, shelter, AC, kosher, open-saturday, open-friday, protected-room |
-
-### Phase 2: Core Features
-
-| Feature | Description |
-|---------|-------------|
-| Favorites | Heart toggle, favorites page, optimistic UI |
-| Structured Menu Items | MenuItem model, CRUD, menu editor, dietary tags (gluten-free, vegan) |
-| Enhanced Search | Combined filters sidebar, attribute checkboxes, "Open Now" toggle |
-| Image Gallery Lightbox | Click to expand, keyboard navigation |
-| Near Me | Geolocation-based truck search |
-| "For Kids" Section | Rich content section on truck page |
-
-### Phase 3: User Experience
-
-| Feature | Description |
-|---------|-------------|
-| Review Photos | Users upload photos with reviews |
-| Owner Review Responses | Owners can reply to reviews |
-| User Profile Page | Show user's reviews + favorites |
-| Review Sorting | Sort by helpful, date, rating |
-| Enhanced Map Page | Filter sidebar, marker clustering |
-
-### Phase 4: Deploy
-
-| Feature | Description |
-|---------|-------------|
-| Test DB Isolation | Separate test database for E2E, CI setup |
-| Testing & Docs | Full flow testing, README update, demo video |
-| Deployment | Docker (Oracle Cloud ARM), Nginx, Certbot SSL |
-
-> **Note:** SEO, Loading States, Error Handling, and Accessibility were originally in Phase 4 but are now part of the Portfolio Polish Sprint above.
+- Favorites (heart toggle, favorites page)
+- Structured menu items (MenuItem model, CRUD, dietary tags)
+- Enhanced search (attribute checkboxes, "Open Now" toggle)
+- Image gallery lightbox
+- Near Me (geolocation)
+- Social sharing (WhatsApp, Waze deep links)
 
 ---
 
-## ✂️ Trimmed (Audit Findings — Low Portfolio Impact)
+## ✂️ Not Doing
 
-Identified during codebase audit but deprioritized. Kept for reference if we revisit.
-
-| Item | Why Trimmed |
-|------|-------------|
-| `prisma.$transaction` wrapping for multi-step mutations | Invisible in demo, requires failure mid-operation to notice |
-| `deleteTruck` Cloudinary image cleanup | Orphaned images don't show in UI |
-| Race condition fix in vote counting | Requires concurrent requests to trigger |
-| Add `ownerId` index to CoffeeTruck schema | DB perf micro-detail, undetectable |
-| `createMany` vs sequential creates in `setTruckHours` | Perf micro-optimization |
-| Geocoding cache/rate-limiting | Won't hit limits in a demo |
-| Cloudinary signing endpoint auth | Security deep cut, invisible |
-| `as unknown as` double cast in `getTruckHours` | Type safety purity, buried in code |
-| Barrel export for `truck-hours-schema` in index.ts | Trivial import path detail |
-| `prefers-reduced-motion` support | A11y deep cut for a coffee cart app |
-| Unsaved changes warning on truck form | Nice-to-have, not a differentiator |
-| Move inline `downgradeAccount` to actions file | Convention purity, invisible |
-| `console.error` message style standardization | Cosmetic logging detail |
-| `getTruckAssignedAttributes` `include` vs `select` | Perf micro-detail |
-| `truckFiltersSchema` hardcoded limits → use constants | Minor DRY issue |
-| Merge duplicated `imageSchema`/`truckImageSchema` | Subtle schema detail |
-| Redundant null check filter in map page | Doesn't affect behavior |
-| Remove unnecessary `"use client"` from `feature-lock.tsx` | Bundle micro-detail |
-| Remove redundant `truck-map-client.tsx` wrapper | Dead code, buried |
-
----
-
-## Nice-to-Have (Post-MVP)
-
-| Feature | Description | Effort |
-|---------|-------------|--------|
-| Dark Mode | Theme toggle, CSS variables | Low |
-| Social Login | Google OAuth via better-auth | Medium |
-| Email Notifications | Review reminders, updates | Medium |
-| Owner Analytics Dashboard | Views, clicks, review stats | Medium |
-| Trending Trucks | Algorithm based on recent activity | Low |
-| Map Clustering | Marker grouping at zoom levels | Medium |
-
----
-
-## Known Issues
-
-| ID | Issue | File | Status |
-|----|-------|------|--------|
-| ~~BUG-001~~ | ~~`setPrimaryImage` tests fail — missing `$transaction` mock~~ | `app/actions/images.test.ts` | ✅ Resolved |
-| ~~LINT-001~~ | ~~Unused `auth` import~~ | `app/actions/truck-hours.test.ts` | ✅ Resolved |
-
----
-
-## Skipped (Not Portfolio-Worthy)
-
-| Feature | Why Skip |
-|---------|----------|
-| Real payment integration | Mock is sufficient |
-| Rate limiting | Not visible |
-| Report/flag system | Admin moderation, boring |
-| View tracking/analytics | Hidden feature |
-| Cities reference table | Over-engineering |
-| Menu PDF Upload | Structured menu items are better |
-| Newsletter Signup | Boring, not portfolio-worthy |
-| PWA | Overkill for portfolio |
-| Owner Story Section | Not essential |
+Real payments, rate limiting, report/flag system, view tracking,
+PWA, newsletter, dark mode, social login. See git history for
+detailed audit findings that were triaged and trimmed.
