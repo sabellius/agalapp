@@ -8,14 +8,16 @@ This project works with OpenCode and Claude Code. Follow this source of truth hi
 
 - `AGENTS.md` (this file) — single source of truth for agent rules
 - `CLAUDE.md` — symlink to AGENTS.md, never edit directly
-- `ROADMAP.md` — single source of truth for planning, read at session start
+- `ROADMAP.md` — high-level project overview (shipped features, current focus, next planned). Read at session start
+- YouTrack (`AGA` project) — granular ticket tracking (status, assignee, subtasks)
 - `tasks/` — detailed per-feature plans, read before starting work
 - `plans/` — historical archive only
 
 **Rules:**
 - Read `ROADMAP.md` before doing anything each session
-- Never start a feature without an entry in `ROADMAP.md`
-- After completing work, update `ROADMAP.md` (move to ✅ Done with date)
+- Never start a feature without a ticket in YouTrack
+- After completing work, update YouTrack ticket status AND add one line to ROADMAP.md ✅ Shipped table
+- ROADMAP.md is high-level only — one line per shipped feature with date. Never track per-ticket status there (that's YouTrack's job)
 - Never create planning files outside `tasks/`
 
 ## YouTrack Workflow
