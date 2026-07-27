@@ -103,12 +103,12 @@ export function HoursEditor({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <Clock className="h-5 w-5" />
           <h3 className="text-lg font-semibold">שעות פעילות</h3>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             type="button"
             variant="outline"
@@ -125,41 +125,41 @@ export function HoursEditor({
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="divide-y divide-border">
         {DAYS_OF_WEEK.map((day) => {
           const values = localValues[day.value];
           return (
-            <div key={day.value} className="flex items-center gap-3 py-1">
-              <span className="w-20 text-sm font-medium shrink-0">
-                {day.nameHe}
-              </span>
-
-              <Switch
-                checked={!values.isClosed}
-                onCheckedChange={(checked) =>
-                  updateDay(day.value, { isClosed: !checked })
-                }
-                className="shrink-0"
-              />
+            <div key={day.value} className="py-3 first:pt-0 last:pb-0">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">{day.nameHe}</span>
+                <Switch
+                  checked={!values.isClosed}
+                  onCheckedChange={(checked) =>
+                    updateDay(day.value, { isClosed: !checked })
+                  }
+                />
+              </div>
 
               {!values.isClosed && (
-                <div className="flex items-center gap-2">
+                <div className="mt-2 flex items-center gap-2">
                   <Input
                     type="time"
                     value={values.openTime ?? ""}
                     onChange={(e) =>
                       updateDay(day.value, { openTime: e.target.value })
                     }
-                    className="w-36 h-9"
+                    className="h-9 flex-1 min-w-0"
                   />
-                  <span className="text-xs text-muted-foreground">עד</span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    עד
+                  </span>
                   <Input
                     type="time"
                     value={values.closeTime ?? ""}
                     onChange={(e) =>
                       updateDay(day.value, { closeTime: e.target.value })
                     }
-                    className="w-36 h-9"
+                    className="h-9 flex-1 min-w-0"
                   />
                 </div>
               )}
