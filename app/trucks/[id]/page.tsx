@@ -163,40 +163,71 @@ export default async function TruckPage({ params }: Props) {
         </Button>
       </Link>
 
+      {/* Mobile identity strip — name, rating, status before images */}
+      <div className="lg:hidden mb-4">
+        <div className="flex items-start justify-between gap-2">
+          <h1 className="text-2xl font-bold">{truck.name}</h1>
+          <OpenStatusBadge hours={truck.hours} />
+        </div>
+        <div className="mt-2 flex items-center gap-2">
+          {truck.reviews.length > 0 ? (
+            <>
+              <Star className="h-5 w-5 fill-star text-star" />
+              <span className="text-xl font-bold">
+                {truck.averageRating.toFixed(1)}
+              </span>
+              <span className="text-muted-foreground">
+                ({truck.reviews.length} ביקורות)
+              </span>
+            </>
+          ) : (
+            <span className="text-muted-foreground">אין דירוג</span>
+          )}
+        </div>
+        <div className="mt-1 flex items-start gap-2">
+          <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
+          <p className="text-sm">
+            {truck.address}, {truck.city}
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Sidebar: truck identity, hours, attributes */}
-        <div className="lg:col-span-1 space-y-6">
+        <div className="order-2 lg:order-1 lg:col-span-1 space-y-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="hidden lg:flex">
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-2xl">{truck.name}</CardTitle>
                 <OpenStatusBadge hours={truck.hours} />
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center gap-2">
-                {truck.reviews.length > 0 ? (
-                  <>
-                    <Star className="h-5 w-5 fill-star text-star" />
-                    <span className="text-xl font-bold">
-                      {truck.averageRating.toFixed(1)}
-                    </span>
-                    <span className="text-muted-foreground">
-                      ({truck.reviews.length} ביקורות)
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-muted-foreground">אין דירוג</span>
-                )}
-              </div>
-              <div className="flex items-start gap-2">
-                <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
-                <p className="text-sm">
-                  {truck.address}, {truck.city}
-                </p>
+              <div className="hidden lg:block space-y-4">
+                <div className="flex items-center gap-2">
+                  {truck.reviews.length > 0 ? (
+                    <>
+                      <Star className="h-5 w-5 fill-star text-star" />
+                      <span className="text-xl font-bold">
+                        {truck.averageRating.toFixed(1)}
+                      </span>
+                      <span className="text-muted-foreground">
+                        ({truck.reviews.length} ביקורות)
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-muted-foreground">אין דירוג</span>
+                  )}
+                </div>
+                <div className="flex items-start gap-2">
+                  <MapPin className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                  <p className="text-sm">
+                    {truck.address}, {truck.city}
+                  </p>
+                </div>
               </div>
 
-              <div className="pt-4 border-t">
+              <div className="lg:pt-4 lg:border-t">
                 <p className="text-sm text-muted-foreground mb-2">בבעלות</p>
                 <p className="font-medium">{truck.owner.name}</p>
               </div>
@@ -259,7 +290,7 @@ export default async function TruckPage({ params }: Props) {
         </div>
 
         {/* Main content: images, map, reviews */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="order-1 lg:order-2 lg:col-span-2 space-y-6">
           {(primaryImage || otherImages.length > 0) && (
             <Card className="pt-0">
               <CardContent className="p-0">
