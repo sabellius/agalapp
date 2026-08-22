@@ -27,8 +27,11 @@ const mockTruckHoursFindMany = vi.fn();
 const mockTruckHoursDeleteMany = vi.fn();
 const mockTruckHoursCreate = vi.fn();
 
+const mockTransaction = vi.fn();
+
 export const mockPrismaClient = {
   $disconnect: vi.fn(),
+  $transaction: mockTransaction,
   coffeeTruck: {
     findMany: mockTruckFindMany,
     findUnique: mockTruckFindUnique,
@@ -90,6 +93,11 @@ export const mockReset = () => {
   mockTruckHoursFindMany.mockReset();
   mockTruckHoursDeleteMany.mockReset();
   mockTruckHoursCreate.mockReset();
+
+  mockTransaction.mockReset();
+  mockTransaction.mockImplementation(
+    async (cb: (tx: unknown) => Promise<unknown>) => cb(mockPrismaClient),
+  );
 };
 
 vi.mock("@/lib/prisma", () => ({
