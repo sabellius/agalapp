@@ -9,7 +9,7 @@ export function proxy(request: NextRequest) {
 
   if (!isAuthRoute && !sessionCookie) {
     const signInUrl = new URL("/auth/sign-in", request.url);
-    signInUrl.searchParams.set("callbackUrl", pathname);
+    signInUrl.searchParams.set("redirectTo", pathname);
     return NextResponse.redirect(signInUrl);
   }
 

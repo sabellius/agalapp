@@ -18,6 +18,7 @@ export function Providers({ children }: { children: ReactNode }) {
       navigate={router.push}
       replace={router.replace}
       Link={Link}
+      redirectTo="/dashboard"
       localization={{
         SIGN_IN: "כניסה",
         SIGN_IN_DESCRIPTION: "היכנס לחשבון שלך",

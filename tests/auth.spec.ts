@@ -53,4 +53,37 @@ test.describe("Authentication", () => {
       await expect(page).toHaveURL(/\/auth\/sign-in/);
     }
   });
+
+  test("protected edit page redirects to sign-in and back after login", async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
+    await page.goto("/trucks");
+    const truckLink = page
+      .locator('a[href^="/trucks/"]:not([href$="/map"])')
+      .first();
+    await truckLink.waitFor({ state: "visible" });
+    const truckHref = await truckLink.getAttribute("href");
+    const editUrl = `${truckHref}/edit`;
+
+    await page.goto(editUrl);
+
+    await expect(page).toHaveURL(/\/auth\/sign-in/);
+    const redirectTo = new URL(page.url()).searchParams.get("redirectTo");
+    expect(redirectTo).toBe(editUrl);
+
+    const email = process.env.E2E_TEST_EMAIL ?? "test-admin@example.com";
+    const password =
+      process.env.E2E_TEST_PASSWORD ??
+      process.env.E2E_PASSWORD ??
+      "password123";
+
+    await page.waitForLoadState("networkidle");
+    await page.locator('input[type="email"]').first().fill(email);
+    await page.locator('input[type="password"]').first().fill(password);
+    await page.getByRole("button", { name: /^כניסה$/ }).click();
+
+    await expect(page).toHaveURL(editUrl);
+  });
 });

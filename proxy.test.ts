@@ -19,22 +19,20 @@ describe("proxy", () => {
     mockedGetSessionCookie.mockReturnValue(null);
   });
 
-  it("redirects unauthenticated users to sign-in with callbackUrl", () => {
+  it("redirects unauthenticated users to sign-in with redirectTo", () => {
     const response = proxy(makeRequest("/dashboard"));
 
     expect(response.status).toBe(307);
     const location = new URL(response.headers.get("location") ?? "");
     expect(location.pathname).toBe("/auth/sign-in");
-    expect(location.searchParams.get("callbackUrl")).toBe("/dashboard");
+    expect(location.searchParams.get("redirectTo")).toBe("/dashboard");
   });
 
-  it("preserves nested path as callbackUrl", () => {
+  it("preserves nested path as redirectTo", () => {
     const response = proxy(makeRequest("/trucks/abc123/edit"));
 
     const location = new URL(response.headers.get("location") ?? "");
-    expect(location.searchParams.get("callbackUrl")).toBe(
-      "/trucks/abc123/edit",
-    );
+    expect(location.searchParams.get("redirectTo")).toBe("/trucks/abc123/edit");
   });
 
   it("passes authenticated users through", () => {
