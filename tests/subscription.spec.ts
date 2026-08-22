@@ -13,7 +13,11 @@ import { expect, test } from "@playwright/test";
  */
 
 test.describe("Subscription", () => {
-  test("redirects to sign-in when not authenticated", async ({ page }) => {
+  test("redirects to sign-in when not authenticated", async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
     await page.goto("/subscription");
     await expect(page).toHaveURL(/\/auth\/sign-in/);
   });

@@ -54,9 +54,8 @@ test.describe("Trucks Listing", () => {
     await page.goto("/trucks");
 
     const selects = page.locator("select").or(page.getByRole("combobox"));
-    const count = await selects.count();
 
-    expect(count).toBeGreaterThan(0);
+    await expect(selects.first()).toBeVisible();
   });
 
   test("clear filters button appears when filters are active", async ({

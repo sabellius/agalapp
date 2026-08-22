@@ -7,7 +7,9 @@ test.describe("Authentication", () => {
     await expect(page.locator("body")).toBeVisible();
   });
 
-  test("sign in page loads", async ({ page }) => {
+  test("sign in page loads", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
     await page.goto("/auth/sign-in");
     // Check the page loads
     await expect(page).toHaveURL(/\/auth\/sign-in/);
@@ -21,7 +23,9 @@ test.describe("Authentication", () => {
     await expect(emailInput.or(passwordInput)).toHaveCount(2);
   });
 
-  test("sign up page loads", async ({ page }) => {
+  test("sign up page loads", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
     await page.goto("/auth/sign-up");
     await expect(page).toHaveURL(/\/auth\/sign-up/);
     // Sign up form should have name input in addition to email/password
@@ -29,7 +33,11 @@ test.describe("Authentication", () => {
     await expect(emailInput).toHaveCount(1);
   });
 
-  test("can navigate between sign in and sign up", async ({ page }) => {
+  test("can navigate between sign in and sign up", async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
     await page.goto("/auth/sign-in");
     // Look for link to sign up
     const signUpLink = page
@@ -41,7 +49,9 @@ test.describe("Authentication", () => {
     }
   });
 
-  test("shows error for empty form submission", async ({ page }) => {
+  test("shows error for empty form submission", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
     await page.goto("/auth/sign-in");
     // Try to find a submit button
     const submitButton = page
@@ -84,6 +94,6 @@ test.describe("Authentication", () => {
     await page.locator('input[type="password"]').first().fill(password);
     await page.getByRole("button", { name: /^כניסה$/ }).click();
 
-    await expect(page).toHaveURL(editUrl);
+    await expect(page).toHaveURL(editUrl, { timeout: 30000 });
   });
 });

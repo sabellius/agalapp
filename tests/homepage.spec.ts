@@ -4,7 +4,9 @@ test.describe("Homepage", () => {
   test("shows hero section with search", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.locator("h1")).toContainText("עגלות הקפה");
+    await expect(
+      page.getByRole("heading", { level: 1, name: /עגלות הקפה/ }),
+    ).toBeVisible();
     await expect(page.locator('input[placeholder*="שם"]')).toBeVisible();
   });
 
