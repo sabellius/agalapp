@@ -23,15 +23,18 @@ const DEMO_ACCOUNTS = [
 
 export function DemoLogin() {
   const [loadingEmail, setLoadingEmail] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function handleDemoLogin(email: string) {
     setLoadingEmail(email);
+    setErrorMessage(null);
     const { error } = await authClient.signIn.email({
       email,
       password: DEMO_PASSWORD,
     });
     if (error) {
       setLoadingEmail(null);
+      setErrorMessage("הכניסה נכשלה - ודא שמסד הנתונים מאוכלס (pnpm run seed)");
       return;
     }
     window.location.href = "/dashboard";
@@ -65,6 +68,11 @@ export function DemoLogin() {
           </Button>
         ))}
       </div>
+      {errorMessage ? (
+        <p role="alert" className="text-center text-xs text-destructive">
+          {errorMessage}
+        </p>
+      ) : null}
     </div>
   );
 }
