@@ -61,7 +61,6 @@ export async function updateTruck(
     return safeAction(async () => {
       const { truckId, ...dataToValidate } = input;
       const validated = updateTruckSchema.parse(dataToValidate);
-      const location = await geocodeAddress(validated.address, validated.city);
 
       const truck = await prisma.coffeeTruck.findUnique({
         where: { id: truckId },
@@ -81,6 +80,8 @@ export async function updateTruck(
         } as ActionResult<{ id: string }>;
       }
 
+      const location = await geocodeAddress(validated.address, validated.city);
+
       const newImageIds = new Set(
         validated.images
           .filter((img) => !img.id?.startsWith("temp-"))
@@ -90,48 +91,47 @@ export async function updateTruck(
       const imagesToDelete = truck.images.filter(
         (img) => !newImageIds.has(img.publicId),
       );
-      for (const image of imagesToDelete) {
-        try {
-          await prisma.coffeeTruckImage.delete({ where: { id: image.id } });
-        } catch (error) {
-          console.error("Error deleting image:", error);
-        }
-      }
-
       const imagesToCreate = validated.images.filter((img) =>
         img.id?.startsWith("temp-"),
       );
-      if (imagesToCreate.length > 0) {
-        await prisma.coffeeTruckImage.createMany({
-          data: imagesToCreate.map((img) => ({
-            url: img.url,
-            publicId: img.publicId,
-            alt: img.alt ?? null,
-            isPrimary: img.isPrimary,
-            truckId,
-          })),
-        });
-      }
-
       const imagesToUpdate = validated.images.filter(
         (img) => !img.id?.startsWith("temp-"),
       );
-      for (const image of imagesToUpdate) {
-        await prisma.coffeeTruckImage.updateMany({
-          where: { publicId: image.publicId, truckId },
-          data: { alt: image.alt ?? null, isPrimary: image.isPrimary },
-        });
-      }
 
-      const updatedTruck = await prisma.coffeeTruck.update({
-        where: { id: truckId },
-        data: {
-          name: validated.name,
-          city: validated.city,
-          address: validated.address,
-          latitude: location?.latitude,
-          longitude: location?.longitude,
-        },
+      const updatedTruck = await prisma.$transaction(async (tx) => {
+        for (const image of imagesToDelete) {
+          await tx.coffeeTruckImage.delete({ where: { id: image.id } });
+        }
+
+        if (imagesToCreate.length > 0) {
+          await tx.coffeeTruckImage.createMany({
+            data: imagesToCreate.map((img) => ({
+              url: img.url,
+              publicId: img.publicId,
+              alt: img.alt ?? null,
+              isPrimary: img.isPrimary,
+              truckId,
+            })),
+          });
+        }
+
+        for (const image of imagesToUpdate) {
+          await tx.coffeeTruckImage.updateMany({
+            where: { publicId: image.publicId, truckId },
+            data: { alt: image.alt ?? null, isPrimary: image.isPrimary },
+          });
+        }
+
+        return tx.coffeeTruck.update({
+          where: { id: truckId },
+          data: {
+            name: validated.name,
+            city: validated.city,
+            address: validated.address,
+            latitude: location?.latitude,
+            longitude: location?.longitude,
+          },
+        });
       });
 
       revalidatePath("/trucks");
