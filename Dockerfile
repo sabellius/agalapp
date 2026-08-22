@@ -49,7 +49,7 @@ COPY --from=builder /app/env-config.ts ./env-config.ts
 COPY --from=builder /app/next.config.ts ./next.config.ts
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 COPY --from=builder /app/postcss.config.mjs ./postcss.config.mjs
-COPY scripts/entrypoint.sh ./scripts/entrypoint.sh
+COPY scripts/ ./scripts/
 RUN chmod +x scripts/entrypoint.sh
 
 EXPOSE 3000
