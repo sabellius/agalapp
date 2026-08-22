@@ -31,9 +31,9 @@ async function globalSetup(config: FullConfig) {
     // Navigate to sign-in page
     await page.goto(`${baseURL}/auth/sign-in`);
 
-    // Fill form
-    await page.locator('input[name="email"]').fill(email);
-    await page.locator('input[name="password"]').fill(password);
+    // Fill form (inputs duplicate briefly during hydration — use first match)
+    await page.locator('input[name="email"]').first().fill(email);
+    await page.locator('input[name="password"]').first().fill(password);
 
     // Submit form
     await page.click('button[type="submit"]');

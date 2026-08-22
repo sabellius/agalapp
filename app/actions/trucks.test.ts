@@ -9,6 +9,7 @@ vi.mock("@/lib/auth", () => ({
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     $disconnect: vi.fn(),
+    $transaction: vi.fn(),
     user: {
       findUnique: vi.fn(),
       update: vi.fn(),
@@ -32,6 +33,14 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+vi.mock("@/lib/cloudinary", () => ({
+  default: {
+    uploader: {
+      destroy: vi.fn(),
+    },
+  },
+}));
+
 vi.mock("@/lib/geocoding", () => ({
   geocodeAddress: vi.fn().mockResolvedValue({
     latitude: 32.0853,
@@ -48,6 +57,7 @@ vi.mock("next/headers", () => ({
 }));
 
 import { auth } from "@/lib/auth";
+import cloudinary from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
 import type {
   CreateTruckInput,
@@ -60,6 +70,7 @@ import { mockAuthSession } from "@/test/utils/test-helpers";
 import { createTruck, deleteTruck, updateTruck } from "./trucks";
 
 const mockPrisma = prisma as typeof prisma & {
+  $transaction: ReturnType<typeof vi.fn>;
   user: { findUnique: ReturnType<typeof vi.fn> };
   coffeeTruck: {
     findMany: ReturnType<typeof vi.fn>;
@@ -79,6 +90,8 @@ const mockPrisma = prisma as typeof prisma & {
   };
 };
 
+const mockedCloudinaryDestroy = vi.mocked(cloudinary.uploader.destroy);
+
 const mockAuth = auth as typeof auth & {
   api: { getSession: ReturnType<typeof vi.fn> };
 };
@@ -86,6 +99,9 @@ const mockAuth = auth as typeof auth & {
 describe("trucks server actions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPrisma.$transaction.mockImplementation(async (cb: unknown) =>
+      (cb as (tx: unknown) => Promise<unknown>)(prisma),
+    );
   });
 
   describe("createTruck", () => {
@@ -281,6 +297,161 @@ describe("trucks server actions", () => {
         expect(result.message).toContain("אינך מורשה");
       }
     });
+
+    it("deletes removed images inside the transaction", async () => {
+      mockAuthSession(mockTruckOwner);
+
+      const truck = {
+        ...mockTruck,
+        id: validInput.truckId,
+        ownerId: mockTruckOwner.id,
+        images: [
+          { id: "img-1", publicId: "img_123" },
+          { id: "img-2", publicId: "img_removed" },
+        ],
+      };
+
+      mockPrisma.coffeeTruck.findUnique.mockResolvedValue(truck);
+      mockPrisma.coffeeTruckImage.delete.mockResolvedValue(undefined);
+      mockPrisma.coffeeTruckImage.updateMany.mockResolvedValue({ count: 1 });
+      mockPrisma.coffeeTruck.update.mockResolvedValue(truck);
+
+      await updateTruck(validInput);
+
+      expect(mockPrisma.$transaction).toHaveBeenCalled();
+      expect(mockPrisma.coffeeTruckImage.delete).toHaveBeenCalledWith({
+        where: { id: "img-2" },
+      });
+      expect(mockPrisma.coffeeTruckImage.delete).not.toHaveBeenCalledWith({
+        where: { id: "img-1" },
+      });
+    });
+
+    it("skips geocoding when truck not found", async () => {
+      mockAuthSession(mockTruckOwner);
+
+      mockPrisma.coffeeTruck.findUnique.mockResolvedValue(null);
+
+      const { geocodeAddress } = await import("@/lib/geocoding");
+      const mockedGeocode = vi.mocked(geocodeAddress);
+      mockedGeocode.mockClear();
+
+      await updateTruck(validInput);
+
+      expect(mockedGeocode).not.toHaveBeenCalled();
+    });
+
+    it("returns failure when transaction fails", async () => {
+      mockAuthSession(mockTruckOwner);
+
+      const truck = {
+        ...mockTruck,
+        id: validInput.truckId,
+        ownerId: mockTruckOwner.id,
+        images: [{ id: "img-1", publicId: "img_123" }],
+      };
+
+      mockPrisma.coffeeTruck.findUnique.mockResolvedValue(truck);
+      mockPrisma.$transaction.mockRejectedValue(new Error("db failure"));
+
+      const result = await updateTruck(validInput);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.message).toBe("שגיאה בעדכון העגלה");
+      }
+    });
+
+    it("destroys removed images in Cloudinary after commit", async () => {
+      vi.useFakeTimers();
+      try {
+        mockAuthSession(mockTruckOwner);
+
+        const truck = {
+          ...mockTruck,
+          id: validInput.truckId,
+          ownerId: mockTruckOwner.id,
+          images: [
+            { id: "img-1", publicId: "img_123" },
+            { id: "img-2", publicId: "img_removed" },
+          ],
+        };
+
+        mockPrisma.coffeeTruck.findUnique.mockResolvedValue(truck);
+        mockedCloudinaryDestroy.mockResolvedValue({ result: "ok" });
+        mockPrisma.coffeeTruck.update.mockResolvedValue(truck);
+
+        await updateTruck(validInput);
+
+        expect(mockedCloudinaryDestroy).toHaveBeenCalledTimes(1);
+        expect(mockedCloudinaryDestroy).toHaveBeenCalledWith("img_removed");
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("retries Cloudinary destroy once on failure", async () => {
+      vi.useFakeTimers();
+      try {
+        mockAuthSession(mockTruckOwner);
+
+        const truck = {
+          ...mockTruck,
+          id: validInput.truckId,
+          ownerId: mockTruckOwner.id,
+          images: [
+            { id: "img-1", publicId: "img_123" },
+            { id: "img-2", publicId: "img_removed" },
+          ],
+        };
+
+        mockPrisma.coffeeTruck.findUnique.mockResolvedValue(truck);
+        mockedCloudinaryDestroy
+          .mockRejectedValueOnce(new Error("network blip"))
+          .mockResolvedValue({ result: "ok" });
+        mockPrisma.coffeeTruck.update.mockResolvedValue(truck);
+
+        const resultPromise = updateTruck(validInput);
+        await vi.advanceTimersByTimeAsync(500);
+        const result = await resultPromise;
+
+        expect(result.success).toBe(true);
+        expect(mockedCloudinaryDestroy).toHaveBeenCalledTimes(2);
+        expect(mockedCloudinaryDestroy).toHaveBeenCalledWith("img_removed");
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("succeeds despite Cloudinary destroy failing twice", async () => {
+      vi.useFakeTimers();
+      try {
+        mockAuthSession(mockTruckOwner);
+
+        const truck = {
+          ...mockTruck,
+          id: validInput.truckId,
+          ownerId: mockTruckOwner.id,
+          images: [
+            { id: "img-1", publicId: "img_123" },
+            { id: "img-2", publicId: "img_removed" },
+          ],
+        };
+
+        mockPrisma.coffeeTruck.findUnique.mockResolvedValue(truck);
+        mockedCloudinaryDestroy.mockRejectedValue(new Error("api key dead"));
+        mockPrisma.coffeeTruck.update.mockResolvedValue(truck);
+
+        const resultPromise = updateTruck(validInput);
+        await vi.advanceTimersByTimeAsync(500);
+        const result = await resultPromise;
+
+        expect(result.success).toBe(true);
+        expect(mockedCloudinaryDestroy).toHaveBeenCalledTimes(2);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
   });
 
   describe("deleteTruck", () => {
@@ -293,8 +464,10 @@ describe("trucks server actions", () => {
 
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
         ownerId: mockTruckOwner.id,
+        images: [{ publicId: "img_1" }, { publicId: "img_2" }],
       });
       mockPrisma.coffeeTruck.delete.mockResolvedValue(undefined);
+      mockedCloudinaryDestroy.mockResolvedValue({ result: "ok" });
 
       const result = await deleteTruck(validInput);
 
@@ -302,6 +475,8 @@ describe("trucks server actions", () => {
       expect(mockPrisma.coffeeTruck.delete).toHaveBeenCalledWith({
         where: { id: validInput.truckId },
       });
+      expect(mockedCloudinaryDestroy).toHaveBeenCalledWith("img_1");
+      expect(mockedCloudinaryDestroy).toHaveBeenCalledWith("img_2");
     });
 
     it("deletes truck for admin", async () => {
@@ -310,8 +485,10 @@ describe("trucks server actions", () => {
       mockPrisma.user.findUnique.mockResolvedValue({ role: "ADMIN" });
       mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
         ownerId: "other-owner-id",
+        images: [{ publicId: "img_1" }, { publicId: "img_2" }],
       });
       mockPrisma.coffeeTruck.delete.mockResolvedValue(undefined);
+      mockedCloudinaryDestroy.mockResolvedValue({ result: "ok" });
 
       const result = await deleteTruck(validInput);
 

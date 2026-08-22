@@ -61,34 +61,36 @@ export async function setTruckHours(input: WeeklyHoursInput) {
         } as ActionResult;
       }
 
-      await prisma.truckHours.deleteMany({
-        where: { truckId: validated.truckId },
-      });
+      await prisma.$transaction(async (tx) => {
+        await tx.truckHours.deleteMany({
+          where: { truckId: validated.truckId },
+        });
 
-      for (let i = 0; i < validated.hours.length; i++) {
-        const dayHours = validated.hours[i];
-        if (!dayHours.isClosed && dayHours.openTime && dayHours.closeTime) {
-          await prisma.truckHours.create({
-            data: {
-              truckId: validated.truckId,
-              dayOfWeek: dayHours.dayOfWeek,
-              openTime: dayHours.openTime,
-              closeTime: dayHours.closeTime,
-              isClosed: false,
-            },
-          });
-        } else if (dayHours.isClosed) {
-          await prisma.truckHours.create({
-            data: {
-              truckId: validated.truckId,
-              dayOfWeek: dayHours.dayOfWeek,
-              openTime: null,
-              closeTime: null,
-              isClosed: true,
-            },
-          });
+        for (let i = 0; i < validated.hours.length; i++) {
+          const dayHours = validated.hours[i];
+          if (!dayHours.isClosed && dayHours.openTime && dayHours.closeTime) {
+            await tx.truckHours.create({
+              data: {
+                truckId: validated.truckId,
+                dayOfWeek: dayHours.dayOfWeek,
+                openTime: dayHours.openTime,
+                closeTime: dayHours.closeTime,
+                isClosed: false,
+              },
+            });
+          } else if (dayHours.isClosed) {
+            await tx.truckHours.create({
+              data: {
+                truckId: validated.truckId,
+                dayOfWeek: dayHours.dayOfWeek,
+                openTime: null,
+                closeTime: null,
+                isClosed: true,
+              },
+            });
+          }
         }
-      }
+      });
 
       revalidatePath(`/trucks/${validated.truckId}`);
       revalidatePath("/dashboard");

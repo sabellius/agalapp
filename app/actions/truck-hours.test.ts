@@ -140,6 +140,37 @@ describe("truck-hours server actions", () => {
       ],
     };
 
+    it("saves the week inside a single transaction", async () => {
+      mockAuthSession(mockPremiumUser);
+      mockPrisma.user.findUnique.mockResolvedValue(mockPremiumUser);
+      mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
+        ownerId: mockPremiumUser.id,
+      });
+
+      await setTruckHours(validInput);
+
+      expect(mockPrismaClient.$transaction).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.truckHours.deleteMany).toHaveBeenCalledTimes(1);
+      expect(mockPrisma.truckHours.create).toHaveBeenCalledTimes(
+        validInput.hours.length,
+      );
+    });
+
+    it("returns failure when the transaction fails", async () => {
+      mockAuthSession(mockPremiumUser);
+      mockPrisma.user.findUnique.mockResolvedValue(mockPremiumUser);
+      mockPrisma.coffeeTruck.findUnique.mockResolvedValue({
+        ownerId: mockPremiumUser.id,
+      });
+      mockPrismaClient.$transaction.mockRejectedValueOnce(
+        new Error("db died mid-week"),
+      );
+
+      const result = await setTruckHours(validInput);
+
+      expect(result.success).toBe(false);
+    });
+
     it("sets hours for premium truck owner", async () => {
       mockAuthSession(mockPremiumUser);
       mockPrisma.user.findUnique.mockResolvedValue(mockPremiumUser);

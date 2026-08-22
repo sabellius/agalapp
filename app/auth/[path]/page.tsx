@@ -19,7 +19,6 @@ export default async function AuthPage({
     <section className="container mx-auto flex grow flex-col items-center justify-center p-4 md:p-6">
       <AuthView
         path={path}
-        redirectTo="/dashboard"
         cardFooter={path === "sign-in" ? <DemoLogin /> : undefined}
       />
     </section>

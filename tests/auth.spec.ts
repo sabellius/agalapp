@@ -7,7 +7,9 @@ test.describe("Authentication", () => {
     await expect(page.locator("body")).toBeVisible();
   });
 
-  test("sign in page loads", async ({ page }) => {
+  test("sign in page loads", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
     await page.goto("/auth/sign-in");
     // Check the page loads
     await expect(page).toHaveURL(/\/auth\/sign-in/);
@@ -21,7 +23,9 @@ test.describe("Authentication", () => {
     await expect(emailInput.or(passwordInput)).toHaveCount(2);
   });
 
-  test("sign up page loads", async ({ page }) => {
+  test("sign up page loads", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
     await page.goto("/auth/sign-up");
     await expect(page).toHaveURL(/\/auth\/sign-up/);
     // Sign up form should have name input in addition to email/password
@@ -29,7 +33,11 @@ test.describe("Authentication", () => {
     await expect(emailInput).toHaveCount(1);
   });
 
-  test("can navigate between sign in and sign up", async ({ page }) => {
+  test("can navigate between sign in and sign up", async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
     await page.goto("/auth/sign-in");
     // Look for link to sign up
     const signUpLink = page
@@ -41,7 +49,9 @@ test.describe("Authentication", () => {
     }
   });
 
-  test("shows error for empty form submission", async ({ page }) => {
+  test("shows error for empty form submission", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
     await page.goto("/auth/sign-in");
     // Try to find a submit button
     const submitButton = page
@@ -52,5 +62,38 @@ test.describe("Authentication", () => {
       // Should still be on sign-in page (form validation or error)
       await expect(page).toHaveURL(/\/auth\/sign-in/);
     }
+  });
+
+  test("protected edit page redirects to sign-in and back after login", async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
+    await page.goto("/trucks");
+    const truckLink = page
+      .locator('a[href^="/trucks/"]:not([href$="/map"])')
+      .first();
+    await truckLink.waitFor({ state: "visible" });
+    const truckHref = await truckLink.getAttribute("href");
+    const editUrl = `${truckHref}/edit`;
+
+    await page.goto(editUrl);
+
+    await expect(page).toHaveURL(/\/auth\/sign-in/);
+    const redirectTo = new URL(page.url()).searchParams.get("redirectTo");
+    expect(redirectTo).toBe(editUrl);
+
+    const email = process.env.E2E_TEST_EMAIL ?? "test-admin@example.com";
+    const password =
+      process.env.E2E_TEST_PASSWORD ??
+      process.env.E2E_PASSWORD ??
+      "password123";
+
+    await page.waitForLoadState("networkidle");
+    await page.locator('input[type="email"]').first().fill(email);
+    await page.locator('input[type="password"]').first().fill(password);
+    await page.getByRole("button", { name: /^כניסה$/ }).click();
+
+    await expect(page).toHaveURL(editUrl, { timeout: 30000 });
   });
 });
