@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { ActionResult } from "@/lib/actions";
+import cloudinary from "@/lib/cloudinary";
 import { geocodeAddress } from "@/lib/geocoding";
 import { prisma } from "@/lib/prisma";
 import { safeAction, withAuth } from "@/lib/safe-action";
@@ -14,6 +15,45 @@ import {
   type UpdateTruckInput,
   updateTruckSchema,
 } from "@/lib/validations";
+
+const CLOUDINARY_DESTROY_RETRY_DELAY_MS = 500;
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function destroyAssetWithRetry(publicId: string): Promise<boolean> {
+  try {
+    await cloudinary.uploader.destroy(publicId);
+    return true;
+  } catch (error) {
+    console.error(
+      `Cloudinary destroy failed for ${publicId}, retrying:`,
+      error,
+    );
+  }
+
+  await sleep(CLOUDINARY_DESTROY_RETRY_DELAY_MS);
+
+  try {
+    await cloudinary.uploader.destroy(publicId);
+    return true;
+  } catch (error) {
+    console.error(`Cloudinary destroy failed for ${publicId}:`, error);
+    return false;
+  }
+}
+
+async function destroyAssets(publicIds: string[]) {
+  const results = await Promise.all(
+    publicIds.map((id) => destroyAssetWithRetry(id)),
+  );
+  const orphaned = publicIds.filter((_, index) => !results[index]);
+
+  if (orphaned.length > 0) {
+    console.error("Cloudinary orphaned assets (destroy failed):", orphaned);
+  }
+}
 
 export async function createTruck(input: CreateTruckInput) {
   return withAuth(async (userId) => {
@@ -136,6 +176,7 @@ export async function updateTruck(
 
       revalidatePath("/trucks");
       revalidatePath(`/trucks/${truckId}`);
+      await destroyAssets(imagesToDelete.map((img) => img.publicId));
       return { success: true as const, data: updatedTruck };
     }, "שגיאה בעדכון העגלה");
   });
@@ -148,7 +189,7 @@ export async function deleteTruck(input: DeleteTruckInput) {
 
       const truck = await prisma.coffeeTruck.findUnique({
         where: { id: validated.truckId },
-        select: { ownerId: true },
+        select: { ownerId: true, images: { select: { publicId: true } } },
       });
 
       if (!truck) {
@@ -164,6 +205,7 @@ export async function deleteTruck(input: DeleteTruckInput) {
 
       await prisma.coffeeTruck.delete({ where: { id: validated.truckId } });
       revalidatePath("/trucks");
+      await destroyAssets(truck.images.map((img) => img.publicId));
       return { success: true as const };
     }, "שגיאה במחיקת העגלה");
   });
