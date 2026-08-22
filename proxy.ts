@@ -2,19 +2,12 @@ import { getSessionCookie } from "better-auth/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const protectedRoutes = ["/dashboard", "/trucks/new", "/trucks/[id]/edit"];
-
-const authRoutes = ["/auth/sign-in", "/auth/sign-up"];
-
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionCookie = getSessionCookie(request);
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route),
-  );
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const isAuthRoute = pathname.startsWith("/auth/");
 
-  if (isProtectedRoute && !sessionCookie) {
+  if (!isAuthRoute && !sessionCookie) {
     const signInUrl = new URL("/auth/sign-in", request.url);
     signInUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(signInUrl);
@@ -29,6 +22,11 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.gif|.*\\.svg).*)",
+    "/dashboard/:path*",
+    "/subscription/:path*",
+    "/trucks/new",
+    "/trucks/:id/edit",
+    "/auth/sign-in",
+    "/auth/sign-up",
   ],
 };
