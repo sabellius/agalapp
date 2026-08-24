@@ -23,6 +23,7 @@ Hebrew (RTL) coffee cart review platform. Portfolio project.
 | Mobile truck detail reorder (identity before images) | 2026-07-29 |
 | Correctness fixes: proxy matcher, Cloudinary orphan cleanup, transactional writes | 2026-08-22 |
 | Demo login buttons honor redirectTo (open-redirect safe) | 2026-08-24 |
+| Role check on new-truck page (block regular users) | 2026-08-24 |
 
 ---
 
