@@ -88,3 +88,29 @@ test.describe("Trucks Listing", () => {
     }
   });
 });
+
+test.describe("New truck page access", () => {
+  test("regular user is redirected away from new truck page", async ({
+    page,
+  }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== "chromium-authenticated-free",
+      "free user only",
+    );
+
+    await page.goto("/trucks/new");
+
+    await expect(page).toHaveURL(/\/trucks$/);
+  });
+
+  test("truck owner can view new truck form", async ({ page }, testInfo) => {
+    test.skip(
+      testInfo.project.name !== "chromium-authenticated-owner",
+      "truck owner only",
+    );
+
+    await page.goto("/trucks/new");
+
+    await expect(page.getByText("הוספת עגלת קפה חדשה")).toBeVisible();
+  });
+});
