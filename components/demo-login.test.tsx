@@ -22,9 +22,9 @@ const signInFailure = {
   error: { code: "INVALID_EMAIL_OR_PASSWORD" },
 } as SignInResult;
 
-function stubLocationHref() {
+function stubLocationHref(search = "") {
   Object.defineProperty(window, "location", {
-    value: { href: "" },
+    value: { href: "", search },
     writable: true,
   });
 }
@@ -44,6 +44,36 @@ describe("DemoLogin", () => {
   });
 
   it("redirects to dashboard on successful login", async () => {
+    mockedSignIn.mockResolvedValue(signInSuccess);
+    const user = userEvent.setup();
+
+    render(<DemoLogin />);
+    await user.click(screen.getByText("כניסה כמנהל"));
+
+    await waitFor(() => {
+      expect(window.location.href).toBe("/dashboard");
+    });
+  });
+
+  it("redirects to redirectTo param on successful login", async () => {
+    stubLocationHref("?redirectTo=/trucks/abc123/edit");
+    mockedSignIn.mockResolvedValue(signInSuccess);
+    const user = userEvent.setup();
+
+    render(<DemoLogin />);
+    await user.click(screen.getByText("כניסה כמנהל"));
+
+    await waitFor(() => {
+      expect(window.location.href).toBe("/trucks/abc123/edit");
+    });
+  });
+
+  it.each([
+    ["absolute URL", "https://evil.com"],
+    ["protocol-relative URL", "//evil.com"],
+    ["backslash bypass", "/\\evil.com"],
+  ])("ignores %s in redirectTo", async (_label, redirectTo) => {
+    stubLocationHref(`?redirectTo=${encodeURIComponent(redirectTo)}`);
     mockedSignIn.mockResolvedValue(signInSuccess);
     const user = userEvent.setup();
 
