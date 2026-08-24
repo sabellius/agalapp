@@ -96,4 +96,25 @@ test.describe("Authentication", () => {
 
     await expect(page).toHaveURL(editUrl, { timeout: 30000 });
   });
+
+  test("protected edit page redirects to sign-in and back after demo login", async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== "chromium", "anonymous only");
+
+    await page.goto("/trucks");
+    const truckLink = page
+      .locator('a[href^="/trucks/"]:not([href$="/map"])')
+      .first();
+    await truckLink.waitFor({ state: "visible" });
+    const truckHref = await truckLink.getAttribute("href");
+    const editUrl = `${truckHref}/edit`;
+
+    await page.goto(editUrl);
+
+    await expect(page).toHaveURL(/\/auth\/sign-in/);
+    await page.getByRole("button", { name: "כניסה כמנהל" }).click();
+
+    await expect(page).toHaveURL(editUrl, { timeout: 30000 });
+  });
 });

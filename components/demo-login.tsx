@@ -6,6 +6,21 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
 const DEMO_PASSWORD = "password123";
+const DEFAULT_REDIRECT = "/dashboard";
+
+function getRedirectTo(): string {
+  const redirectTo = new URLSearchParams(window.location.search).get(
+    "redirectTo",
+  );
+  if (
+    redirectTo?.startsWith("/") &&
+    !redirectTo.startsWith("//") &&
+    !redirectTo.startsWith("/\\")
+  ) {
+    return redirectTo;
+  }
+  return DEFAULT_REDIRECT;
+}
 
 const DEMO_ACCOUNTS = [
   {
@@ -37,7 +52,7 @@ export function DemoLogin() {
       setErrorMessage("הכניסה נכשלה - ודא שמסד הנתונים מאוכלס (pnpm run seed)");
       return;
     }
-    window.location.href = "/dashboard";
+    window.location.href = getRedirectTo();
   }
 
   return (
