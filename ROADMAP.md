@@ -22,6 +22,7 @@ Hebrew (RTL) coffee cart review platform. Portfolio project.
 | UI/UX polish sprint (RTL, cards, auth i18n, mobile) | 2026-07 |
 | Mobile truck detail reorder (identity before images) | 2026-07-29 |
 | Correctness fixes: proxy matcher, Cloudinary orphan cleanup, transactional writes | 2026-08-22 |
+| Demo login buttons honor redirectTo (open-redirect safe) | 2026-08-24 |
 
 ---
 
