@@ -20,6 +20,10 @@ export async function getUserRole(userId: string): Promise<Role | null> {
   return user?.role ?? null;
 }
 
+export function canCreateTruck(role: Role | null): boolean {
+  return role === "TRUCK_OWNER" || role === "ADMIN";
+}
+
 export async function canModifyTruck(
   userId: string,
   truckOwnerId: string,

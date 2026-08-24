@@ -1,6 +1,7 @@
 import type { User } from "@/generated/prisma/client";
 import {
   canAddAttribute,
+  canCreateTruck,
   canEditWorkingHours,
   canShowWorkingHours,
   getExpiryDateString,
@@ -11,6 +12,23 @@ import {
 } from "./truck-permissions";
 
 describe("truck-permissions", () => {
+  describe("canCreateTruck", () => {
+    it("returns false for regular users", () => {
+      expect(canCreateTruck("USER")).toBe(false);
+    });
+
+    it("returns true for truck owners", () => {
+      expect(canCreateTruck("TRUCK_OWNER")).toBe(true);
+    });
+
+    it("returns true for admins", () => {
+      expect(canCreateTruck("ADMIN")).toBe(true);
+    });
+
+    it("returns false for missing role", () => {
+      expect(canCreateTruck(null)).toBe(false);
+    });
+  });
   const freeUser: Pick<User, "tier" | "tierExpiryAt"> = {
     tier: "FREE",
     tierExpiryAt: null,

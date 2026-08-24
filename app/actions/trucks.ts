@@ -6,7 +6,11 @@ import cloudinary from "@/lib/cloudinary";
 import { geocodeAddress } from "@/lib/geocoding";
 import { prisma } from "@/lib/prisma";
 import { safeAction, withAuth } from "@/lib/safe-action";
-import { canModifyTruck, getUserRole } from "@/lib/truck-permissions";
+import {
+  canCreateTruck,
+  canModifyTruck,
+  getUserRole,
+} from "@/lib/truck-permissions";
 import {
   type CreateTruckInput,
   createTruckSchema,
@@ -59,7 +63,7 @@ export async function createTruck(input: CreateTruckInput) {
   return withAuth(async (userId) => {
     return safeAction(async () => {
       const role = await getUserRole(userId);
-      if (role !== "TRUCK_OWNER" && role !== "ADMIN") {
+      if (!canCreateTruck(role)) {
         return {
           success: false,
           message: "רק בעלי עגלות יכולים ליצור עגלות",
