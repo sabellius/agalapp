@@ -64,6 +64,17 @@ pnpm run seed
 
 > Do not manually run lint, format, or typecheck — handled automatically (formatter on write, lefthook on commit).
 
+## Deployment & Versioning
+
+Deploys are automatic on push to `main` via `.github/workflows/deploy.yml` (three jobs: `check` → `build` → `deploy`). CI runs lint, typecheck, and unit tests before every deploy; e2e stays local.
+
+- Images are built in CI and pushed to `ghcr.io/sabellius/agalapp`, tagged `main-<sha>` (what prod runs) and `latest`. The server pulls, never builds.
+- `/api/health` reports the running version and commit. The deploy job verifies it after rollout.
+- `lib/version.ts` reads `NEXT_PUBLIC_APP_VERSION` / `NEXT_PUBLIC_GIT_SHA` (baked at Docker build time; `dev` locally). Footer shows them on desktop.
+- Versions: SemVer 0.x, source of truth is git tags. For a milestone release, bump `version` in `package.json` (picked up by CI builds), then tag `vX.Y.Z` on the merge commit. No release automation tooling.
+- Manual deploy: `gh workflow run deploy.yml`.
+- Never use `[skip ci]` on the head commit of a push to `main` — it skips the deploy itself.
+
 ## Project Structure
 
 ```
