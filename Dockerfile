@@ -26,8 +26,6 @@ ARG GIT_SHA=dev
 ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
 ENV NEXT_PUBLIC_GIT_SHA=$GIT_SHA
 
-ENV BETTER_AUTH_SECRET=build_placeholder_not_real
-
 RUN pnpm exec prisma generate
 RUN pnpm run build
 
