@@ -3,6 +3,7 @@ import { Geist, Noto_Sans_Hebrew } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import { Providers } from "@/app/providers";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,7 @@ export default function RootLayout({
         <Providers>
           <SiteHeader />
           <main>{children}</main>
+          <SiteFooter />
         </Providers>
       </body>
     </html>

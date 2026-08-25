@@ -18,13 +18,7 @@ services:
       start_period: 30s
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
-        NEXT_PUBLIC_CLOUDINARY_API_KEY: ${NEXT_PUBLIC_CLOUDINARY_API_KEY}
-        NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: ${NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+    image: ghcr.io/sabellius/agalapp:${APP_TAG:-latest}
     container_name: agalapp_app
     restart: unless-stopped
     depends_on:
