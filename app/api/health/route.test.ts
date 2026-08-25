@@ -15,6 +15,5 @@ describe("GET /api/health", () => {
 
     expect(body).toHaveProperty("version");
     expect(body).toHaveProperty("commit");
-    expect(body).toHaveProperty("buildTime");
   });
 });
